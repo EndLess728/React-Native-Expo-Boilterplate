@@ -83,7 +83,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.airduct"
+    namespace "com.app.airduct"
     defaultConfig {
         applicationId 'com.app.airduct'
         minSdkVersion rootProject.ext.minSdkVersion

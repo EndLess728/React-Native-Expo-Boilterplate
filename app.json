@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ExpoTemplate",
-    "slug": "ExpoTemplate",
+    "name": "AirDuct",
+    "slug": "AirDuct",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,13 +15,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.app.airduct"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.app.airduct"
     },
     "web": {
       "favicon": "./assets/favicon.png"

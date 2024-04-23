@@ -2,8 +2,9 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { fonts } from "@/theme";
 import Constants from "expo-constants";
-
+import i18n from "@/localization/i18n";
 export const Login = () => {
+
   return (
     <View
       style={{
@@ -20,10 +21,11 @@ export const Login = () => {
           fontFamily: fonts.openSan.boldItalic,
         }}
       >
-        {Constants.expoConfig.name}
+        {i18n.t('welcome')}
       </Text>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({});

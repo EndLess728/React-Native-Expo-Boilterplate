@@ -3,9 +3,24 @@ import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "../reducer";
 import { storage } from "@/storage";
 
+export const reduxStorage = {
+  setItem: (key, value) => {
+    storage.set(key, value);
+    return Promise.resolve(true);
+  },
+  getItem: (key) => {
+    const value = storage.getString(key);
+    return Promise.resolve(value);
+  },
+  removeItem: (key) => {
+    storage.delete(key);
+    return Promise.resolve();
+  },
+};
+
 const persistConfig = {
-  key: "temp-root",
-  storage,
+  key: "root",
+  storage: reduxStorage,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -32,6 +32,7 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExpoTemplate/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		3686DC85C8B7435AAA31FD6B /* ExpoTemplate-Bridging-Header.h */ = {isa = PBXFileReference; name = "ExpoTemplate-Bridging-Header.h"; path = "ExpoTemplate/ExpoTemplate-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +58,7 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				7B2EA666AA86461F9926872B /* noop-file.swift */,
+				3686DC85C8B7435AAA31FD6B /* ExpoTemplate-Bridging-Header.h */,
 			);
 			name = ExpoTemplate;
 			sourceTree = "<group>";
@@ -197,6 +199,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				ED408DC2CCF042E5BFE1728F /* ExpoTemplate-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,11 +333,12 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.expo.template;
-				PRODUCT_NAME = ExpoTemplate;
+				PRODUCT_NAME = "ExpoTemplate";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
+				SWIFT_OBJC_BRIDGING_HEADER = ExpoTemplate/ExpoTemplate-Bridging-Header.h;
 			};
 			name = Debug;
 		};
@@ -357,10 +361,11 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.expo.template;
-				PRODUCT_NAME = ExpoTemplate;
+				PRODUCT_NAME = "ExpoTemplate";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
+				SWIFT_OBJC_BRIDGING_HEADER = ExpoTemplate/ExpoTemplate-Bridging-Header.h;
 			};
 			name = Release;
 		};

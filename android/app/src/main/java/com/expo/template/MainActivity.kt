@@ -1,4 +1,4 @@
-package com.app.airduct
+package com.expo.template
 
 import android.os.Build
 import android.os.Bundle

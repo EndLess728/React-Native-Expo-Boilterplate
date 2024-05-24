@@ -1,4 +1,4 @@
-rootProject.name = 'AirDuct'
+rootProject.name = 'ExpoTemplate'
 
 dependencyResolutionManagement {
   versionCatalogs {

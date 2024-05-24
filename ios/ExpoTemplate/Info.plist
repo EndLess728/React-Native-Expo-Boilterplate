@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>AirDuct</string>
+    <string>ExpoTemplate</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,7 +27,13 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.app.airduct</string>
+          <string>com.expo.template</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+expotemplate</string>
         </array>
       </dict>
     </array>
@@ -46,7 +52,7 @@
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
-      <string>armv7</string>
+      <string>arm64</string>
     </array>
     <key>UIRequiresFullScreen</key>
     <false/>

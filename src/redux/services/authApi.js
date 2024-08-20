@@ -1,7 +1,7 @@
 // src/services/authApi.js
-import { emptyApi } from "./emptyApi";
+import { baseApi } from "./baseApi";
 
-const authApi = emptyApi.injectEndpoints({
+const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation({
       query: (credentials) => ({

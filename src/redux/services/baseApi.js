@@ -1,4 +1,4 @@
-import { createApi } from "@reduxjs/toolkit/query";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { HttpClient } from "./HttpClient";
 
 const axiosBaseQuery =
@@ -24,9 +24,9 @@ const axiosBaseQuery =
     }
   };
 
-export const emptyApi = createApi({
+export const baseApi = createApi({
   baseQuery: axiosBaseQuery({
     baseUrl: "https://example.com",
   }),
-  endpoints: () => {},
+  endpoints: () => ({}),
 });

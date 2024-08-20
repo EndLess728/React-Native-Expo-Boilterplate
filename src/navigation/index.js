@@ -1,10 +1,9 @@
 import { NavigationContainer } from "@react-navigation/native";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { ActivityIndicator, useColorScheme } from "react-native";
-import { useSelector } from "react-redux";
 import { AppNavigator } from "@/navigation/AppNavigator";
 import { AuthNavigator } from "@/navigation/AuthNavigator";
-import { loadFonts, theme } from "@/theme";
+import { theme } from "@/theme";
 import * as SplashScreen from "expo-splash-screen";
 import { customFontsToLoad } from "@/theme/fonts";
 import { useFonts } from "expo-font";
@@ -13,10 +12,7 @@ import { useFonts } from "expo-font";
 SplashScreen.preventAutoHideAsync();
 
 export function RootNavigator() {
-  const user = useSelector((s) => s.auth.user);
   const scheme = useColorScheme();
-
-  const isUserLoggedIn = !!user?.username;
 
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
 
@@ -32,7 +28,7 @@ export function RootNavigator() {
 
   return (
     <NavigationContainer onReady={onReady} theme={theme[scheme]}>
-      {isUserLoggedIn ? <AppNavigator /> : <AuthNavigator />}
+      {false ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }

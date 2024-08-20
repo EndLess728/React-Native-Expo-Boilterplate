@@ -1,8 +1,10 @@
-import {combineReducers} from '@reduxjs/toolkit';
-import authSlicer from '../slices/authSlicer';
+import { combineReducers } from "@reduxjs/toolkit";
+import { emptyApi } from "../services/emptyApi";
+import userSlicer from "../slices/userSlicer";
 
 const rootReducer = combineReducers({
-  auth: authSlicer,
+  user: userSlicer,
+  [emptyApi.reducerPath]: emptyApi.reducer,
 });
 
 export default rootReducer;

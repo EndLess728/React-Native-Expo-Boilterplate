@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  // baseURL: BASE_URL,
+  baseURL: "https:example.com",
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,21 +28,33 @@ client.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-client.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      return Promise.reject(error.response.data);
-    } else if (error.request) {
-      return Promise.reject(error.request);
-    } else {
-      return Promise.reject(error);
-    }
-  }
-);
+// client.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response) {
+//       // Return a standardized error format
+//       return Promise.reject({
+//         status: error.response.status,
+//         data: error.response.data,
+//       });
+//     } else if (error.request) {
+//       // The request was made but no response was received
+//       return Promise.reject({
+//         status: null,
+//         data: error.message,
+//       });
+//     } else {
+//       // Something happened in setting up the request
+//       return Promise.reject({
+//         status: null,
+//         data: error.message,
+//       });
+//     }
+//   }
+// );
 
 const setAuthorization = (token) => {
-  client.defaults.headers.common.authorization = token;
+  client.defaults.headers.common.authorization = `Bearer ${token}`;
 };
 
 const clearAuthorization = () => {

@@ -3,12 +3,13 @@ import { HttpClient } from "./HttpClient";
 
 const axiosBaseQuery =
   ({ baseUrl } = { baseUrl: "" }) =>
-  async ({ url, method, data, params, headers }) => {
+  async ({ url, method, params, headers, body }) => {
     try {
-      const result = await HttpClient({
+      const result = await HttpClient.request({
         url: baseUrl + url,
         method,
-        data,
+        data: body,
+        // body,
         params,
         headers,
       });

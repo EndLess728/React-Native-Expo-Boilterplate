@@ -1,3 +1,5 @@
+import "./src/styles/unistyles";
+import "react-native-gesture-handler";
 import { Provider } from "react-redux";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootNavigator } from "@/navigation";

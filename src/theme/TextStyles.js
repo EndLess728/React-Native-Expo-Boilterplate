@@ -1,4 +1,6 @@
+import { ms } from "@/utils";
 import { StyleSheet } from "react-native";
+import { fonts } from "./fonts";
 
 export const TextStyles = StyleSheet.create({
   title: {
@@ -12,6 +14,14 @@ export const TextStyles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: "700",
+  },
+  smallText: {
+    fontSize: ms(14, 0.3),
+    fontFamily: fonts.openSan.semiBold,
+  },
+  button: {
+    fontSize: ms(18, 0.3),
+    fontFamily: fonts.openSan.semiBold,
   },
   error: {
     fontSize: 14,

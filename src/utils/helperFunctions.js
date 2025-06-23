@@ -1,5 +1,5 @@
 import { TextStyles } from "@/theme";
-import { SuccessToast } from "react-native-toast-message";
+import { ErrorToast, SuccessToast } from "react-native-toast-message";
 
 export const toastConfig = {
   /*

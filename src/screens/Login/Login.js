@@ -6,6 +6,7 @@ import { ms } from "@/utils";
 import { fonts } from "@/theme";
 import { useDispatch } from "react-redux";
 import { login } from "@/redux/slices/userSlicer";
+import { showErrorToast } from "@/components/ToastAlert";
 
 const Login = () => {
   const { styles, theme } = useStyles(stylesheet);
@@ -15,6 +16,16 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const onPressLogin = () => {
+    if (email.trim() === "") {
+      showErrorToast({ title: "Please enter email" });
+      return;
+    }
+
+    if (password.trim() === "") {
+      showErrorToast({ title: "Please enter password" });
+      return;
+    }
+
     const params = {
       email,
       password,

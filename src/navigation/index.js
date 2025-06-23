@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import React, { useCallback } from "react";
-import { ActivityIndicator, useColorScheme } from "react-native";
+import { useColorScheme } from "react-native";
 import { AppNavigator } from "@/navigation/AppNavigator";
 import { AuthNavigator } from "@/navigation/AuthNavigator";
 import { theme } from "@/theme";
@@ -23,7 +23,7 @@ export function RootNavigator() {
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) {
-    return <ActivityIndicator size={"large"} />;
+    return null;
   }
 
   return (

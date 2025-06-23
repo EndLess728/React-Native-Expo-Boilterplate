@@ -19,7 +19,7 @@ export const Login = () => {
           fontFamily: fonts.openSan.boldItalic,
         }}
       >
-        {i18n.t("welcome")}
+        {i18n.t("welcome")} {process.env.EXPO_PUBLIC_ENVIRONMENT}
       </Text>
     </View>
   );

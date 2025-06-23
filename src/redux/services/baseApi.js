@@ -1,46 +1,77 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { HttpClient } from "./HttpClient";
-import { Alert } from "react-native";
+import { client } from "./HttpClient";
+import { BASE_URL } from "@/constants/ApiUrls";
 import { logout } from "../slices/userSlicer";
+import NetInfo from "@react-native-community/netinfo";
+import i18n from "@/localization/i18n";
+import { showErrorToast } from "@/components";
+import { Alert } from "react-native";
 
 const axiosBaseQuery =
   ({ baseUrl } = { baseUrl: "" }) =>
-  async ({ url, method, params, headers, body }, api) => {
+  async ({ url, method, data, params, headers }, api) => {
     try {
-      const result = await HttpClient.request({
+      const networkState = await NetInfo.fetch();
+
+      if (!networkState.isConnected) {
+        showErrorToast({ title: i18n.t("noInternetError") });
+
+        // Don't make the actual HTTP call
+        return {
+          error: {
+            status: "NETWORK_ERROR",
+            data: {
+              message: "No internet connection",
+            },
+          },
+        };
+      }
+
+      // Only proceed if connected
+      const result = await client({
         url: baseUrl + url,
         method,
-        data: body,
-        // body,
+        data,
         params,
         headers,
       });
+
       return { data: result.data };
-    } catch (axiosError) {
-      const err = axiosError;
-      const status = err.response?.status;
+    } catch (error) {
+      const status = error.response?.status;
 
       if (status === 401) {
-        Alert.alert(
-          "Session Expired",
-          "Your session has timed out. Please log in again to continue."
-        );
-        api?.dispatch(logout());
-        api?.dispatch(baseApi.util.resetApiState());
+        Alert.alert(i18n.t("sessionExpired"), i18n.t("sessionExpiredMessage"), [
+          {
+            text: "OK",
+            onPress: () => {
+              api.dispatch(logout());
+              api.dispatch(baseApi.util.resetApiState());
+            },
+          },
+        ]);
       }
 
       return {
         error: {
-          status,
-          ...(err.response?.data || err.message),
+          status: status || "UNKNOWN_ERROR",
+          data: error.response?.data || error.message || "Something went wrong",
         },
       };
     }
   };
 
 export const baseApi = createApi({
+  reducerPath: "base_api",
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   baseQuery: axiosBaseQuery({
-    baseUrl: "https://example.com",
+    baseUrl: BASE_URL,
   }),
   endpoints: () => ({}),
+  tagTypes: [
+    "GET_USER_PROFILE_DETAILS",
+    "GET_SCHEDULED_RIDE_LIST",
+    "ACTIVE_RIDE",
+  ],
 });

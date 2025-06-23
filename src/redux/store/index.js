@@ -1,7 +1,9 @@
-import { persistReducer, persistStore } from "redux-persist";
-import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "../reducer";
 import { storage } from "@/storage";
+import { baseApi } from "../services/baseApi";
+import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { persistReducer, persistStore } from "redux-persist";
 
 export const reduxStorage = {
   setItem: (key, value) => {
@@ -29,8 +31,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
+    getDefaultMiddleware({ serializableCheck: false }).concat(
+      baseApi.middleware
+    ),
 });
+
+setupListeners(store.dispatch); // required for refetchOnFocus or refetchOnReconnect
 
 // store with persist
 const persistor = persistStore(store);

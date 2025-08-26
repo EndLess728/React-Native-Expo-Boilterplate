@@ -13,7 +13,7 @@ SplashScreen.preventAutoHideAsync();
 export function RootNavigator() {
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
 
-  const { isLoggedIn, user } = useSelector((state) => state.user);
+  const { isLoggedIn, user } = useSelector((state) => state?.user) || {};
 
   console.log("🚀 ~ RootNavigator ~ user ===> ", user);
 

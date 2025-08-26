@@ -13,7 +13,6 @@ const userSlice = createSlice({
       state.isLoggedIn = true;
       state.user = action.payload;
     },
-    logout: () => initialState, // ← resets the state by returning the initialState
   },
 });
 

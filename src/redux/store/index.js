@@ -3,7 +3,17 @@ import { storage } from "@/storage";
 import { baseApi } from "../services/baseApi";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { persistReducer, persistStore } from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
+import { logoutMiddleware } from "./logoutMiddleware";
 
 export const reduxStorage = {
   setItem: (key, value) => {
@@ -23,6 +33,7 @@ export const reduxStorage = {
 const persistConfig = {
   key: "root",
   storage: reduxStorage,
+  blacklist: [baseApi.reducerPath], // Don't persist the API cache
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -31,9 +42,13 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat(
-      baseApi.middleware
-    ),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    })
+      .concat(baseApi.middleware)
+      .concat(logoutMiddleware),
 });
 
 setupListeners(store.dispatch); // required for refetchOnFocus or refetchOnReconnect

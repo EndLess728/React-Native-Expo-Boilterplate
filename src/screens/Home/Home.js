@@ -5,7 +5,7 @@ import { Button, ScreenWrapper } from "@/components";
 import { fonts } from "@/theme";
 import { ms } from "@/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/redux/slices/userSlicer";
+import { logout } from "@/redux/actions/authAction";
 
 const Home = () => {
   const { styles, theme } = useStyles(stylesheet);

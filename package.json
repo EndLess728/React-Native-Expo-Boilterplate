@@ -21,7 +21,7 @@
     "build:ios:staging": "dotenv -e .env.staging -- expo prebuild --platform ios && cd ios && open ExpoTemplate.xcworkspace",
     "build:ios:development": "dotenv -e .env.development -- expo prebuild --platform ios && cd ios && open ExpoTemplate.xcworkspace",
     "build:ios:production": "dotenv -e .env.production -- expo prebuild --platform ios && cd ios && open ExpoTemplate.xcworkspace",
-    "postinstall": "expo prebuild"
+    "postinstall": "expo prebuild && patch-package"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
@@ -44,6 +44,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-system-ui": "~5.0.11",
     "i18n-js": "^4.4.3",
+    "patch-package": "^8.0.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.5",

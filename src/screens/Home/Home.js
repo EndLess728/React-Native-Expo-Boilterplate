@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 import React from "react";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { Button, ScreenWrapper } from "@/components";
 import { fonts } from "@/theme";
 import { ms } from "@/utils";
@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/actions/authAction";
 
 const Home = () => {
-  const { styles, theme } = useStyles(stylesheet);
+  const { theme } = useUnistyles();
 
   const { user } = useSelector((state) => state.user);
 
@@ -28,7 +28,7 @@ const Home = () => {
 
 export default Home;
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     padding: ms(20),
     justifyContent: "center",

@@ -1,19 +1,16 @@
 /**
  * References:
- * - Introduction: https://v2.unistyl.es/start/introduction/
- * - Setup Guide: https://v2.unistyl.es/start/setup/
- * - Basic Usage: https://v2.unistyl.es/start/basic-usage/
- * - Migration from StyleSheet: https://v2.unistyl.es/start/migration-from-stylesheet/
+ * - Introduction: https://www.unistyl.es/v3/start/getting-started
+ * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
-import { UnistylesRegistry } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import breakpoints from "./breakpoints";
-import { lightTheme, darkTheme } from "./themes";
+import { darkTheme, lightTheme } from "./themes";
 
-type AppBreakpoints = typeof breakpoints;
-type AppThemes = {
-  light: typeof lightTheme;
-  dark: typeof darkTheme;
+const appThemes = {
+  light: lightTheme,
+  other: darkTheme,
 };
 
 declare module "react-native-unistyles" {
@@ -21,11 +18,19 @@ declare module "react-native-unistyles" {
   export interface UnistylesThemes extends AppThemes {}
 }
 
-UnistylesRegistry.addBreakpoints(breakpoints)
-  .addThemes({
-    light: lightTheme,
-    dark: darkTheme,
-  })
-  .addConfig({
-    adaptiveThemes: true,
-  });
+type AppBreakpoints = typeof breakpoints;
+type AppThemes = typeof appThemes;
+
+declare module "react-native-unistyles" {
+  export interface UnistylesThemes extends AppThemes {}
+  export interface UnistylesBreakpoints extends AppBreakpoints {}
+}
+
+StyleSheet.configure({
+  settings: {
+    initialTheme: "light",
+  },
+
+  breakpoints,
+  themes: appThemes,
+});

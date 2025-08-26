@@ -1,9 +1,7 @@
 /**
  * References:
- * - Introduction: https://v2.unistyl.es/start/introduction/
- * - Setup Guide: https://v2.unistyl.es/start/setup/
- * - Basic Usage: https://v2.unistyl.es/start/basic-usage/
- * - Migration from StyleSheet: https://v2.unistyl.es/start/migration-from-stylesheet/
+ * - Introduction: https://www.unistyl.es/v3/start/getting-started
+ * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
 const constantsColors = {
@@ -26,15 +24,13 @@ export const lightTheme = {
     textInputColor: "rgba(217, 217, 217,0.2)",
     placeholder: "rgba(1,1,1,0.52)",
     darkwhite: "#000000",
-    primary: "#000000",
-    secondary: "#004AAD",
+    primary: "#00BFFF",
     primaryTransparent: "#E1F8FF",
     textGray: "#6B7F85",
     primaryText: "#394347",
     fadedWhite: "#F7F8F9",
     borderGray: "#E8ECF4",
     iconGray: "#8BA1A8",
-    onboarding: "#d0ddf0",
   },
   margins: {
     sm: 2,
@@ -54,14 +50,12 @@ export const darkTheme = {
     textInputColor: "#000000",
     placeholder: "#f8f9fa",
     darkwhite: "#ffffff",
-    primary: "#000000",
-    secondary: "#004AAD",
+    primary: "#00BFFF",
     textGray: "#6B7F85",
     primaryText: "#394347",
     fadedWhite: "#F7F8F9",
     borderGray: "#E8ECF4",
     iconGray: "#8BA1A8",
-    onboarding: "#d0ddf0",
   },
   margins: {
     sm: 2,

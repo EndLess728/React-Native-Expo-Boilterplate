@@ -11,6 +11,14 @@ module.exports = function (api) {
           },
         },
       ],
+      [
+        "react-native-unistyles/plugin",
+        {
+          root: "src", // ✅ correct way to pass your root folder
+        },
+      ],
+      // ✅ Only keep this, remove the old reanimated one
+      "react-native-reanimated/plugin",
     ],
   };
 };

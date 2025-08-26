@@ -1,6 +1,6 @@
 import React from "react";
-import { ScrollView, StyleSheet, View, ViewStyle } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { ScrollView, View, ViewStyle } from "react-native";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import FullscreenLoader from "./FullScreenLoader";
 
 interface ScreenWrapperProps {
@@ -17,7 +17,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   showLoader = false,
   scrollable = false,
 }) => {
-  const { styles } = useStyles(stylesheet);
+  const { theme } = useUnistyles();
 
   if (scrollable) {
     return (
@@ -47,7 +47,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
 
 export default ScreenWrapper;
 
-const stylesheet = createStyleSheet((theme, rt) => ({
+const styles = StyleSheet.create((theme, rt) => ({
   wrapper: {
     flex: 1,
     backgroundColor: theme.colors.white, // fallback background

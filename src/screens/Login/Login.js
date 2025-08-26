@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import React from "react";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { Button, ScreenWrapper, TextField } from "@/components";
 import { ms } from "@/utils";
 import { fonts } from "@/theme";
@@ -9,7 +9,7 @@ import { login } from "@/redux/slices/userSlicer";
 import { showErrorToast } from "@/components/ToastAlert";
 
 const Login = () => {
-  const { styles, theme } = useStyles(stylesheet);
+  const { theme } = useUnistyles();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -63,7 +63,7 @@ const Login = () => {
 
 export default Login;
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     padding: ms(20),
     justifyContent: "center",

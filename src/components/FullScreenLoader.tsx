@@ -3,7 +3,7 @@ import { ms } from "@/utils";
 import React from "react";
 import { View, ActivityIndicator, Text } from "react-native";
 import ReactNativeModal from "react-native-modal";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 interface FullscreenLoaderProps {
   visible: boolean;
@@ -16,7 +16,7 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   size = "large",
   color,
 }) => {
-  const { styles, theme } = useStyles(stylesheet);
+  const { theme } = useUnistyles();
 
   return (
     <ReactNativeModal
@@ -42,7 +42,7 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   );
 };
 
-const stylesheet = createStyleSheet((theme, rt) => ({
+const styles = StyleSheet.create((theme, rt) => ({
   modalBackground: {
     flex: 1,
     justifyContent: "center",

@@ -1,9 +1,7 @@
 /**
  * References:
- * - Introduction: https://v2.unistyl.es/start/introduction/
- * - Setup Guide: https://v2.unistyl.es/start/setup/
- * - Basic Usage: https://v2.unistyl.es/start/basic-usage/
- * - Migration from StyleSheet: https://v2.unistyl.es/start/migration-from-stylesheet/
+ * - Introduction: https://www.unistyl.es/v3/start/getting-started
+ * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
 const breakpoints = {

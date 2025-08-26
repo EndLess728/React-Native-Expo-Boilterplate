@@ -11,7 +11,7 @@ import {
   ImageStyle,
   StyleProp,
 } from "react-native";
-import { createStyleSheet, useStyles } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { TextStyles } from "@/theme";
 import { ms } from "@/utils";
 
@@ -39,7 +39,7 @@ export const TextField = forwardRef<any, TextFieldProps>(
     },
     ref
   ) => {
-    const { styles, theme } = useStyles(stylesheet);
+    const { theme } = useUnistyles();
 
     return (
       <View style={[styles.container, containerStyle]}>
@@ -75,7 +75,7 @@ export const TextField = forwardRef<any, TextFieldProps>(
   }
 );
 
-const stylesheet = createStyleSheet((theme) => ({
+const styles = StyleSheet.create((theme) => ({
   leftImageStyle: {
     width: ms(20),
     height: ms(20),

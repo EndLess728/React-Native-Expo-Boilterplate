@@ -33,7 +33,16 @@
           "image": "./assets/icon.png",
           "imageWidth": 200
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "16.0"
+          }
+        }
+      ],
+      ["./plugins/withIosDeploymentTarget.js", { "deploymentTarget": "16.0" }]
     ]
   }
 }

@@ -24,7 +24,7 @@ const Home = () => {
 
 export default Home;
 
-const stylesheet = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     padding: ms(20),
     justifyContent: "center",

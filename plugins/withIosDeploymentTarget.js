@@ -15,9 +15,17 @@ module.exports = function withIosDeploymentTarget(
       );
       let contents = fs.readFileSync(podfilePath, "utf-8");
 
-      // Look for the existing post_install block
+      // Skip if our custom block already exists
+      if (
+        contents.includes(
+          "config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] ="
+        )
+      ) {
+        return config; // already patched
+      }
+
+      // Only patch if post_install exists
       if (contents.includes("post_install do |installer|")) {
-        // Inject after react_native_post_install
         const patched = contents.replace(
           /react_native_post_install\([^\)]+\)\n/,
           (match) =>

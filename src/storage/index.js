@@ -1,6 +1,8 @@
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 
-export const storage = new MMKV({
+// Updated from v3 → v4
+// https://github.com/mrousavy/react-native-mmkv/blob/main/docs/V4_UPGRADE_GUIDE.md
+export const storage = createMMKV({
   id: "secureStorage",
-  encryptionKey: "my-super-secret-key", // Use any secret key to encrypt the storage
+  encryptionKey: "my-super-secret-key", // Use a secure secret key to encrypt the storage
 });

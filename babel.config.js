@@ -18,7 +18,7 @@ module.exports = function (api) {
         },
       ],
       // ✅ Only keep this, remove the old reanimated one
-      "react-native-reanimated/plugin",
+      "react-native-worklets/plugin",
     ],
   };
 };

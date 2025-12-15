@@ -4571,10 +4571,10 @@ react-native-is-edge-to-edge@^1.2.1:
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
-react-native-mmkv@^3.3.0:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-3.3.3.tgz#1f0326f6314e23725af8145964343224d074e6cd"
-  integrity sha512-GMsfOmNzx0p5+CtrCFRVtpOOMYNJXuksBVARSQrCFaZwjUyHJdQzcN900GGaFFNTxw2fs8s5Xje//RDKj9+PZA==
+react-native-mmkv@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-4.1.0.tgz#91f53c0f5bf55585db7ae5f95389b955d565b10f"
+  integrity sha512-ia76WnU6dkLZxFkSSflxqFgHT2pIaML763aucEu7nMglF41oEWTdTtBu0o8a1cxbhZOaONk6KF8RQp5fLvPitA==
 
 react-native-modal@^14.0.0-rc.1:
   version "14.0.0-rc.1"
@@ -4615,7 +4615,7 @@ react-native-toast-message@^2.3.0:
   resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.3.3.tgz#e301508d386a9902ff6b4559ecc6674f8cfdf97a"
   integrity sha512-4IIUHwUPvKHu4gjD0Vj2aGQzqPATiblL1ey8tOqsxOWRPGGu52iIbL8M/mCz4uyqecvPdIcMY38AfwRuUADfQQ==
 
-react-native-unistyles@^3.0.10:
+react-native-unistyles@^3.0.20:
   version "3.0.20"
   resolved "https://registry.yarnpkg.com/react-native-unistyles/-/react-native-unistyles-3.0.20.tgz#efa46bf8c772cb8cf56c2214acd53b2b29db34d0"
   integrity sha512-y66zsayry0KU0aHt8q2zpxa5ld+IwPtV6pdZigD1Lb7NAPP6+QuqwAv7v+2UFGop0V/PAgvgiGaZAkmGpC21Hg==

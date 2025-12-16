@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 import { useDispatch } from 'react-redux';
 
 import { Button, ScreenWrapper, TextField } from '@/components';
@@ -10,8 +10,6 @@ import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Login: React.FC = () => {
-  const { theme } = useUnistyles();
-
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
   const dispatch = useDispatch();
@@ -59,7 +57,7 @@ const Login: React.FC = () => {
 
 export default Login;
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create(() => ({
   container: {
     padding: ms(20),
     justifyContent: 'center',

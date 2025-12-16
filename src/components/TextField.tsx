@@ -73,7 +73,7 @@ export const TextField = forwardRef<any, TextFieldProps>(
   },
 );
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create(() => ({
   leftImageStyle: {
     width: ms(20),
     height: ms(20),

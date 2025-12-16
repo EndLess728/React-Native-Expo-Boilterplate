@@ -39,7 +39,7 @@ local.properties
 .DS_Store
 
 # Visual Studio Code
-.vscode/
+# .vscode/
 
 # JetBrains IDEs
 .idea/

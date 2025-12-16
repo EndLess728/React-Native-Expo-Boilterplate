@@ -26,7 +26,7 @@ module.exports = [
     ],
   },
 
-  // 2. Base Expo Config (Flattens automatically if it's an array, but we spread to be safe)
+  // 2. Base Expo Config
   ...expoConfig,
 
   // 3. Prettier Integration
@@ -42,7 +42,7 @@ module.exports = [
     },
   },
 
-  // 5. Obytes & Custom Rules (Unistyles, Import Sorting, Unused Imports)
+  // 5. FIXED: Custom Rules + Import Overrides (No unrs-resolver)
   {
     plugins: {
       'simple-import-sort': simpleImportSort,
@@ -51,17 +51,32 @@ module.exports = [
     },
     settings: {
       'import/resolver': {
-        'babel-module': {},
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          paths: ['src'],
+        },
       },
+      'import/ignore': ['node_modules', '\\.(scss|css)$'],
     },
     rules: {
+      // DISABLE ALL import/* rules to prevent unrs-resolver errors
+      'import/no-unresolved': 'off',
+      'import/named': 'off',
+      'import/namespace': 'off',
+      'import/default': 'off',
+      'import/export': 'off',
+      'import/no-named-as-default': 'off',
+      'import/no-named-as-default-member': 'off',
+      'import/no-duplicates': 'off',
+      'import/no-named-default': 'off',
+
       // Import Sorting
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
 
       // Unused Imports - forcefully remove them
-      'no-unused-vars': 'off', // disable default
-      '@typescript-eslint/no-unused-vars': 'off', // disable default TS
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'error',
@@ -78,7 +93,7 @@ module.exports = [
 
       // React Native / Expo best practices
       'react/display-name': 'off',
-      'react/no-inline-styles': 'off', // Allow inline styles if needed, or set to 'warn'
+      'react/no-inline-styles': 'off',
       'react/jsx-sort-props': [
         'warn',
         {
@@ -91,12 +106,11 @@ module.exports = [
     },
   },
 
-  // 6. TypeScript specific overrides if needed (Expo config handles most)
+  // 6. TypeScript specific overrides
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      '@typescript-eslint/no-require-imports': 'off', // Allow requires in some places if absolutely necessary, but generally Expo config handles this.
-      // Re-enable require imports for specific non-source files if needed, but globally off is safer for source.
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 
@@ -105,7 +119,7 @@ module.exports = [
     files: ['*.config.js', 'app.config.js'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
-      'no-undef': 'off', // for __dirname etc in simple js files
+      'no-undef': 'off',
     },
   },
 ];

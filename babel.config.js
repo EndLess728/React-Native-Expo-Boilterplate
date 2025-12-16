@@ -6,18 +6,19 @@ module.exports = function (api) {
       [
         'module-resolver',
         {
+          root: ['./src'],
+          extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.ts', '.tsx', '.json'],
           alias: {
-            '^@/(.+)': './src/\\1',
+            '@': './src',
           },
         },
       ],
       [
         'react-native-unistyles/plugin',
         {
-          root: 'src', // ✅ correct way to pass your root folder
+          root: 'src',
         },
       ],
-      // ✅ Only keep this, remove the old reanimated one
       'react-native-worklets/plugin',
     ],
   };

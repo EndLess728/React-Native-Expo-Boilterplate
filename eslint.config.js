@@ -49,6 +49,11 @@ module.exports = [
       'unused-imports': unusedImports,
       'react-native-unistyles': unistyles,
     },
+    settings: {
+      'import/resolver': {
+        'babel-module': {},
+      },
+    },
     rules: {
       // Import Sorting
       'simple-import-sort/imports': 'error',

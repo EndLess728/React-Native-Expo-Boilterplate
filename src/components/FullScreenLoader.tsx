@@ -1,19 +1,20 @@
-import { TextStyles } from "@/theme";
-import { ms } from "@/utils";
-import React from "react";
-import { View, ActivityIndicator, Text } from "react-native";
-import ReactNativeModal from "react-native-modal";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import React from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+import ReactNativeModal from 'react-native-modal';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+import { TextStyles } from '@/theme';
+import { ms } from '@/utils';
 
 interface FullscreenLoaderProps {
   visible: boolean;
-  size?: "small" | "large";
+  size?: 'small' | 'large';
   color?: string;
 }
 
 const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   visible = false,
-  size = "large",
+  size = 'large',
   color,
 }) => {
   const { theme } = useUnistyles();
@@ -21,20 +22,17 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   return (
     <ReactNativeModal
       // backdropColor="black"
+      coverScreen
+      statusBarTranslucent
+      animationIn={'fadeIn'}
+      animationOut={'fadeOut'}
       backdropOpacity={0}
       isVisible={visible}
-      animationIn={"fadeIn"}
-      animationOut={"fadeOut"}
-      statusBarTranslucent
-      coverScreen
       style={{ margin: 0 }}
     >
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
-          <ActivityIndicator
-            size={size}
-            color={color || theme.colors.primary}
-          />
+          <ActivityIndicator color={color || theme.colors.primary} size={size} />
           <Text style={[TextStyles.label, styles.loadingText]}>Loading...</Text>
         </View>
       </View>
@@ -45,15 +43,15 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
 const styles = StyleSheet.create((theme, rt) => ({
   modalBackground: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#00000060",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00000060',
   },
   activityIndicatorWrapper: {
     padding: 20,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: { color: theme.colors.white, marginTop: ms(10) },
 }));

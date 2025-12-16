@@ -1,10 +1,11 @@
-import React from "react";
-import { Text, TextStyle } from "react-native";
-import { NAVIGATION } from "@/constants";
+import React from 'react';
+import { Text } from 'react-native';
+
+import { NAVIGATION } from '@/constants';
 
 const tabLabel: Record<string, string> = {
-  [NAVIGATION.homeNavigator]: "Home",
-  [NAVIGATION.profileNavigator]: "Profile",
+  [NAVIGATION.homeNavigator]: 'Home',
+  [NAVIGATION.profileNavigator]: 'Profile',
 };
 
 interface TabBarLabelProps {

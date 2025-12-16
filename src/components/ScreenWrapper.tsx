@@ -1,7 +1,8 @@
-import React from "react";
-import { ScrollView, View, ViewStyle } from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import FullscreenLoader from "./FullScreenLoader";
+import React from 'react';
+import { ScrollView, View, type ViewStyle } from 'react-native';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+import FullscreenLoader from './FullScreenLoader';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -24,8 +25,8 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
       <>
         <View style={styles.wrapper}>
           <ScrollView
-            style={[styles.container, style]}
             contentContainerStyle={styles.scrollContainer}
+            style={[styles.container, style]}
           >
             {children}
           </ScrollView>

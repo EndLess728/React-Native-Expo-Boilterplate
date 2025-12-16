@@ -1,24 +1,24 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ["babel-preset-expo"],
+    presets: ['babel-preset-expo'],
     plugins: [
       [
-        "module-resolver",
+        'module-resolver',
         {
           alias: {
-            "^@/(.+)": "./src/\\1",
+            '^@/(.+)': './src/\\1',
           },
         },
       ],
       [
-        "react-native-unistyles/plugin",
+        'react-native-unistyles/plugin',
         {
-          root: "src", // ✅ correct way to pass your root folder
+          root: 'src', // ✅ correct way to pass your root folder
         },
       ],
       // ✅ Only keep this, remove the old reanimated one
-      "react-native-worklets/plugin",
+      'react-native-worklets/plugin',
     ],
   };
 };

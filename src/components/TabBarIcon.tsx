@@ -1,7 +1,8 @@
-import React from "react";
-import { Image, ImageSourcePropType } from "react-native";
-import { homeIcon, settingsIcon } from "@/assets";
-import { NAVIGATION } from "@/constants";
+import React from 'react';
+import { Image, type ImageSourcePropType } from 'react-native';
+
+import { homeIcon, settingsIcon } from '@/assets';
+import { NAVIGATION } from '@/constants';
 
 const tabIcon: Record<string, ImageSourcePropType> = {
   [NAVIGATION.homeNavigator]: homeIcon,

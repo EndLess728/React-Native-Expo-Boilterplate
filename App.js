@@ -1,12 +1,13 @@
-import "./src/styles/unistyles";
-import "react-native-gesture-handler";
-import { Provider } from "react-redux";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { RootNavigator } from "@/navigation";
-import { persistor, store } from "@/redux/store";
-import { PersistGate } from "redux-persist/integration/react";
-import Toast from "react-native-toast-message";
-import { toastConfig } from "@/utils/helperFunctions";
+import './src/styles/unistyles';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+
+import { RootNavigator } from '@/navigation';
+import { persistor, store } from '@/redux/store';
+import { toastConfig } from '@/utils/helperFunctions';
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
           <RootNavigator />
         </PersistGate>
       </Provider>
-      <Toast position="top" config={toastConfig} />
+      <Toast config={toastConfig} position="top" />
     </GestureHandlerRootView>
   );
 }

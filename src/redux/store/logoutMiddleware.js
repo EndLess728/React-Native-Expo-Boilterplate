@@ -1,6 +1,7 @@
-import { storage } from "@/storage";
-import { baseApi } from "../services/baseApi";
-import { AUTH_LOGOUT, RESET_STATE } from "../types";
+import { storage } from '@/storage';
+
+import { baseApi } from '../services/baseApi';
+import { AUTH_LOGOUT, RESET_STATE } from '../types';
 
 export const logoutMiddleware = (store) => (next) => (action) => {
   if (action.type === AUTH_LOGOUT) {

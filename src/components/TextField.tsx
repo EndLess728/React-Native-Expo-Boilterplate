@@ -1,19 +1,20 @@
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef } from 'react';
 import {
-  Pressable,
-  TextInput,
-  TextInputProps,
-  View,
   Image,
-  ImageSourcePropType,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-  StyleProp,
-} from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import { TextStyles } from "@/theme";
-import { ms } from "@/utils";
+  type ImageSourcePropType,
+  type ImageStyle,
+  Pressable,
+  type StyleProp,
+  TextInput,
+  type TextInputProps,
+  type TextStyle,
+  View,
+  type ViewStyle,
+} from 'react-native';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+
+import { TextStyles } from '@/theme';
+import { ms } from '@/utils';
 
 interface TextFieldProps extends TextInputProps {
   icon?: ImageSourcePropType;
@@ -37,7 +38,7 @@ export const TextField = forwardRef<any, TextFieldProps>(
       rightIconStyle,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const { theme } = useUnistyles();
 
@@ -45,9 +46,11 @@ export const TextField = forwardRef<any, TextFieldProps>(
       <View style={[styles.container, containerStyle]}>
         {icon && <Image source={icon} style={styles.leftImageStyle} />}
         <TextInput
+          ref={ref}
           autoComplete="off"
           autoCorrect={false}
-          ref={ref}
+          placeholder={placeholder}
+          placeholderTextColor={'#808080'}
           style={[
             {
               color: theme.colors.textGray,
@@ -58,21 +61,16 @@ export const TextField = forwardRef<any, TextFieldProps>(
             style,
           ]}
           underlineColorAndroid="transparent"
-          placeholder={placeholder}
-          placeholderTextColor={"#808080"}
           {...rest}
         />
         {rightIcon && (
           <Pressable onPress={onPressRightIcon}>
-            <Image
-              source={rightIcon}
-              style={[styles.eyeIcon, rightIconStyle]}
-            />
+            <Image source={rightIcon} style={[styles.eyeIcon, rightIconStyle]} />
           </Pressable>
         )}
       </View>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create((theme) => ({
@@ -80,22 +78,22 @@ const styles = StyleSheet.create((theme) => ({
     width: ms(20),
     height: ms(20),
     marginRight: ms(10),
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   container: {
     padding: ms(12),
     borderWidth: ms(1),
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: ms(10),
     borderRadius: ms(10),
-    borderColor: "#004AAD",
-    backgroundColor: "#F7F8F9",
+    borderColor: '#004AAD',
+    backgroundColor: '#F7F8F9',
     height: ms(50),
   },
   eyeIcon: {
     height: ms(25),
-    resizeMode: "contain",
-    tintColor: "#000",
+    resizeMode: 'contain',
+    tintColor: '#000',
   },
 }));

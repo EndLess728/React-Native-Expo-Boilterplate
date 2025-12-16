@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 /*
  * generated with https://ethercreative.github.io/react-native-shadow-generator/
@@ -7,7 +7,7 @@ import { StyleSheet } from "react-native";
 export const ShadowStyles = StyleSheet.create({
   shadow: {
     elevation: 5,
-    shadowColor: "#000000",
+    shadowColor: '#000000',
     shadowRadius: 3.84,
     shadowOpacity: 0.25,
     shadowOffset: {

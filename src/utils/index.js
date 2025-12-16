@@ -1,1 +1,1 @@
-export { s, ms, vs, mvs } from "@/utils/scale";
+export { ms, mvs, s, vs } from '@/utils/scale';

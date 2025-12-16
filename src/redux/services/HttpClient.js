@@ -1,15 +1,16 @@
-import { showErrorToast } from "@/components/ToastAlert";
-import axios from "axios";
+import axios from 'axios';
+
+import { showErrorToast } from '@/components/ToastAlert';
 
 const client = axios.create({
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
 client.interceptors.request.use(
   (config) => {
-    const token = "PUT YOUR AUTH TOKEN HERE";
+    const token = 'PUT YOUR AUTH TOKEN HERE';
     const baseHeaders = {
       ...config.headers,
     };
@@ -20,15 +21,12 @@ client.interceptors.request.use(
 
     config.headers = {
       ...baseHeaders,
-      "Content-Type":
-        config.data instanceof FormData
-          ? "multipart/form-data"
-          : "application/json",
+      'Content-Type': config.data instanceof FormData ? 'multipart/form-data' : 'application/json',
     };
     // __DEV__ && console.log("Starting Request:", JSON.stringify(config, null, 2));
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 client.interceptors.response.use(
@@ -40,24 +38,22 @@ client.interceptors.response.use(
   (error) => {
     __DEV__ &&
       console.log(
-        "\n\n-----API ERROR RESPOSNE----\n" +
-          JSON.stringify(error.response.data) +
-          "\n\n"
+        '\n\n-----API ERROR RESPOSNE----\n' + JSON.stringify(error.response.data) + '\n\n',
       );
 
     if (error.response.data) {
-      var errorMessage = "";
+      let errorMessage = '';
       if (error.response.data.error) {
-        errorMessage = error.response.data.error.join(", ");
+        errorMessage = error.response.data.error.join(', ');
       } else {
         errorMessage = error.response.data.message;
       }
 
-      showErrorToast({ title: errorMessage ?? "Something went wrong" });
+      showErrorToast({ title: errorMessage ?? 'Something went wrong' });
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 const setAuthorization = (token) => {
@@ -68,4 +64,4 @@ const clearAuthorization = () => {
   delete client.defaults.headers.common.Authorization;
 };
 
-export { client, setAuthorization, clearAuthorization };
+export { clearAuthorization, client, setAuthorization };

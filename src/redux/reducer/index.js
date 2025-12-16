@@ -1,7 +1,8 @@
-import { combineReducers } from "@reduxjs/toolkit";
-import { baseApi } from "../services/baseApi";
-import userSlicer from "../slices/userSlicer";
-import { RESET_STATE } from "../types";
+import { combineReducers } from '@reduxjs/toolkit';
+
+import { baseApi } from '../services/baseApi';
+import userSlicer from '../slices/userSlicer';
+import { RESET_STATE } from '../types';
 
 const appReducer = combineReducers({
   user: userSlicer,

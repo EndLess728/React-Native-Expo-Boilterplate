@@ -4,16 +4,17 @@
  * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
-import { StyleSheet } from "react-native-unistyles";
-import breakpoints from "./breakpoints";
-import { darkTheme, lightTheme } from "./themes";
+import { StyleSheet } from 'react-native-unistyles';
+
+import breakpoints from './breakpoints';
+import { darkTheme, lightTheme } from './themes';
 
 const appThemes = {
   light: lightTheme,
   other: darkTheme,
 };
 
-declare module "react-native-unistyles" {
+declare module 'react-native-unistyles' {
   export interface UnistylesBreakpoints extends AppBreakpoints {}
   export interface UnistylesThemes extends AppThemes {}
 }
@@ -23,7 +24,7 @@ type AppThemes = typeof appThemes;
 
 StyleSheet.configure({
   settings: {
-    initialTheme: "light",
+    initialTheme: 'light',
   },
   breakpoints,
   themes: appThemes,

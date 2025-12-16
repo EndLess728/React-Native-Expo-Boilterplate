@@ -1,5 +1,6 @@
-import { TextStyles } from "@/theme";
-import { ErrorToast, SuccessToast } from "react-native-toast-message";
+import { ErrorToast, SuccessToast } from 'react-native-toast-message';
+
+import { TextStyles } from '@/theme';
 
 export const toastConfig = {
   /*
@@ -9,15 +10,15 @@ export const toastConfig = {
   success: (props) => (
     <SuccessToast
       {...props}
-      text1NumberOfLines={0}
-      text2NumberOfLines={0}
       style={{
-        borderLeftColor: "green",
-        height: "auto",
+        borderLeftColor: 'green',
+        height: 'auto',
         paddingVertical: 5,
         minHeight: 60,
       }}
+      text1NumberOfLines={0}
       text1Style={TextStyles.label}
+      text2NumberOfLines={0}
       text2Style={TextStyles.text}
     />
   ),
@@ -28,16 +29,16 @@ export const toastConfig = {
   error: (props) => (
     <ErrorToast
       {...props}
-      text1NumberOfLines={0}
-      text2NumberOfLines={0}
-      text1Style={TextStyles.label}
-      text2Style={TextStyles.text}
       style={{
-        borderLeftColor: "red",
-        height: "auto",
+        borderLeftColor: 'red',
+        height: 'auto',
         paddingVertical: 5,
         minHeight: 60,
       }}
+      text1NumberOfLines={0}
+      text1Style={TextStyles.label}
+      text2NumberOfLines={0}
+      text2Style={TextStyles.text}
     />
   ),
 };

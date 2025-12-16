@@ -18,15 +18,15 @@ import { baseApi } from '../services/baseApi';
 import { logoutMiddleware } from './logoutMiddleware';
 
 export const reduxStorage = {
-  setItem: (key, value) => {
+  setItem: (key: string, value: string) => {
     storage.set(key, value);
     return Promise.resolve(true);
   },
-  getItem: (key) => {
+  getItem: (key: string) => {
     const value = storage.getString(key);
     return Promise.resolve(value);
   },
-  removeItem: (key) => {
+  removeItem: (key: string) => {
     storage.remove(key);
     return Promise.resolve();
   },

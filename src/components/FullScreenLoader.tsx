@@ -40,7 +40,7 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   );
 };
 
-const styles = StyleSheet.create((theme, rt) => ({
+const styles = StyleSheet.create((theme) => ({
   modalBackground: {
     flex: 1,
     justifyContent: 'center',

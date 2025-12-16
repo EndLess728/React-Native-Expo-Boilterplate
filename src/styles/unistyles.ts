@@ -14,13 +14,13 @@ const appThemes = {
   other: darkTheme,
 };
 
+type AppBreakpoints = typeof breakpoints;
+type AppThemes = typeof appThemes;
+
 declare module 'react-native-unistyles' {
   export interface UnistylesBreakpoints extends AppBreakpoints {}
   export interface UnistylesThemes extends AppThemes {}
 }
-
-type AppBreakpoints = typeof breakpoints;
-type AppThemes = typeof appThemes;
 
 StyleSheet.configure({
   settings: {

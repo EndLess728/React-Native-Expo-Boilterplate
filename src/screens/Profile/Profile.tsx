@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { StyleSheet } from 'react-native-unistyles';
 import { useDispatch } from 'react-redux';
 
 import { Button, ScreenWrapper } from '@/components';
@@ -9,7 +9,6 @@ import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Profile: React.FC = () => {
-  const { theme } = useUnistyles();
   const dispatch = useDispatch();
   const onPressLogout = () => {
     dispatch(logout());

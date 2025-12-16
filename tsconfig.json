@@ -1,12 +1,14 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
-    "noImplicitAny": false,
-    "strict": false
+    "esModuleInterop": true,
+    "checkJs": true
   },
-  "include": ["src/**/*"],
-  "extends": "expo/tsconfig.base"
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "android", "ios", "plugins"],
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

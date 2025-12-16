@@ -4,4 +4,4 @@ export const NAVIGATION = {
   login: 'Login',
   profile: 'Profile',
   profileNavigator: 'profileNavigator',
-};
+} as const;

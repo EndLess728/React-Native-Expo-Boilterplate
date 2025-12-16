@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import { showErrorToast } from '@/components/ToastAlert';
 
@@ -9,54 +9,56 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = 'PUT YOUR AUTH TOKEN HERE';
-    const baseHeaders = {
-      ...config.headers,
-    };
 
     if (token) {
-      baseHeaders.Authorization = `Bearer ${token}`;
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
 
-    config.headers = {
-      ...baseHeaders,
-      'Content-Type': config.data instanceof FormData ? 'multipart/form-data' : 'application/json',
-    };
+    const contentType =
+      config.data instanceof FormData ? 'multipart/form-data' : 'application/json';
+    config.headers.set('Content-Type', contentType);
+
     // __DEV__ && console.log("Starting Request:", JSON.stringify(config, null, 2));
     return config;
   },
-  (error) => Promise.reject(error),
+  (error: AxiosError) => Promise.reject(error),
 );
 
+interface ErrorResponse {
+  error?: string[];
+  message?: string;
+}
+
 client.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     // __DEV__ && console.log("\n\n-----API  RESPOSNE----\n" + JSON.stringify(response) + "\n\n");
 
     return response;
   },
-  (error) => {
+  (error: AxiosError<ErrorResponse>) => {
     __DEV__ &&
       console.log(
-        '\n\n-----API ERROR RESPOSNE----\n' + JSON.stringify(error.response.data) + '\n\n',
+        '\n\n-----API ERROR RESPOSNE----\n' + JSON.stringify(error.response?.data) + '\n\n',
       );
 
-    if (error.response.data) {
+    if (error.response?.data) {
       let errorMessage = '';
       if (error.response.data.error) {
         errorMessage = error.response.data.error.join(', ');
       } else {
-        errorMessage = error.response.data.message;
+        errorMessage = error.response.data.message || 'Something went wrong';
       }
 
-      showErrorToast({ title: errorMessage ?? 'Something went wrong' });
+      showErrorToast({ title: errorMessage });
     }
 
     return Promise.reject(error);
   },
 );
 
-const setAuthorization = (token) => {
+const setAuthorization = (token: string) => {
   client.defaults.headers.common.Authorization = `Bearer ${token}`;
 };
 

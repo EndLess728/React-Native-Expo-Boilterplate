@@ -1,4 +1,4 @@
-import { ErrorToast, SuccessToast } from 'react-native-toast-message';
+import { BaseToastProps, ErrorToast, SuccessToast } from 'react-native-toast-message';
 
 import { TextStyles } from '@/theme';
 
@@ -7,7 +7,7 @@ export const toastConfig = {
     Overwrite 'success' type,
     by modifying the existing `BaseToast` component
   */
-  success: (props) => (
+  success: (props: BaseToastProps) => (
     <SuccessToast
       {...props}
       style={{
@@ -26,7 +26,7 @@ export const toastConfig = {
     Overwrite 'error' type,
     by modifying the existing `ErrorToast` component
   */
-  error: (props) => (
+  error: (props: BaseToastProps) => (
     <ErrorToast
       {...props}
       style={{

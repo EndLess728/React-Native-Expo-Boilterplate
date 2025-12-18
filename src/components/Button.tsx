@@ -1,7 +1,6 @@
 import React, { type FC, type ReactNode } from 'react';
 import {
   ActivityIndicator,
-  StyleSheet,
   Text,
   type TextStyle,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
@@ -74,7 +74,7 @@ const Button: FC<ButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create(() => ({
   primary: {
     width: '100%',
     borderRadius: ms(28),
@@ -124,6 +124,6 @@ const styles = StyleSheet.create({
   iconWrapper: {
     marginHorizontal: ms(8),
   },
-});
+}));
 
 export default Button;

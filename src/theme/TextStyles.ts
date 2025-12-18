@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { ms } from '@/utils';
 
 import { fonts } from './fonts';
 
-export const TextStyles = StyleSheet.create({
+export const TextStyles = StyleSheet.create(() => ({
   title: {
     fontSize: 18,
     fontWeight: '700',
@@ -29,4 +29,4 @@ export const TextStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
   },
-});
+}));

@@ -12,7 +12,7 @@ const translations = {
 
 // Initialize i18n
 const i18n = new I18n(translations);
-i18n.locale = Localization.getLocales()[0].languageCode; // Device language (e.g., "en-US" → "en")
+i18n.locale = Localization.getLocales()[0].languageCode ?? 'en'; // Device language (e.g., "en-US" → "en")
 i18n.enableFallback = true; // Fallback to "en" if translation missing
 i18n.defaultLocale = 'en'; // Safety net
 

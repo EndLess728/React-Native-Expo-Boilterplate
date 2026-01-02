@@ -3,7 +3,7 @@ import { storage } from '@/storage';
 import { baseApi } from '../services/baseApi';
 import { AUTH_LOGOUT, RESET_STATE } from '../types';
 
-export const logoutMiddleware = (store) => (next) => (action) => {
+export const logoutMiddleware = (store: any) => (next: any) => (action: any) => {
   if (action.type === AUTH_LOGOUT) {
     // // 1. Reset Redux state
     store.dispatch({ type: RESET_STATE });

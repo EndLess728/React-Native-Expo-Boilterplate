@@ -6,12 +6,21 @@ import { showErrorToast } from '@/components';
 import { BASE_URL } from '@/constants/ApiUrls';
 import i18n from '@/localization/i18n';
 
-import { logout } from '../slices/userSlicer';
+import { logout } from '../actions/authAction';
 import { client } from './HttpClient';
 
 const axiosBaseQuery =
   ({ baseUrl } = { baseUrl: '' }) =>
-  async ({ url, method, data, params, headers }, api) => {
+  async (
+    {
+      url,
+      method,
+      data,
+      params,
+      headers,
+    }: { url: string; method: string; data?: any; params?: any; headers?: any },
+    api: any,
+  ) => {
     try {
       const networkState = await NetInfo.fetch();
 
@@ -39,7 +48,7 @@ const axiosBaseQuery =
       });
 
       return { data: result.data };
-    } catch (error) {
+    } catch (error: any) {
       const status = error.response?.status;
 
       if (status === 401) {
@@ -68,7 +77,7 @@ export const baseApi = createApi({
   refetchOnFocus: true,
   refetchOnReconnect: true,
   baseQuery: axiosBaseQuery({
-    baseUrl: BASE_URL,
+    baseUrl: BASE_URL as string,
   }),
   endpoints: () => ({}),
   tagTypes: ['GET_USER_PROFILE_DETAILS', 'GET_SCHEDULED_RIDE_LIST', 'ACTIVE_RIDE'],

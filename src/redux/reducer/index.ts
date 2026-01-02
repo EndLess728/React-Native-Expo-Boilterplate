@@ -10,7 +10,7 @@ const appReducer = combineReducers({
 });
 
 // Root reducer with reset capability
-const rootReducer = (state, action) => {
+const rootReducer = (state: any, action: any) => {
   if (action.type === RESET_STATE) {
     // Return undefined to reset all state
     return undefined;

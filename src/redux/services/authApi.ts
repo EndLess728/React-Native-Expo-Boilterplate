@@ -7,7 +7,7 @@ const authApi = baseApi.injectEndpoints({
       query: (credentials) => ({
         url: 'auth/login',
         method: 'POST',
-        body: credentials,
+        data: credentials,
       }),
     }),
 
@@ -15,7 +15,7 @@ const authApi = baseApi.injectEndpoints({
       query: (userInfo) => ({
         url: 'auth/register',
         method: 'POST',
-        body: userInfo,
+        data: userInfo,
       }),
     }),
 

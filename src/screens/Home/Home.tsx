@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { usePosts } from '@/api';
 import { Button, ScreenWrapper } from '@/components';
 import { logout } from '@/redux/actions/authAction';
 import { fonts } from '@/theme';
@@ -10,6 +11,12 @@ import { ms } from '@/utils';
 
 const Home: React.FC = () => {
   const { user } = useSelector((state: any) => state.user);
+
+  const { data, isLoading } = usePosts();
+
+  console.log('🚀 ~ Home ~ isLoading ===> ', isLoading);
+
+  console.log('🚀 ~ Home ~ data ===> ', data);
 
   const dispatch = useDispatch();
 

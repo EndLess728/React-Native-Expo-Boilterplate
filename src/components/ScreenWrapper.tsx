@@ -9,7 +9,6 @@ interface ScreenWrapperProps {
   style?: ViewStyle;
   showLoader?: boolean;
   scrollable?: boolean;
-  showBackgroundShape?: boolean; // toggle the SVG background
 }
 
 const ScreenWrapper: React.FC<ScreenWrapperProps> = ({

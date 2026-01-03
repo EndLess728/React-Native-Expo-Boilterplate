@@ -123,5 +123,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Expo
+expo-env.d.ts
+
 # @end expo-cli
 extract_DSR.sh
+

@@ -4,11 +4,23 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "esModuleInterop": true,
     "checkJs": true
   },
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "android", "ios", "plugins"],
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "android",
+    "ios",
+    "plugins"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }

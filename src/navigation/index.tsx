@@ -2,10 +2,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import { AppNavigator } from '@/navigation/AppNavigator';
 import { AuthNavigator } from '@/navigation/AuthNavigator';
+import { useUserStore } from '@/store';
 import { customFontsToLoad } from '@/theme/fonts';
 
 // Keep the splash screen visible while complete fetching resources
@@ -19,7 +19,7 @@ SplashScreen.setOptions({
 export function RootNavigator(): React.JSX.Element | null {
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
 
-  const { isLoggedIn } = useSelector((state: any) => state?.user) || {};
+  const isLoggedIn = useUserStore((state) => state.isLoggedIn);
 
   const onReady = useCallback(async (): Promise<void> => {
     if (fontsLoaded || fontError) {

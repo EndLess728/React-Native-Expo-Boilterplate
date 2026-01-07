@@ -1,16 +1,15 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { usePosts } from '@/api';
 import { Button, ScreenWrapper } from '@/components';
-import { logout } from '@/redux/actions/authAction';
+import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Home: React.FC = () => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user, logout } = useUserStore();
 
   const { data, isLoading } = usePosts();
 
@@ -18,10 +17,8 @@ const Home: React.FC = () => {
 
   console.log('🚀 ~ Home ~ data ===> ', data);
 
-  const dispatch = useDispatch();
-
   const onPressLogout = () => {
-    dispatch(logout() as any);
+    logout();
   };
 
   return (

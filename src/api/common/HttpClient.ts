@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import { showErrorToast } from '@/components/ToastAlert';
+import { useUserStore } from '@/store';
 
 const client = axios.create({
   headers: {
@@ -42,6 +43,13 @@ client.interceptors.response.use(
       console.log(
         '\n\n-----API ERROR RESPOSNE----\n' + JSON.stringify(error.response?.data) + '\n\n',
       );
+
+    const status = error.response?.status;
+
+    // Handle 401 Unauthorized - logout user
+    if (status === 401) {
+      useUserStore.getState().logout();
+    }
 
     if (error.response?.data) {
       let errorMessage = '';

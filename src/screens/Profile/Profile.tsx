@@ -1,17 +1,17 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
-import { useDispatch } from 'react-redux';
 
 import { Button, ScreenWrapper } from '@/components';
-import { logout } from '@/redux/actions/authAction';
+import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Profile: React.FC = () => {
-  const dispatch = useDispatch();
+  const logout = useUserStore((state) => state.logout);
+
   const onPressLogout = () => {
-    dispatch(logout());
+    logout();
   };
 
   return (

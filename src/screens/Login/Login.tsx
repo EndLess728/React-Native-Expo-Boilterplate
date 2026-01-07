@@ -1,18 +1,17 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
-import { useDispatch } from 'react-redux';
 
 import { Button, ScreenWrapper, TextField } from '@/components';
 import { showErrorToast } from '@/components/ToastAlert';
-import { login } from '@/redux/slices/userSlicer';
+import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Login: React.FC = () => {
   const [email, setEmail] = React.useState<string>('');
   const [password, setPassword] = React.useState<string>('');
-  const dispatch = useDispatch();
+  const login = useUserStore((state) => state.login);
 
   const onPressLogin = () => {
     if (email.trim() === '') {
@@ -29,7 +28,7 @@ const Login: React.FC = () => {
       email,
       password,
     };
-    dispatch(login(params) as any);
+    login(params);
   };
 
   return (

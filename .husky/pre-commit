@@ -19,5 +19,5 @@ fi
 echo ">> Finish checking branch name"
 echo ">> Linting your files and fixing them if needed..."
 
-npm run type-check
-npx lint-staged
+yarn type-check
+yarn lint-staged

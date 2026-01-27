@@ -4,13 +4,14 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { usePosts } from '@/api';
 import { Button, ScreenWrapper } from '@/components';
-import { translate } from '@/localization/utils';
+import { useTranslate } from '@/localization/utils';
 import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Home: React.FC = () => {
   const { user, logout } = useUserStore();
+  const translate = useTranslate();
 
   const { data, isLoading } = usePosts();
 

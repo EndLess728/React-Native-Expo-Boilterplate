@@ -8,5 +8,12 @@
     "email": "Email",
     "password": "Password",
     "login_description": "Enter your email and password to login"
+  },
+  "settings": {
+    "language": "Language",
+    "select_language": "Select Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "arabic": "Arabic"
   }
 }

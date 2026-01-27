@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
 import { Button, ScreenWrapper } from '@/components';
+import { translate } from '@/localization/utils';
 import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
@@ -16,7 +17,7 @@ const Profile: React.FC = () => {
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title}>{translate('auth.profile')}</Text>
       <Button style={styles.btnStyle} title="Logout" onPress={onPressLogout} />
     </ScreenWrapper>
   );

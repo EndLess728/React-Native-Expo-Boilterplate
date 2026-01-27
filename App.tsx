@@ -1,4 +1,5 @@
 import './src/styles/unistyles';
+import './src/localization/i18n'; // Initialize i18next with translations
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';

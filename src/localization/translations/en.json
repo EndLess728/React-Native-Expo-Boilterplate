@@ -1,3 +1,19 @@
 {
-   "welcome": "Welcome"
+  "auth": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "profile": "Profile",
+    "logout": "Logout",
+    "home": "Home",
+    "email": "Email",
+    "password": "Password",
+    "login_description": "Enter your email and password to login"
+  },
+  "settings": {
+    "language": "Language",
+    "select_language": "Select Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "arabic": "Arabic"
+  }
 }

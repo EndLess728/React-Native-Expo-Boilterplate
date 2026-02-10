@@ -1,0 +1,78 @@
+import type { TOptions } from 'i18next';
+import i18n from 'i18next';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { I18nManager, NativeModules, Platform } from 'react-native';
+import { useMMKVString } from 'react-native-mmkv';
+import RNRestart from 'react-native-restart';
+
+import { storage } from '../storage';
+import type { Language, resources } from './resources';
+import type { RecursiveKeyOf } from './types';
+
+type DefaultLocale = typeof resources.en.translation;
+export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
+
+export const LOCAL = 'local';
+
+export const getLanguage = () => storage.getString(LOCAL);
+
+/**
+ * Translates text (non-reactive, use for static content).
+ * For components that need to react to language changes, use useTranslate() hook.
+ */
+export function translate(key: TxKeyPath, options?: TOptions): string {
+  if (i18n.isInitialized) {
+    return i18n.t(key, options);
+  }
+  return key;
+}
+
+/**
+ * A hook that returns a translate function that reacts to language changes.
+ * Use this in components for UI that should update when language changes.
+ */
+export const useTranslate = () => {
+  const { t } = useTranslation();
+  return useCallback((key: TxKeyPath, options?: TOptions): string => t(key, options), [t]);
+};
+
+export const changeLanguage = (lang: Language) => {
+  const currentLang = i18n.language;
+  const isCurrentRTL = currentLang === 'ar';
+  const isNewRTL = lang === 'ar';
+  const needsRTLChange = isCurrentRTL !== isNewRTL;
+
+  // Change i18next language (this triggers react-i18next to re-render)
+  i18n.changeLanguage(lang);
+
+  // Only reload if RTL direction needs to change
+  if (needsRTLChange) {
+    if (lang === 'ar') {
+      I18nManager.forceRTL(true);
+    } else {
+      I18nManager.forceRTL(false);
+    }
+    // RTL changes require app restart to take effect
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      if (__DEV__) NativeModules.DevSettings.reload();
+      else RNRestart.restart();
+    } else if (Platform.OS === 'web') {
+      window.location.reload();
+    }
+  }
+};
+
+export const useSelectedLanguage = () => {
+  const [language, setLang] = useMMKVString(LOCAL, storage);
+
+  const setLanguage = useCallback(
+    (lang: Language) => {
+      setLang(lang);
+      if (lang !== undefined) changeLanguage(lang as Language);
+    },
+    [setLang],
+  );
+
+  return { language: language as Language, setLanguage };
+};

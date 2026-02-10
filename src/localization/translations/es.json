@@ -1,3 +1,19 @@
 {
-        "welcome": "Bienvenido"
+  "auth": {
+    "welcome": "Bienvenido",
+    "login": "Iniciar sesión",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "home": "Inicio",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "login_description": "Ingrese su correo electrónico y contraseña para iniciar sesión"
+  },
+  "settings": {
+    "language": "Idioma",
+    "select_language": "Seleccionar idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "arabic": "Árabe"
+  }
 }

@@ -4,12 +4,14 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { usePosts } from '@/api';
 import { Button, ScreenWrapper } from '@/components';
+import { useTranslate } from '@/localization/utils';
 import { useUserStore } from '@/store';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
 const Home: React.FC = () => {
   const { user, logout } = useUserStore();
+  const translate = useTranslate();
 
   const { data, isLoading } = usePosts();
 
@@ -23,7 +25,9 @@ const Home: React.FC = () => {
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={styles.title}>Welcome {user?.email}</Text>
+      <Text style={styles.title}>
+        {translate('auth.welcome')} {user?.email}
+      </Text>
       <Button style={styles.btnStyle} title="Logout" onPress={onPressLogout} />
     </ScreenWrapper>
   );

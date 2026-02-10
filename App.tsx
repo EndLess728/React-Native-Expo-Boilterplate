@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { APIProvider } from '@/api';
 import { RootNavigator } from '@/navigation';
-import { toastConfig } from '@/utils/helperFunctions';
+import { toastConfig } from '@/utils/toast-config';
 
 export default function App() {
   return (

@@ -5,32 +5,42 @@
     "promptToConfigurePushNotifications": false
   },
   "build": {
-    "development": {
+    "base": {
+      "node": "20.19.4"
+    },
+    "debug": {
+      "extends": "base",
+      "developmentClient": true,
       "distribution": "internal",
-      "node": "20.18.0",
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "https://base-url/api/v1/",
-        "EXPO_PUBLIC_SOCKET_URL": "https://socket-url.tech"
+        "EXPO_PUBLIC_ENVIRONMENT": "development"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_ENVIRONMENT": "development"
       }
     },
     "staging": {
+      "extends": "base",
       "distribution": "internal",
-      "node": "20.18.0",
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "https://base-url/api/v1/",
-        "EXPO_PUBLIC_SOCKET_URL": "https://socket-url.tech"
+        "EXPO_PUBLIC_ENVIRONMENT": "staging"
       }
     },
     "production": {
+      "extends": "base",
       "autoIncrement": true,
-      "node": "20.18.0",
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "https://base-url/api/v1/",
-        "EXPO_PUBLIC_SOCKET_URL": "https://socket-url.tech"
+        "EXPO_PUBLIC_ENVIRONMENT": "production"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": { "releaseStatus": "draft", "track": "internal" }
+    }
   }
 }

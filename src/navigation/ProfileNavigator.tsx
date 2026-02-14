@@ -13,11 +13,7 @@ const Stack = createNativeStackNavigator<ProfileStackParamList>();
 export function ProfileNavigator(): React.JSX.Element {
   return (
     <Stack.Navigator id="ProfileStack">
-      <Stack.Screen
-        component={Profile}
-        name={NAVIGATION.profile}
-        options={{ headerLargeTitle: true }}
-      />
+      <Stack.Screen component={Profile} name={NAVIGATION.profile} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
 }

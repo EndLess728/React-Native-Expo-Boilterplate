@@ -13,9 +13,7 @@ const Home: React.FC = () => {
   const { user, logout } = useUserStore();
   const translate = useTranslate();
 
-  const { data, isLoading } = usePosts();
-
-  console.log('🚀 ~ Home ~ isLoading ===> ', isLoading);
+  const { data } = usePosts();
 
   console.log('🚀 ~ Home ~ data ===> ', data);
 

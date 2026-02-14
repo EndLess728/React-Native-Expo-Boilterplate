@@ -1,10 +1,10 @@
 import React, { type FC, type ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
+  type PressableProps,
   Text,
   type TextStyle,
-  TouchableOpacity,
-  type TouchableOpacityProps,
   View,
   type ViewStyle,
 } from 'react-native';
@@ -15,7 +15,7 @@ import { ms } from '@/utils';
 
 type ButtonTypes = 'primary' | 'secondary' | 'disabled';
 
-interface ButtonProps extends TouchableOpacityProps {
+interface ButtonProps extends PressableProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   isLoading?: boolean;
@@ -54,7 +54,11 @@ const Button: FC<ButtonProps> = ({
   const isButtonDisabled = disabled || isLoading || type === 'disabled';
 
   return (
-    <TouchableOpacity disabled={isButtonDisabled} style={[buttonTypeStyles[type], style]} {...rest}>
+    <Pressable
+      disabled={isButtonDisabled}
+      style={({ pressed }) => [buttonTypeStyles[type], pressed && styles.pressed, style]}
+      {...rest}
+    >
       {isLoading ? (
         // Loading spinner when button is in loading state
         <ActivityIndicator color="#ffffff" size="small" />
@@ -70,11 +74,11 @@ const Button: FC<ButtonProps> = ({
           {rightIcon && <View style={styles.iconWrapper}>{rightIcon}</View>}
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
-const styles = StyleSheet.create(() => ({
+const styles = StyleSheet.create((theme) => ({
   primary: {
     width: '100%',
     borderRadius: ms(28),
@@ -82,7 +86,7 @@ const styles = StyleSheet.create(() => ({
     justifyContent: 'center',
     paddingVertical: ms(16),
     marginBottom: ms(24),
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.typography,
   },
   secondary: {
     width: '100%',
@@ -92,7 +96,7 @@ const styles = StyleSheet.create(() => ({
     justifyContent: 'center',
     paddingVertical: ms(16),
     marginBottom: ms(24),
-    borderColor: '#000', // Added border color for clarity
+    borderColor: theme.colors.typography,
     backgroundColor: 'transparent',
   },
   disabled: {
@@ -102,18 +106,21 @@ const styles = StyleSheet.create(() => ({
     justifyContent: 'center',
     paddingVertical: ms(17.5),
     marginBottom: ms(24),
-    backgroundColor: '#00000020',
+    backgroundColor: theme.colors.grey,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   primaryText: {
-    color: '#fff',
+    color: theme.colors.white,
     textAlign: 'center',
   },
   secondaryText: {
-    color: '#000',
+    color: theme.colors.typography,
     textAlign: 'center',
   },
   disabledText: {
-    color: '#00000040',
+    color: theme.colors.textGray,
     textAlign: 'center',
   },
   contentRow: {

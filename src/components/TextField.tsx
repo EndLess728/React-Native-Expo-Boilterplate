@@ -1,79 +1,101 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import {
   Image,
   type ImageSourcePropType,
   type ImageStyle,
-  Pressable,
-  type StyleProp,
   TextInput,
   type TextInputProps,
-  type TextStyle,
   View,
   type ViewStyle,
 } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 interface TextFieldProps extends TextInputProps {
-  icon?: ImageSourcePropType;
-  containerStyle?: ViewStyle;
-  style?: StyleProp<TextStyle>;
   placeholder?: string;
-  rightIcon?: ImageSourcePropType;
-  onPressRightIcon?: () => void;
-  rightIconStyle?: ImageStyle;
+  containerStyle?: ViewStyle;
+  endIcon?: ImageSourcePropType;
+  icon?: ImageSourcePropType;
+  endIconStyle?: ImageStyle;
+  /** When true, border turns danger-red and stays red regardless of focus state */
+  hasError?: boolean;
 }
 
-export const TextField = forwardRef<any, TextFieldProps>(
+const TextField = forwardRef<TextInput, TextFieldProps>(
   (
     {
-      style,
+      placeholder = '',
+      containerStyle = {},
+      endIcon,
       icon,
-      rightIcon,
-      containerStyle,
-      placeholder,
-      onPressRightIcon = () => {},
-      rightIconStyle,
+      endIconStyle,
+      hasError = false,
+      style,
+      onFocus,
+      onBlur,
       ...rest
     },
     ref,
   ) => {
     const { theme } = useUnistyles();
+    const borderColor = useSharedValue<string>(
+      hasError ? theme.colors.danger : theme.colors.borderGray,
+    );
+
+    // React to error state changes
+    useEffect(() => {
+      borderColor.value = withTiming(hasError ? theme.colors.danger : theme.colors.borderGray);
+    }, [hasError, borderColor, theme.colors.danger, theme.colors.borderGray]);
+
+    const animatedBorderStyle = useAnimatedStyle(() => ({
+      borderColor: borderColor.value,
+    }));
 
     return (
-      <View style={[styles.container, containerStyle]}>
+      <Animated.View style={[styles.container, containerStyle, animatedBorderStyle]}>
         {icon && <Image source={icon} style={styles.leftImageStyle} />}
         <TextInput
           ref={ref}
           autoComplete="off"
           autoCorrect={false}
           placeholder={placeholder}
-          placeholderTextColor={'#808080'}
+          placeholderTextColor={theme.colors.textGray}
           style={[
             {
-              color: theme.colors.textGray,
+              color: theme.colors.typography,
               flex: 1,
               height: ms(40),
             },
-            TextStyles.smallText,
+            TextStyles.bodySmallSemiBold,
             style,
           ]}
           underlineColorAndroid="transparent"
+          onBlur={(e) => {
+            borderColor.value = withTiming(
+              hasError ? theme.colors.danger : theme.colors.borderGray,
+            );
+            onBlur?.(e);
+          }}
+          onFocus={(e) => {
+            borderColor.value = withTiming(hasError ? theme.colors.danger : theme.colors.primary);
+            onFocus?.(e);
+          }}
           {...rest}
         />
-        {rightIcon && (
-          <Pressable onPress={onPressRightIcon}>
-            <Image source={rightIcon} style={[styles.eyeIcon, rightIconStyle]} />
-          </Pressable>
+        {endIcon && (
+          <View>
+            <Image source={endIcon} style={[styles.eyeIcon, endIconStyle]} />
+          </View>
         )}
-      </View>
+      </Animated.View>
     );
   },
 );
 
-const styles = StyleSheet.create(() => ({
+const styles = StyleSheet.create((theme) => ({
   leftImageStyle: {
     width: ms(20),
     height: ms(20),
@@ -87,13 +109,15 @@ const styles = StyleSheet.create(() => ({
     alignItems: 'center',
     marginVertical: ms(10),
     borderRadius: ms(10),
-    borderColor: '#004AAD',
-    backgroundColor: '#F7F8F9',
+    borderColor: theme.colors.borderGray,
+    backgroundColor: theme.colors.fadedWhite,
     height: ms(50),
   },
   eyeIcon: {
     height: ms(25),
     resizeMode: 'contain',
-    tintColor: '#000',
+    tintColor: theme.colors.typography,
   },
 }));
+
+export default TextField;

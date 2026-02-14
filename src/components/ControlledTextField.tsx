@@ -22,7 +22,7 @@ import { StyleSheet } from 'react-native-unistyles';
 
 import { ms } from '@/utils';
 
-import { TextField } from './TextField';
+import TextField from './TextField';
 
 interface ControlledTextFieldProps<T extends FieldValues> extends Omit<
   TextInputProps,
@@ -54,7 +54,8 @@ export function ControlledTextField<T extends FieldValues>({
       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
         <>
           <TextField
-            containerStyle={{ ...containerStyle, ...(error && styles.errorBorder) }}
+            containerStyle={containerStyle}
+            hasError={!!error}
             value={value}
             onBlur={onBlur}
             onChangeText={onChange}
@@ -68,9 +69,6 @@ export function ControlledTextField<T extends FieldValues>({
 }
 
 const styles = StyleSheet.create((theme) => ({
-  errorBorder: {
-    borderColor: theme.colors.danger,
-  },
   errorText: {
     color: theme.colors.danger,
     fontSize: ms(12),

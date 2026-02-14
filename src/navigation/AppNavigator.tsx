@@ -4,7 +4,7 @@ import type { RouteProp } from '@react-navigation/native';
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
 
-import { TabBarIcon } from '@/components';
+import { TabBarIcon } from '@/components/TabBarIcon';
 import { TabBarLabel } from '@/components/TabBarLabel';
 import { NAVIGATION } from '@/constants';
 import { HomeNavigator } from '@/navigation/HomeNavigator';

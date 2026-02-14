@@ -45,7 +45,7 @@ const styles = StyleSheet.create((theme) => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00000060',
+    backgroundColor: theme.colors.opacity50,
   },
   activityIndicatorWrapper: {
     padding: 20,

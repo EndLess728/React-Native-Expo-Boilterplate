@@ -4,6 +4,7 @@ import RNRestart from 'react-native-restart';
 import { StyleSheet } from 'react-native-unistyles';
 
 import Button from '@/components/Button';
+import { TextStyles } from '@/theme';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -19,11 +20,11 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Oops! Something went wrong.</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[TextStyles.h2, styles.title]}>Oops! Something went wrong.</Text>
+        <Text style={[TextStyles.body, styles.subtitle]}>
           We apologize for the inconvenience. Please try again or restart the app.
         </Text>
-        <Text style={styles.errorText}>{error.toString()}</Text>
+        <Text style={[TextStyles.bodySmall, styles.errorText]}>{error.toString()}</Text>
         <Button
           style={styles.button}
           testID="try-again-button"
@@ -49,20 +50,16 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.margins.lg,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
     color: theme.colors.typography,
     marginBottom: theme.margins.md,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
     color: theme.colors.textGray,
     textAlign: 'center',
     marginBottom: theme.margins.lg,
   },
   errorText: {
-    fontSize: 14,
     color: theme.colors.danger,
     textAlign: 'center',
     marginBottom: theme.margins.xl,

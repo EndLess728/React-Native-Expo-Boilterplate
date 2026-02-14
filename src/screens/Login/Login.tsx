@@ -16,7 +16,7 @@ import Button from '@/components/Button';
 import { ControlledTextField } from '@/components/ControlledTextField';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useUserStore } from '@/store/useUserStore';
-import { fonts } from '@/theme';
+import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 // ─────────────────────────────────────────────────────────────
@@ -66,7 +66,7 @@ const Login: React.FC = () => {
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={TextStyles.h1}>Login</Text>
 
       <View style={styles.formContainer}>
         <ControlledTextField<LoginFormData>
@@ -111,10 +111,6 @@ const styles = StyleSheet.create(() => ({
     padding: ms(20),
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    fontFamily: fonts.openSan.bold,
-    fontSize: ms(30),
   },
   formContainer: {
     width: '100%',

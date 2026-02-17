@@ -1,31 +1,32 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { usePosts } from '@/api';
-import { Button, ScreenWrapper } from '@/components';
+import { usePosts } from '@/api/posts';
+import Button from '@/components/Button';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslate } from '@/localization/utils';
-import { useUserStore } from '@/store';
-import { fonts } from '@/theme';
+import { useUserStore } from '@/store/useUserStore';
+import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 const Home: React.FC = () => {
   const { user, logout } = useUserStore();
   const translate = useTranslate();
 
-  const { data, isLoading } = usePosts();
+  const { data } = usePosts();
 
-  console.log('🚀 ~ Home ~ isLoading ===> ', isLoading);
+  if (__DEV__) {
+    console.log('🚀 ~ Home ~ data ===> ', data);
+  }
 
-  console.log('🚀 ~ Home ~ data ===> ', data);
-
-  const onPressLogout = () => {
+  const onPressLogout = useCallback(() => {
     logout();
-  };
+  }, [logout]);
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={styles.title}>
+      <Text style={TextStyles.h1}>
         {translate('auth.welcome')} {user?.email}
       </Text>
       <Button style={styles.btnStyle} title="Logout" onPress={onPressLogout} />
@@ -40,10 +41,6 @@ const styles = StyleSheet.create(() => ({
     padding: ms(20),
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    fontFamily: fonts.openSan.bold,
-    fontSize: ms(30),
   },
   btnStyle: {
     marginTop: ms(40),

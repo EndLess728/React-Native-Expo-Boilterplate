@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator<HomeStackParamList>();
 export function HomeNavigator(): React.JSX.Element {
   return (
     <Stack.Navigator id="HomeStack">
-      <Stack.Screen component={Home} name={NAVIGATION.home} options={{ headerShown: false }} />
+      <Stack.Screen component={Home} name={NAVIGATION.home} options={{ headerShown: true }} />
     </Stack.Navigator>
   );
 }

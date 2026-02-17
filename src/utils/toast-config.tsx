@@ -19,7 +19,7 @@ export const toastConfig = {
       text1NumberOfLines={0}
       text1Style={TextStyles.label}
       text2NumberOfLines={0}
-      text2Style={TextStyles.text}
+      text2Style={TextStyles.body}
     />
   ),
   /*
@@ -38,7 +38,7 @@ export const toastConfig = {
       text1NumberOfLines={0}
       text1Style={TextStyles.label}
       text2NumberOfLines={0}
-      text2Style={TextStyles.text}
+      text2Style={TextStyles.body}
     />
   ),
 };

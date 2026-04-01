@@ -1,10 +1,10 @@
-import type { TOptions } from 'i18next';
-import i18n from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 import { useMMKVString } from 'react-native-mmkv';
 import RNRestart from 'react-native-restart';
+import type { TOptions } from 'i18next';
+import i18n from 'i18next';
 
 import { storage } from '../storage';
 import type { Language, resources } from './resources';

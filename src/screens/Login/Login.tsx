@@ -5,18 +5,19 @@
  * Validation errors are displayed inline below each field.
  */
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
+import { Env } from '@env';
 import Button from '@/components/Button';
 import { ControlledTextField } from '@/components/ControlledTextField';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useUserStore } from '@/store/useUserStore';
-import { TextStyles } from '@/theme';
+import { fonts, TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 // ─────────────────────────────────────────────────────────────
@@ -67,7 +68,6 @@ const Login: React.FC = () => {
   return (
     <ScreenWrapper style={styles.container}>
       <Text style={TextStyles.h1}>Login</Text>
-
       <View style={styles.formContainer}>
         <ControlledTextField<LoginFormData>
           autoCapitalize="none"
@@ -100,6 +100,11 @@ const Login: React.FC = () => {
         type="primary"
         onPress={handleSubmit(onSubmit)}
       />
+      {__DEV__ && (
+        <Text
+          style={{ color: 'red', marginTop: ms(20), fontFamily: fonts.openSan.semiBold }}
+        >{`Environment : ${Env.EXPO_PUBLIC_ENVIRONMENT}`}</Text>
+      )}
     </ScreenWrapper>
   );
 };

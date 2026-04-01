@@ -12,9 +12,9 @@
  * - Dev-mode request/response logging
  */
 
+import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { Alert } from 'react-native';
 
 import { showErrorToast } from '@/components/ToastAlert';
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';

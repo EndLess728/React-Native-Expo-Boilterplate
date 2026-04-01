@@ -1,25 +1,37 @@
-import dotenv from 'dotenv';
 import { ConfigContext, ExpoConfig } from 'expo/config';
-import path from 'path';
 
 import packageJson from './package.json';
 
-// Load the correct .env file based on EXPO_PUBLIC_ENVIRONMENT from eas.json
-// Falls back to 'development' when running locally
-const APP_ENV = process.env.EXPO_PUBLIC_ENVIRONMENT || 'development';
-dotenv.config({
-  path: path.resolve(__dirname, `.env.${APP_ENV}`),
-  override: true,
-});
+// The build environment is configured via EXPO_PUBLIC_ENVIRONMENT passed via npm scripts or eas.json
+// Expo CLI natively loads EXPO_PUBLIC_* vars from .env / .env.local files.
+const APP_ENV = (process.env.EXPO_PUBLIC_ENVIRONMENT ?? 'development') as
+  | 'development'
+  | 'staging'
+  | 'production';
 
-const APP_NAME = 'ExpoTemplate';
-const APP_SLUG = 'ExpoTemplate';
-const APP_BUNDLE_IDENTIFIER = 'com.expo.template';
+type AppEnvironment = 'development' | 'staging' | 'production';
+
+const envConfig: Record<AppEnvironment, { name: string; bundleIdentifier: string }> = {
+  development: {
+    name: 'ExpoTemplate (Dev)',
+    bundleIdentifier: 'com.expo.template.dev',
+  },
+  staging: {
+    name: 'ExpoTemplate (Staging)',
+    bundleIdentifier: 'com.expo.template.staging',
+  },
+  production: {
+    name: 'ExpoTemplate',
+    bundleIdentifier: 'com.expo.template',
+  },
+};
+
+const { name, bundleIdentifier } = envConfig[APP_ENV];
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: APP_NAME,
-  slug: APP_SLUG,
+  name,
+  slug: 'ExpoTemplate',
   version: packageJson.version,
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -27,7 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: APP_BUNDLE_IDENTIFIER,
+    bundleIdentifier,
   },
   android: {
     adaptiveIcon: {
@@ -35,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#232323',
     },
     edgeToEdgeEnabled: true,
-    package: APP_BUNDLE_IDENTIFIER,
+    package: bundleIdentifier,
   },
   web: {
     favicon: './assets/favicon.png',

@@ -1,8 +1,8 @@
+import React from 'react';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { RouteProp } from '@react-navigation/native';
 import { useTheme } from '@react-navigation/native';
-import React from 'react';
 
 import { TabBarIcon } from '@/components/TabBarIcon';
 import { TabBarLabel } from '@/components/TabBarLabel';

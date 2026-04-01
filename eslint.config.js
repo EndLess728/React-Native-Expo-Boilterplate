@@ -71,7 +71,12 @@ module.exports = [
       'import/no-named-default': 'off',
 
       // Import Sorting
-      'simple-import-sort/imports': 'error',
+      'simple-import-sort/imports': [
+        'error',
+        {
+          groups: [['^\\u0000'], ['^react', '^@?\\w'], ['^@env', '^@/', '^'], ['^\\.']],
+        },
+      ],
       'simple-import-sort/exports': 'error',
 
       // Unused Imports - forcefully remove them

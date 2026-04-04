@@ -37,26 +37,13 @@ const Button: FC<ButtonProps> = ({
   type = 'primary',
   ...rest
 }) => {
-  // Style maps for reusability and scalability
-  const buttonTypeStyles: Record<ButtonTypes, ViewStyle> = {
-    primary: styles.primary,
-    secondary: styles.secondary,
-    disabled: styles.disabled,
-  };
-
-  const textTypeStyles: Record<ButtonTypes, TextStyle> = {
-    primary: styles.primaryText,
-    secondary: styles.secondaryText,
-    disabled: styles.disabledText,
-  };
-
   // Button is considered disabled if explicitly set or if loading
   const isButtonDisabled = disabled || isLoading || type === 'disabled';
 
   return (
     <Pressable
       disabled={isButtonDisabled}
-      style={({ pressed }) => [buttonTypeStyles[type], pressed && styles.pressed, style]}
+      style={({ pressed }) => [buttonStyleMap[type], pressed && styles.pressed, style]}
       {...rest}
     >
       {isLoading ? (
@@ -68,7 +55,7 @@ const Button: FC<ButtonProps> = ({
           {leftIcon && <View style={styles.iconWrapper}>{leftIcon}</View>}
 
           {/* Button title */}
-          <Text style={[textTypeStyles[type], TextStyles.button, textStyle]}>{title}</Text>
+          <Text style={[textStyleMap[type], TextStyles.button, textStyle]}>{title}</Text>
 
           {/* Optional right icon */}
           {rightIcon && <View style={styles.iconWrapper}>{rightIcon}</View>}
@@ -132,5 +119,18 @@ const styles = StyleSheet.create((theme) => ({
     marginHorizontal: ms(8),
   },
 }));
+
+// Static maps defined once — not recreated on every render
+const buttonStyleMap: Record<ButtonTypes, object> = {
+  primary: styles.primary,
+  secondary: styles.secondary,
+  disabled: styles.disabled,
+};
+
+const textStyleMap: Record<ButtonTypes, object> = {
+  primary: styles.primaryText,
+  secondary: styles.secondaryText,
+  disabled: styles.disabledText,
+};
 
 export default Button;

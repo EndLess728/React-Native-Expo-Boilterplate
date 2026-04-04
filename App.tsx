@@ -6,7 +6,7 @@ import ErrorBoundary from 'react-native-error-boundary';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 
-import { APIProvider } from '@/api';
+import { APIProvider } from '@/api/common/api-provider';
 import ErrorFallback from '@/components/ErrorFallback';
 import { RootNavigator } from '@/navigation';
 import { toastConfig } from '@/utils/toast-config';

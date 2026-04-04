@@ -2,10 +2,11 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { Button, ScreenWrapper } from '@/components';
+import Button from '@/components/Button';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import type { Language } from '@/localization/resources';
 import { useSelectedLanguage, useTranslate } from '@/localization/utils';
-import { useUserStore } from '@/store';
+import { useUserStore } from '@/store/useUserStore';
 import { fonts } from '@/theme';
 import { ms } from '@/utils';
 
@@ -23,14 +24,6 @@ const Profile: React.FC = () => {
   const { language, setLanguage } = useSelectedLanguage();
   const translate = useTranslate();
 
-  const onPressLogout = () => {
-    logout();
-  };
-
-  const handleLanguageChange = (lang: Language) => {
-    setLanguage(lang);
-  };
-
   return (
     <ScreenWrapper style={styles.container}>
       <Text style={styles.title}>{translate('auth.profile')}</Text>
@@ -43,7 +36,7 @@ const Profile: React.FC = () => {
             <Pressable
               key={lang.code}
               style={[styles.languageButton, language === lang.code && styles.languageButtonActive]}
-              onPress={() => handleLanguageChange(lang.code)}
+              onPress={() => setLanguage(lang.code)}
             >
               <Text
                 style={[
@@ -58,7 +51,7 @@ const Profile: React.FC = () => {
         </View>
       </View>
 
-      <Button style={styles.btnStyle} title={translate('auth.logout')} onPress={onPressLogout} />
+      <Button style={styles.btnStyle} title={translate('auth.logout')} onPress={logout} />
     </ScreenWrapper>
   );
 };

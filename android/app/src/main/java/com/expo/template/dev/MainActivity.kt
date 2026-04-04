@@ -1,4 +1,4 @@
-package com.expo.template
+package com.expo.template.dev
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { usePosts } from '@/api/posts';
+import { usePosts } from '@/api/posts/use-posts';
 import Button from '@/components/Button';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslate } from '@/localization/utils';
@@ -20,16 +20,12 @@ const Home: React.FC = () => {
     console.log('🚀 ~ Home ~ data ===> ', data);
   }
 
-  const onPressLogout = useCallback(() => {
-    logout();
-  }, [logout]);
-
   return (
     <ScreenWrapper style={styles.container}>
       <Text style={TextStyles.h1}>
         {translate('auth.welcome')} {user?.email}
       </Text>
-      <Button style={styles.btnStyle} title="Logout" onPress={onPressLogout} />
+      <Button style={styles.btnStyle} title="Logout" onPress={logout} />
     </ScreenWrapper>
   );
 };

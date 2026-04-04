@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { NAVIGATION } from '@/constants';
-import { Profile } from '@/screens';
+import Profile from '@/screens/Profile/Profile';
 
 export type ProfileStackParamList = {
   [NAVIGATION.profile]: undefined;

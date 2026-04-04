@@ -21,14 +21,11 @@ export function getUrlParameters(url: string | null): { [k: string]: string } | 
   if (url === null) {
     return null;
   }
-  let regex = /[?&]([^=#]+)=([^&#]*)/g,
-    params = {},
-    match;
+  const regex = /[?&]([^=#]+)=([^&#]*)/g;
+  const params: Record<string, string> = {};
+  let match;
   while ((match = regex.exec(url))) {
-    if (match[1] !== null) {
-      //@ts-ignore
-      params[match[1]] = match[2];
-    }
+    params[match[1]] = match[2];
   }
   return params;
 }

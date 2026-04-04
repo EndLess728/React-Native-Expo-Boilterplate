@@ -18,7 +18,7 @@ import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'ax
 
 import { showErrorToast } from '@/components/ToastAlert';
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
-import { useUserStore } from '@/store';
+import { useUserStore } from '@/store/useUserStore';
 
 // ─────────────────────────────────────────────────────────────
 //  Types

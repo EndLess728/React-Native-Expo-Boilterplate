@@ -5,7 +5,7 @@
  * Validation errors are displayed inline below each field.
  */
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
@@ -58,12 +58,9 @@ const Login: React.FC = () => {
    * Only called when Zod validation passes.
    * Replace with your actual API login call.
    */
-  const onSubmit = useCallback(
-    (data: LoginFormData) => {
-      login({ email: data.email, password: data.password });
-    },
-    [login],
-  );
+  const onSubmit = (data: LoginFormData) => {
+    login({ email: data.email, password: data.password });
+  };
 
   return (
     <ScreenWrapper style={styles.container}>

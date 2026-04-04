@@ -32,6 +32,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name,
   slug: 'ExpoTemplate',
+  experiments: {
+    reactCompiler: true,
+  },
   version: packageJson.version,
   orientation: 'portrait',
   icon: './assets/icon.png',

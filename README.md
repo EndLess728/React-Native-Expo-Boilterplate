@@ -88,31 +88,32 @@ This means you can install **all three variants on the same device** simultaneou
 
 ### Environment Variables
 
-Each `.env.<environment>` file must define:
+Each `.env.<environment>` file defines:
 
 ```bash
-EXPO_PUBLIC_ENVIRONMENT=development    # development | staging | production
-EXPO_PUBLIC_BASE_URL=https://api.example.com/
+EXPO_PUBLIC_APP_ENV=development    # development | staging | production
+EXPO_PUBLIC_API_URL=https://api.example.com/
 EXPO_PUBLIC_SOCKET_URL=https://ws.example.com/
 ```
 
 Adding a new variable:
-1. Add it to the `.env.*` files
+1. Add it to all three `.env.*` files
 2. Add the key to the Zod schema in `env.ts`
 3. Reference it statically: `process.env.EXPO_PUBLIC_YOUR_VAR` (Metro requires dot notation)
-4. Import from `@env`: `import { Env } from '@env'`
+4. Import from `@env`: `import Env from '@env'`
 
-> **Important:** The Zod schema in `env.ts` validates all variables at app startup. If any are missing or malformed, the app will throw with a clear error message — **before** rendering anything.
+> **Validation:** `env.ts` validates all variables via Zod on every startup. In development, invalid vars log a warning. During prebuild (`STRICT_ENV_VALIDATION=1`), it throws — catching config errors before native code is generated.
 
 ### How Env Switching Works
 
 ```
-yarn start:staging
-  → copies .env.staging → .env.local
-  → sets EXPO_PUBLIC_ENVIRONMENT=staging
-  → Metro reads EXPO_PUBLIC_* from .env.local
-  → app.config.ts picks the correct app name + package name
-  → env.ts validates all values via Zod
+yarn android:staging
+  → cp .env.staging .env.local        (writes active env to .env.local)
+  → expo run:android                  (Metro starts, reads .env.local)
+  → .env.local has highest priority   (wins over .env.development auto-load)
+  → env.ts reads EXPO_PUBLIC_APP_ENV=staging, builds typed config
+  → app.config.ts uses Env for app name, bundle ID, package name
+  → Runtime code imports Env from @env for API URLs etc.
 ```
 
 ## Available Scripts
@@ -137,6 +138,14 @@ yarn android:production        # Build + run Android (production)
 yarn ios:production            # Build + run iOS (production)
 ```
 
+### Prebuild (Generate Native Projects)
+
+```bash
+yarn prebuild:development      # Clean prebuild for dev (strict validation)
+yarn prebuild:staging          # Clean prebuild for staging
+yarn prebuild:production       # Clean prebuild for production
+```
+
 ### Local Release Builds
 
 ```bash
@@ -147,7 +156,7 @@ yarn build:android:production  # prebuild --clean → gradlew assembleRelease
 yarn build:ios:production      # prebuild --clean → open .xcworkspace
 ```
 
-> All build scripts use `--clean` to wipe and regenerate native directories, preventing stale package name issues when switching environments.
+> All build and prebuild scripts use `--clean` and `STRICT_ENV_VALIDATION=1` to ensure fresh native projects with validated env vars.
 
 ### EAS Cloud Builds
 
@@ -157,7 +166,7 @@ eas build --profile staging --platform ios
 eas build --profile production --platform all
 ```
 
-EAS profiles are defined in `eas.json`. Each profile injects the correct `EXPO_PUBLIC_ENVIRONMENT` and the `eas-build-pre-install` script copies the matching `.env` file.
+EAS profiles are defined in `eas.json`. Each profile injects `EXPO_PUBLIC_APP_ENV`, and the `eas-build-pre-install` script copies the matching `.env` file to `.env.local`.
 
 ### Code Quality
 
@@ -184,7 +193,7 @@ Two aliases are configured in `tsconfig.json` and `babel.config.js`:
 | Alias | Maps to | Example |
 |---|---|---|
 | `@/*` | `./src/*` | `import { Button } from '@/components'` |
-| `@env` | `./env.ts` | `import { Env } from '@env'` |
+| `@env` | `./env.ts` | `import Env from '@env'` |
 
 ### Commit Conventions
 

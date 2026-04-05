@@ -1,48 +1,24 @@
+import 'tsx/cjs';
+
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
-import packageJson from './package.json';
-
-// The build environment is configured via EXPO_PUBLIC_ENVIRONMENT passed via npm scripts or eas.json
-// Expo CLI natively loads EXPO_PUBLIC_* vars from .env / .env.local files.
-const APP_ENV = (process.env.EXPO_PUBLIC_ENVIRONMENT ?? 'development') as
-  | 'development'
-  | 'staging'
-  | 'production';
-
-type AppEnvironment = 'development' | 'staging' | 'production';
-
-const envConfig: Record<AppEnvironment, { name: string; bundleIdentifier: string }> = {
-  development: {
-    name: 'ExpoTemplate (Dev)',
-    bundleIdentifier: 'com.expo.template.dev',
-  },
-  staging: {
-    name: 'ExpoTemplate (Staging)',
-    bundleIdentifier: 'com.expo.template.staging',
-  },
-  production: {
-    name: 'ExpoTemplate',
-    bundleIdentifier: 'com.expo.template',
-  },
-};
-
-const { name, bundleIdentifier } = envConfig[APP_ENV];
+import Env from './env';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name,
+  name: Env.EXPO_PUBLIC_NAME,
   slug: 'ExpoTemplate',
   experiments: {
     reactCompiler: true,
   },
-  version: packageJson.version,
+  version: Env.EXPO_PUBLIC_VERSION,
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'light',
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: true,
-    bundleIdentifier,
+    bundleIdentifier: Env.EXPO_PUBLIC_PACKAGE_NAME,
   },
   android: {
     adaptiveIcon: {
@@ -50,7 +26,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#232323',
     },
     edgeToEdgeEnabled: true,
-    package: bundleIdentifier,
+    package: Env.EXPO_PUBLIC_PACKAGE_NAME,
   },
   web: {
     favicon: './assets/favicon.png',

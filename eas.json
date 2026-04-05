@@ -13,28 +13,28 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_ENVIRONMENT": "development"
+        "EXPO_PUBLIC_APP_ENV": "development"
       }
     },
     "development": {
       "extends": "base",
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_ENVIRONMENT": "development"
+        "EXPO_PUBLIC_APP_ENV": "development"
       }
     },
     "staging": {
       "extends": "base",
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_ENVIRONMENT": "staging"
+        "EXPO_PUBLIC_APP_ENV": "staging"
       }
     },
     "production": {
       "extends": "base",
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_ENVIRONMENT": "production"
+        "EXPO_PUBLIC_APP_ENV": "production"
       }
     }
   },

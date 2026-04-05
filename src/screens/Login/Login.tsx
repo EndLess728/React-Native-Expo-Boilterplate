@@ -12,7 +12,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { Env } from '@env';
+import Env from '@env';
 import Button from '@/components/Button';
 import { ControlledTextField } from '@/components/ControlledTextField';
 import ScreenWrapper from '@/components/ScreenWrapper';
@@ -100,7 +100,7 @@ const Login: React.FC = () => {
       {__DEV__ && (
         <Text
           style={{ color: 'red', marginTop: ms(20), fontFamily: fonts.openSan.semiBold }}
-        >{`Environment : ${Env.EXPO_PUBLIC_ENVIRONMENT}`}</Text>
+        >{`Environment : ${Env.EXPO_PUBLIC_APP_ENV}`}</Text>
       )}
     </ScreenWrapper>
   );

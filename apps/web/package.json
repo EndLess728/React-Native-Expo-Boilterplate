@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -17,19 +19,23 @@
     "framer-motion": "^12.38.0",
     "i18next": "^25.8.0",
     "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-hook-form": "^7.72.1",
     "react-i18next": "^16.5.3",
     "react-query-kit": "^3.3.2",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.7.4",
     "typescript": "~5.9.2"
   }
 }

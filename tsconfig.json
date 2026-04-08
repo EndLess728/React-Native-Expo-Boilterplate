@@ -4,7 +4,7 @@
     "skipLibCheck": true
   },
   "references": [
-    { "path": "./packages/business-logic" },
+    { "path": "./packages/shared" },
     { "path": "./apps/mobile" },
     { "path": "./apps/web" }
   ]

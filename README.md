@@ -35,10 +35,10 @@ From the root directory, ensure you have ran `yarn` to install dependencies, the
 
 ### Run the Mobile App
 ```bash
-yarn mobile start
+yarn mobile
 ```
 
 ### Run the Web App
 ```bash
-yarn web dev
+yarn web
 ```

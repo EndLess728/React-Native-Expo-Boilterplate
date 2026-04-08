@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "mobile": "yarn workspace @repo/mobile",
-    "web": "yarn workspace @repo/web",
+    "mobile": "yarn workspace @repo/mobile start",
+    "web": "yarn workspace @repo/web dev",
     "lint": "yarn workspaces run lint",
     "type-check": "yarn workspaces run type-check"
   },

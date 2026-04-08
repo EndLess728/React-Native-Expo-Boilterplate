@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
-import { setupWebApiClient } from '@/lib/api-client';
 import { QueryProvider } from '@/providers/query-provider';
-
-setupWebApiClient();
 
 export const metadata: Metadata = {
   title: 'Web App',

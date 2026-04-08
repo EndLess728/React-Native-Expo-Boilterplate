@@ -9,7 +9,7 @@ This is a full-stack monorepo built using Yarn Workspaces, allowing business log
 │   ├── mobile/               # React Native (Expo) app
 │   └── web/                  # Next.js web app
 └── packages/
-    └── business-logic/       # Shared code (API, hooks, store, localization)
+    └── shared/               # Shared code (API, hooks, store, localization)
 ```
 
 ## 🧠 Shared Business Logic
@@ -42,3 +42,11 @@ yarn mobile
 ```bash
 yarn web
 ```
+
+## 📦 Dependency Management (Hoisting)
+
+Because this repo uses Yarn Workspaces, you will notice that when you run `yarn install`, dependencies are heavily installed in the **root** `node_modules` instead of inside individual app folders. This is intentional and called **hoisting**.
+
+- Shared dependencies (like `react`, `axios`) are installed once at the root to save space and ensure matching versions.
+- If an app requires a conflicting version, *only then* will it be installed in that app's local `node_modules`.
+- The `metro.config.js` in the mobile app is pre-configured to look at the monorepo root to properly bundle these hoisted dependencies.

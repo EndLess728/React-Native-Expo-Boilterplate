@@ -1,1 +1,1 @@
-export { usePosts } from '@repo/business-logic';
+export { usePosts } from '@repo/shared';

@@ -1,12 +1,12 @@
 /**
  * Web-specific API client setup.
  *
- * Configures the shared axios client from @repo/business-logic with:
+ * Configures the shared axios client from @repo/shared with:
  * - localStorage token injection
  * - Console error notifications (replace with your toast library)
  * - Redirect to /login on 401
  */
-import { setupApiClient } from '@repo/business-logic';
+import { setupApiClient } from '@repo/shared';
 
 const TOKEN_KEY = 'auth_access_token';
 

@@ -14,7 +14,7 @@ This is a full-stack monorepo built using Yarn Workspaces, allowing business log
 
 ## 🧠 Shared Business Logic
 
-We extract all cross-platform domain logic into the `@repo/business-logic` package to prevent code duplication, including:
+We extract all cross-platform domain logic into the `@repo/shared` package to prevent code duplication, including:
 
 - **API Layer**: API hooks powered by React Query (`react-query-kit`).
 - **Store**: State management powered by Zustand.
@@ -22,7 +22,7 @@ We extract all cross-platform domain logic into the `@repo/business-logic` packa
 
 ### Platform-Specific API Configuration
 
-While all React Query hooks are centralized in `@repo/business-logic`, the underlying Axios client instance is uniquely configured for each platform:
+While all React Query hooks are centralized in `@repo/shared`, the underlying Axios client instance is uniquely configured for each platform:
 
 - **Mobile (`apps/mobile/src/api/common/client.ts`)**: Injects an MMKV-backed token storage adapter, adds connection checks via `NetInfo`, and handles mobile-specific toasts or alerts.
 - **Web (`apps/web/src/lib/api-client.ts`)**: Injects a `localStorage`-backed adapter and manages generic web console logging and web redirects for unauthorized states.

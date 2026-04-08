@@ -1,7 +1,7 @@
 /**
  * Mobile-specific API client setup.
  *
- * Configures the shared axios client from @repo/business-logic with:
+ * Configures the shared axios client from @repo/shared with:
  * - NetInfo connectivity check before every request
  * - MMKV token injection
  * - Toast error notifications
@@ -11,7 +11,7 @@
  */
 import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import { client, setupApiClient } from '@repo/business-logic';
+import { client, setupApiClient } from '@repo/shared';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 import { showErrorToast } from '@/components/ToastAlert';
@@ -92,7 +92,7 @@ declare module 'axios' {
 }
 
 export function setupMobileApiClient(baseURL: string): void {
-  // Configure the shared client from @repo/business-logic
+  // Configure the shared client from @repo/shared
   setupApiClient({
     baseURL,
     getAccessToken,
@@ -177,4 +177,4 @@ export function setupMobileApiClient(baseURL: string): void {
 }
 
 // Re-export shared client so mobile code can import from here
-export { client } from '@repo/business-logic';
+export { client } from '@repo/shared';

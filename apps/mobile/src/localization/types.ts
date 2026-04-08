@@ -1,1 +1,1 @@
-export type { RecursiveKeyOf } from '@repo/business-logic';
+export type { RecursiveKeyOf } from '@repo/shared';

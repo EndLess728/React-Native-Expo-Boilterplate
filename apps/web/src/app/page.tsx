@@ -1,6 +1,6 @@
 'use client';
 
-import { usePosts } from '@repo/business-logic';
+import { usePosts } from '@repo/shared';
 
 export default function HomePage() {
   const { data: posts, isLoading, error } = usePosts();

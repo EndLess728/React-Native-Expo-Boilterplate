@@ -1,7 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist, PersistOptions } from 'zustand/middleware';
 
-import type { StorageAdapter } from '@repo/business-logic';
+import type { StorageAdapter } from '@repo/shared';
 
 import { storage } from '@/storage';
 
@@ -19,7 +19,7 @@ export const mmkvStorage = createJSONStorage(() => mmkvStorageAdapter);
 
 /**
  * Creates a Zustand store with MMKV persistence pre-configured.
- * For stores defined locally in mobile — for shared stores use createUserStore() from @repo/business-logic.
+ * For stores defined locally in mobile — for shared stores use createUserStore() from @repo/shared.
  */
 export function createPersistedStore<T>(
   name: string,

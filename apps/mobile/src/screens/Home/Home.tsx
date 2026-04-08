@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 
-import { usePosts } from '@repo/business-logic';
+import { usePosts } from '@repo/shared';
 import Button from '@/components/Button';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslate } from '@/localization/utils';

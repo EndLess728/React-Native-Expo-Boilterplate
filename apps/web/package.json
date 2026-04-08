@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/business-logic": "*",
+    "@repo/shared": "*",
     "@tanstack/react-query": "^5.90.16",
     "axios": "^1.6.8",
     "i18next": "^25.8.0",

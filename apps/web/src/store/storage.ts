@@ -1,8 +1,8 @@
-import type { StorageAdapter } from '@repo/business-logic';
+import type { StorageAdapter } from '@repo/shared';
 
 /**
  * localStorage-backed storage adapter for the web app.
- * Satisfies the shared StorageAdapter interface from @repo/business-logic.
+ * Satisfies the shared StorageAdapter interface from @repo/shared.
  */
 export const localStorageAdapter: StorageAdapter = {
   getItem: (name: string): string | null => {

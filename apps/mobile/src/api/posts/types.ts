@@ -1,1 +1,1 @@
-export type { Post } from '@repo/business-logic';
+export type { Post } from '@repo/shared';

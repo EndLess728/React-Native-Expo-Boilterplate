@@ -1,6 +1,6 @@
 export * from './api-provider';
 export * from './client';
-// Shared pagination utils from @repo/business-logic
+// Shared pagination utils from @repo/shared
 export {
   DEFAULT_LIMIT,
   getNextPageParam,
@@ -8,4 +8,4 @@ export {
   getQueryKey,
   getUrlParameters,
   normalizePages,
-} from '@repo/business-logic';
+} from '@repo/shared';

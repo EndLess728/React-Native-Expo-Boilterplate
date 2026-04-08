@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { LoginFormData, loginSchema } from '@repo/shared';
 
 import Env from '@env';
 import Button from '@/components/Button';
@@ -19,25 +19,6 @@ import ScreenWrapper from '@/components/ScreenWrapper';
 import { useUserStore } from '@/store/useUserStore';
 import { fonts, TextStyles } from '@/theme';
 import { ms } from '@/utils';
-
-// ─────────────────────────────────────────────────────────────
-//  Validation Schema
-// ─────────────────────────────────────────────────────────────
-
-const loginSchema = z.object({
-  email: z
-    .string({ error: 'Email is required' })
-    .min(1, 'Email is required')
-    .email('Please enter a valid email'),
-
-  password: z
-    .string({ error: 'Password is required' })
-    .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-});
-
-/** Infer TypeScript type from the schema — keeps types in sync automatically */
-type LoginFormData = z.infer<typeof loginSchema>;
 
 // ─────────────────────────────────────────────────────────────
 //  Screen Component

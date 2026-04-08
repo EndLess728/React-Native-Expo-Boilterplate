@@ -10,6 +10,9 @@
       ],
       "@env": [
         "./env"
+      ],
+      "@repo/shared": [
+        "../../packages/shared/src"
       ]
     },
     "esModuleInterop": true,

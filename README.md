@@ -19,6 +19,8 @@ We extract all cross-platform domain logic into the `@repo/shared` package to pr
 - **API Layer**: API hooks powered by React Query (`react-query-kit`).
 - **Store**: State management powered by Zustand.
 - **Localization**: Shared `i18next` configurations and translations.
+- **Validations**: UI form validation components and data schemas powered by Zod.
+- **Constants**: Shared app-wide configurations and static values.
 
 ### Platform-Specific API Configuration
 

@@ -16,6 +16,7 @@ import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
+import Env from '@env';
 import { showErrorToast } from '@/components/ToastAlert';
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
 import { useUserStore } from '@/store/useUserStore';
@@ -87,7 +88,7 @@ const MAX_RETRIES = 1;
 // ─────────────────────────────────────────────────────────────
 
 export const client = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_BASE_URL,
+  baseURL: Env.EXPO_PUBLIC_API_URL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -193,7 +194,7 @@ const refreshToken = async (): Promise<string> => {
   }
 
   // NOTE: Using plain `axios.post` here, NOT `client.post`
-  const { data } = await axios.post(`${process.env.EXPO_PUBLIC_BASE_URL}/auth/refresh`, {
+  const { data } = await axios.post(`${Env.EXPO_PUBLIC_API_URL}/auth/refresh`, {
     refreshToken: currentRefreshToken,
   });
 

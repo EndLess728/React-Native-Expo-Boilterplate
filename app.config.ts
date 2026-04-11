@@ -8,6 +8,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.EXPO_PUBLIC_NAME,
   slug: 'ExpoTemplate',
+  scheme: 'expotemplate',
   experiments: {
     reactCompiler: true,
   },

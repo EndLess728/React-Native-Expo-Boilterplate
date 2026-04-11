@@ -19,9 +19,13 @@
     "node_modules",
     "babel.config.js",
     "metro.config.js",
+    "jest.config.js",
+    "jest.setup.ts",
     "android",
     "ios",
-    "plugins"
+    "plugins",
+    "**/__tests__/**",
+    "**/__mocks__/**"
   ],
   "include": [
     "**/*.ts",

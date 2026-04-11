@@ -15,7 +15,9 @@ export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
 export const LOCAL = 'local';
 
-export const getLanguage = () => storage.getString(LOCAL);
+// storage may not be initialized yet when i18n.ts runs at module load time.
+// Return null if called before initStorage() completes — i18n falls back to device locale.
+export const getLanguage = (): string | null => storage?.getString(LOCAL) ?? null;
 
 /**
  * Translates text (non-reactive, use for static content).

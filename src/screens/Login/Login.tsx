@@ -59,7 +59,9 @@ const Login: React.FC = () => {
    * Replace with your actual API login call.
    */
   const onSubmit = (data: LoginFormData) => {
-    login({ email: data.email, password: data.password });
+    // NOTE: never pass the raw password to the store — only persist
+    // safe user profile data. Auth tokens belong in token storage.
+    login({ email: data.email });
   };
 
   return (

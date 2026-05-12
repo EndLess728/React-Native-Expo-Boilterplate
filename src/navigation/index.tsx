@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -21,11 +21,11 @@ export function RootNavigator(): React.JSX.Element | null {
 
   const isLoggedIn = useUserStore((state) => state.isLoggedIn);
 
-  const onReady = async (): Promise<void> => {
+  const onReady = useCallback(async (): Promise<void> => {
     if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync();
     }
-  };
+  }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) {
     return null;

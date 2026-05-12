@@ -24,7 +24,12 @@ export default function App() {
     // during this brief async operation so users never see a blank screen.
     initStorage()
       .then(rehydrateStores)
-      .then(() => setStorageReady(true));
+      .then(() => setStorageReady(true))
+      .catch((error) => {
+        if (__DEV__) console.error('[App] Storage initialization failed:', error);
+        // Proceed without persisted state — app still functions, user will start fresh
+        setStorageReady(true);
+      });
   }, []);
 
   if (!storageReady) {

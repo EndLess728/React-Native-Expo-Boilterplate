@@ -18,18 +18,19 @@ export type AppTabParamList = {
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
 
+// Defined outside the component — stable references, no recreation on re-render
+const renderTabIcon = (
+  color: string,
+  route: RouteProp<AppTabParamList, keyof AppTabParamList>,
+): React.JSX.Element => <TabBarIcon color={color} routeName={route.name} />;
+
+const renderTabLabel = (
+  color: string,
+  route: RouteProp<AppTabParamList, keyof AppTabParamList>,
+): React.JSX.Element => <TabBarLabel color={color} routeName={route.name} />;
+
 export function AppNavigator(): React.JSX.Element {
   const { colors } = useTheme();
-
-  const renderTabIcon = (
-    color: string,
-    route: RouteProp<AppTabParamList, keyof AppTabParamList>,
-  ): React.JSX.Element => <TabBarIcon color={color} routeName={route.name} />;
-
-  const renderTabLabel = (
-    color: string,
-    route: RouteProp<AppTabParamList, keyof AppTabParamList>,
-  ): React.JSX.Element => <TabBarLabel color={color} routeName={route.name} />;
 
   return (
     <Tab.Navigator

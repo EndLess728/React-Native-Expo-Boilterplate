@@ -71,7 +71,7 @@ export const useSelectedLanguage = () => {
   const setLanguage = useCallback(
     (lang: Language) => {
       setLang(lang);
-      if (lang !== undefined) changeLanguage(lang as Language);
+      changeLanguage(lang);
     },
     [setLang],
   );

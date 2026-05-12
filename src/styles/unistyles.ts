@@ -11,7 +11,7 @@ import { darkTheme, lightTheme } from './themes';
 
 const appThemes = {
   light: lightTheme,
-  other: darkTheme,
+  dark: darkTheme,
 };
 
 type AppBreakpoints = typeof breakpoints;

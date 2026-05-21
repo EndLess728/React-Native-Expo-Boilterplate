@@ -11,7 +11,10 @@ import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 const Home: React.FC = () => {
-  const { user, logout } = useUserStore();
+  // Atomic selectors — each subscription is scoped to a single store field,
+  // so unrelated store updates don't re-render Home.
+  const user = useUserStore((s) => s.user);
+  const logout = useUserStore((s) => s.logout);
   const translate = useTranslate();
 
   const { data } = usePosts();

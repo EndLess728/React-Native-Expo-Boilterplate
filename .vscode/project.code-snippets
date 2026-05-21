@@ -78,7 +78,7 @@
       "export const use$1 = createQuery<Response, Variables, AxiosError>({",
       "  queryKey: ['$2'],",
       "  fetcher: () => {",
-      "    return client.get(`$2`).then((response) => response.data.posts);",
+      "    return client.get(`$2`).then((response) => response.data);",
       "  },",
       "});",
       "",

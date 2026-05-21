@@ -129,6 +129,23 @@ module.exports = [
           message:
             'StyleSheet.create should use a callback function: StyleSheet.create(() => ({ ... }))',
         },
+        {
+          // Atomic Zustand selectors. Every `use<Name>Store()` call MUST pass a
+          // selector function so the subscription is scoped to a single field.
+          // Without a selector, the component re-renders on ANY store change.
+          //
+          //   bad:   const { user, logout } = useUserStore();
+          //   good:  const user   = useUserStore((s) => s.user);
+          //          const logout = useUserStore((s) => s.logout);
+          //
+          // Non-subscribing API access stays unaffected because those calls go
+          // through a MemberExpression callee (useUserStore.getState(),
+          // useUserStore.persist.rehydrate(), useUserStore.subscribe(...)).
+          selector:
+            "CallExpression[callee.type='Identifier'][callee.name=/^use[A-Z].*Store$/][arguments.length=0]",
+          message:
+            'Zustand: pass an atomic selector — useFooStore((s) => s.field). Calling the hook with no arguments subscribes to the entire store and re-renders on every state change.',
+        },
       ],
     },
   },

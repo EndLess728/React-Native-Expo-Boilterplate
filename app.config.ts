@@ -48,5 +48,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         imageWidth: 200,
       },
     ],
+    [
+      'expo-build-properties',
+      {
+        android: {
+          // R8 minifies Java/Kotlin in release builds. Required for
+          // `enableShrinkResourcesInReleaseBuilds` (the plugin throws otherwise).
+          enableMinifyInReleaseBuilds: true,
+          // Strip unused resources (drawables, strings, layouts) from the APK/AAB.
+          enableShrinkResourcesInReleaseBuilds: true,
+        },
+        // ios: { useFrameworks: 'static' },  // opt-in: smaller binary + faster
+        //                                       startup but breaks libs that
+        //                                       expect dynamic frameworks.
+      },
+    ],
   ],
 });

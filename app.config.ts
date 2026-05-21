@@ -1,4 +1,8 @@
 import 'tsx/cjs';
+// Hydrate process.env from .env files BEFORE evaluating ./env (which validates).
+// Without this, EAS CLI's fallback `@expo/config` evaluates this file with an
+// empty process.env and zod validation aborts the build. See ./load-env.ts.
+import './load-env';
 
 import { ConfigContext, ExpoConfig } from 'expo/config';
 

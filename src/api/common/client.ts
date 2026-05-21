@@ -17,9 +17,9 @@ import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import Env from '@env';
-import { showErrorToast } from '@/components/ToastAlert';
 import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
 import { useUserStore } from '@/store/useUserStore';
+import { showErrorToast } from '@/utils/toast';
 
 // ─────────────────────────────────────────────────────────────
 //  Types

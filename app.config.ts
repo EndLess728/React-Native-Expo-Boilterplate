@@ -44,14 +44,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         imageWidth: 200,
       },
     ],
-    [
-      'expo-build-properties',
-      {
-        ios: {
-          deploymentTarget: '16.0',
-        },
-      },
-    ],
-    ['./plugins/withIosDeploymentTarget.js', { deploymentTarget: '16.0' }],
   ],
 });

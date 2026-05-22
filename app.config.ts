@@ -30,7 +30,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/icon.png',
       backgroundColor: '#232323',
     },
-    edgeToEdgeEnabled: true,
+    // SDK 55 removed `edgeToEdgeEnabled` — edge-to-edge is now mandatory and is
+    // wired up via the `react-native-edge-to-edge` plugin in the plugins list.
     package: Env.EXPO_PUBLIC_PACKAGE_NAME,
   },
   web: {
@@ -39,6 +40,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-localization',
     'expo-font',
+    // Required from SDK 55 onward — registers the SecureStore native module.
+    'expo-secure-store',
     'react-native-edge-to-edge',
     [
       'expo-splash-screen',

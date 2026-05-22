@@ -19,7 +19,7 @@ const LANGUAGES: {
   { code: 'ar', labelKey: 'settings.arabic' },
 ];
 
-const Profile: React.FC = () => {
+export default function ProfileScreen() {
   const logout = useUserStore((state) => state.logout);
   const { language, setLanguage } = useSelectedLanguage();
   const translate = useTranslate();
@@ -28,7 +28,6 @@ const Profile: React.FC = () => {
     <ScreenWrapper style={styles.container}>
       <Text style={styles.title}>{translate('auth.profile')}</Text>
 
-      {/* Language Picker Section */}
       <View style={styles.languageSection}>
         <Text style={styles.languageLabel}>{translate('settings.language')}</Text>
         <View style={styles.languageOptions}>
@@ -54,9 +53,7 @@ const Profile: React.FC = () => {
       <Button style={styles.btnStyle} title={translate('auth.logout')} onPress={logout} />
     </ScreenWrapper>
   );
-};
-
-export default Profile;
+}
 
 const styles = StyleSheet.create((theme) => ({
   container: {

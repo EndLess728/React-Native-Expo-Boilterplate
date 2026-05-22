@@ -15,6 +15,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: 'expotemplate',
   experiments: {
     reactCompiler: true,
+    typedRoutes: true,
   },
   version: Env.EXPO_PUBLIC_VERSION,
   orientation: 'portrait',
@@ -35,9 +36,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: Env.EXPO_PUBLIC_PACKAGE_NAME,
   },
   web: {
+    bundler: 'metro',
     favicon: './assets/favicon.png',
   },
   plugins: [
+    'expo-router',
     'expo-localization',
     'expo-font',
     // Required from SDK 55 onward — registers the SecureStore native module.

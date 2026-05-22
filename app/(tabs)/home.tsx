@@ -10,9 +10,7 @@ import { useUserStore } from '@/store/useUserStore';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
-const Home: React.FC = () => {
-  // Atomic selectors — each subscription is scoped to a single store field,
-  // so unrelated store updates don't re-render Home.
+export default function HomeScreen() {
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
   const translate = useTranslate();
@@ -31,9 +29,7 @@ const Home: React.FC = () => {
       <Button style={styles.btnStyle} title="Logout" onPress={logout} />
     </ScreenWrapper>
   );
-};
-
-export default Home;
+}
 
 const styles = StyleSheet.create(() => ({
   container: {

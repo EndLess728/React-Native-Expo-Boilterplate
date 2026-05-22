@@ -1,0 +1,102 @@
+// Unistyles config side-effect runs in `./index.ts` BEFORE expo-router scans
+// any route — required because route modules transitively load components
+// that call `StyleSheet.create` at import time. i18next is initialized below
+// in `prepare()` because its language preference is stored in MMKV, which
+// isn't available until `initStorage()` resolves.
+
+import React, { useCallback, useEffect, useState } from 'react';
+import ErrorBoundary from 'react-native-error-boundary';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+import { useFonts } from 'expo-font';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+
+import { APIProvider } from '@/api/common/api-provider';
+import ErrorFallback from '@/components/ErrorFallback';
+import { initI18n } from '@/localization/i18n';
+import { initStorage } from '@/storage';
+import { rehydrateStores } from '@/store';
+import { useUserStore } from '@/store/useUserStore';
+import { customFontsToLoad } from '@/theme/fonts';
+import { toastConfig } from '@/utils/toast';
+
+SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 100, fade: true });
+
+function AuthGate(): React.JSX.Element {
+  const isLoggedIn = useUserStore((s) => s.isLoggedIn);
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!isLoggedIn && !inAuthGroup) {
+      router.replace('/login');
+    } else if (isLoggedIn && inAuthGroup) {
+      router.replace('/home');
+    }
+  }, [isLoggedIn, segments, router]);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
+}
+
+export default function RootLayout(): React.JSX.Element | null {
+  const [storageReady, setStorageReady] = useState(false);
+  const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await initStorage();
+        await rehydrateStores();
+        // initI18n must run AFTER initStorage — it reads the saved language
+        // from MMKV. Initializing earlier would always fall back to the
+        // device locale.
+        await initI18n();
+      } catch (error) {
+        if (__DEV__) console.error('[RootLayout] App initialization failed:', error);
+      } finally {
+        setStorageReady(true);
+      }
+    }
+    prepare();
+  }, []);
+
+  const onLayoutReady = useCallback(async () => {
+    if (storageReady && (fontsLoaded || fontError)) {
+      await SplashScreen.hideAsync();
+    }
+  }, [storageReady, fontsLoaded, fontError]);
+
+  useEffect(() => {
+    onLayoutReady();
+  }, [onLayoutReady]);
+
+  if (!storageReady || (!fontsLoaded && !fontError)) {
+    return null;
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
+        <SafeAreaProvider>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <APIProvider>
+              <AuthGate />
+            </APIProvider>
+          </ErrorBoundary>
+        </SafeAreaProvider>
+      </KeyboardProvider>
+      <Toast config={toastConfig} position="top" />
+    </GestureHandlerRootView>
+  );
+}

@@ -9,14 +9,16 @@ sibling file rather than inventing a new pattern.
 
 ## Stack
 
-- **Expo SDK 54** (`react-native ^0.81`), Hermes default, React Compiler enabled
-  (`app.config.ts → experiments.reactCompiler: true`).
+- **Expo SDK 55** (`react-native ^0.83`), Hermes default, React Compiler enabled
+  (`app.config.ts → experiments.reactCompiler: true`). Typed routes enabled via
+  `experiments.typedRoutes: true`.
 - **TypeScript** strict mode. Path aliases: `@` → `./src`, `@env` → `./env`.
 - **State**: Zustand (atomic selectors — see Rules), persisted via MMKV.
 - **Data**: TanStack Query + `react-query-kit` for hook codegen; Axios client.
 - **Forms**: React Hook Form + Zod.
 - **Styling**: Unistyles v3 (`StyleSheet.create((theme) => ({...}))` only).
-- **Navigation**: React Navigation v7 (`native-stack` + `bottom-tabs`).
+- **Navigation**: **Expo Router** (file-based, on top of React Navigation v7).
+  Routes live in `app/`; there is no `src/navigation/` or `src/screens/`.
 - **i18n**: i18next + `react-i18next`, translations in `src/localization/translations/`.
 - **Toast**: `react-native-toast-message` wrapped in `src/utils/toast.tsx`.
 
@@ -28,16 +30,29 @@ This is a **standalone** Expo project (not a monorepo). Do not introduce
 ## Directory map — where things go
 
 ```
+index.ts                ← custom entry; runs unistyles + i18n side-effects
+                          before `expo-router/entry` (must remain in this order)
+app/                    ← Expo Router file-based routes
+├── _layout.tsx         ← providers (gesture, keyboard, safe-area, error
+                          boundary, API/QueryClient, Toast); splash; fonts;
+                          storage init; `AuthGate` that redirects on isLoggedIn
+├── index.tsx           ← `/` redirect (defers to AuthGate)
+├── (auth)/
+│   ├── _layout.tsx     ← auth `<Stack>` (headerless)
+│   └── login.tsx       ← /login
+└── (tabs)/
+    ├── _layout.tsx     ← `<Tabs>` using unistyles theme colors
+    ├── home.tsx        ← /home
+    └── profile.tsx     ← /profile
+
 src/
 ├── api/
 │   ├── common/         ← axios client (interceptors), QueryClientProvider
 │   └── <resource>/     ← react-query-kit hooks (use-<resource>.ts)
 ├── components/         ← reusable UI components only. NO toast helpers, NO screens
-├── constants/          ← NAVIGATION names, ApiUrls, deviceInfo, status enums
+├── constants/          ← NAVIGATION tab segments, ApiUrls, deviceInfo, status
 ├── hooks/              ← reusable hooks (useAppState, useDebounce, …)
 ├── localization/       ← i18n.ts, resources.ts, translations/*.json
-├── navigation/         ← navigators (AppNavigator, AuthNavigator, …)
-├── screens/<Screen>/   ← screen components (one folder per screen)
 ├── storage/            ← MMKV init (index.ts) + token helpers (token.ts)
 ├── store/              ← Zustand stores (createPersistedStore-based)
 ├── styles/             ← Unistyles config (themes, breakpoints, unistyles.ts)
@@ -45,9 +60,19 @@ src/
 └── utils/              ← side-effect helpers (toast.tsx, scale.ts)
 ```
 
-**Adding a new module:** mirror the closest sibling. New API resource → copy
-`src/api/posts/` shape. New store → copy `src/store/useUserStore.ts`. New
-screen → copy `src/screens/Login/`.
+**Adding a new screen**: create a file under `app/` matching the desired URL
+(`app/foo.tsx` → `/foo`, `app/(tabs)/foo.tsx` → tab named `foo`). The default
+export is the screen component — put the JSX, hooks, and styles directly in
+that file. Do **not** re-add a `src/screens/` folder.
+
+**Adding a new module**: mirror the closest sibling. New API resource → copy
+`src/api/posts/` shape. New store → copy `src/store/useUserStore.ts`.
+
+**Navigation**: use `useRouter()` + `router.push('/foo')` for imperative nav,
+`<Link href="/foo">` for declarative. Route paths are URL-visible — group
+segments like `(tabs)` and `(auth)` are NOT included in `href` strings (use
+`/home`, not `/(tabs)/home`). Auth gating lives in `app/_layout.tsx`; do not
+re-implement it inside individual screens.
 
 ---
 
@@ -89,7 +114,7 @@ Import `StyleSheet` **from `react-native-unistyles`**, never from `react-native`
 | `AsyncStorage` | MMKV via `@/storage` (`getItem`/`setItem`/`removeItem`) |
 | `Toast.show({...})` directly | `showSuccessToast` / `showErrorToast` etc. from `@/utils/toast` |
 | `process.env.EXPO_PUBLIC_*` ad-hoc | `import Env from '@env'` (Zod-validated) |
-| Hardcoded screen names | `NAVIGATION.<key>` from `@/constants` |
+| Hardcoded route paths | URL-visible literals (`/home`, `/login`) — typed by `experiments.typedRoutes`. `NAVIGATION.*` is only for matching `route.name` inside TabBar* helpers. |
 | Hardcoded scale values | `ms(n)` / `s(n)` / `vs(n)` from `@/utils/scale` |
 | Custom `t()` wrapper | `useTranslate()` from `@/localization/utils` |
 
@@ -112,7 +137,7 @@ Import `StyleSheet` **from `react-native-unistyles`**, never from `react-native`
 - After creation, **add the store to `rehydrateStores()` in `src/store/index.ts`**
   so it hydrates on app start.
 - Stores use `skipHydration: true`; never access `storage` (raw MMKV) before
-  `initStorage()` resolves in `App.tsx`.
+  `initStorage()` resolves in `app/_layout.tsx`.
 
 ### 6. API client
 

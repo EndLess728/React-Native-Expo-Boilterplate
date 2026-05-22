@@ -5,8 +5,8 @@ import { NAVIGATION } from '@/constants';
 import { TextStyles } from '@/theme';
 
 const tabLabel: Record<string, string> = {
-  [NAVIGATION.homeNavigator]: 'Home',
-  [NAVIGATION.profileNavigator]: 'Profile',
+  [NAVIGATION.home]: 'Home',
+  [NAVIGATION.profile]: 'Profile',
 };
 
 interface TabBarLabelProps {

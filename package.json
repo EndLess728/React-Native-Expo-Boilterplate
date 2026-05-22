@@ -1,6 +1,7 @@
 {
   "name": "expotemplate",
   "version": "1.0.0",
+  "main": "./index.ts",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -68,7 +69,9 @@
     "expo-crypto": "~55.0.15",
     "expo-dev-client": "~55.0.35",
     "expo-font": "~55.0.8",
+    "expo-linking": "~55.0.15",
     "expo-localization": "~55.0.15",
+    "expo-router": "~55.0.16",
     "expo-secure-store": "~55.0.14",
     "expo-splash-screen": "~55.0.21",
     "expo-status-bar": "~55.0.6",
@@ -133,11 +136,17 @@
   },
   "expo": {
     "install": {
-      "exclude": ["jest", "@types/jest"]
+      "exclude": [
+        "jest",
+        "@types/jest"
+      ]
     },
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "exclude": ["react-native-restart", "@dev-plugins/react-query"]
+        "exclude": [
+          "react-native-restart",
+          "@dev-plugins/react-query"
+        ]
       }
     }
   },

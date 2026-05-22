@@ -1,13 +1,13 @@
 # React Native Expo Boilerplate
 
-Production-grade React Native starter built on **Expo SDK 54**, **React Native 0.81**, and **React 19**. Ships with multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
+Production-grade React Native starter built on **Expo SDK 55**, **React Native 0.83**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
 
 ## Tech Stack
 
 | Category | Library |
 |---|---|
-| **Framework** | [Expo](https://expo.dev/) (SDK 54) with React Compiler |
-| **Navigation** | [React Navigation v7](https://reactnavigation.org/) — Native Stack, Bottom Tabs, Drawer |
+| **Framework** | [Expo](https://expo.dev/) (SDK 55) with React Compiler |
+| **Navigation** | [Expo Router](https://docs.expo.dev/router/introduction/) — File-based routing on top of [React Navigation v7](https://reactnavigation.org/) (Native Stack, Bottom Tabs, Drawer). Typed routes enabled. |
 | **State** | [Zustand](https://github.com/pmndrs/zustand) — Atomic global state with MMKV persistence |
 | **Data Fetching** | [TanStack Query v5](https://tanstack.com/query) + [Axios](https://axios-http.com/) + [react-query-kit](https://github.com/nichenqin/react-query-kit) |
 | **Forms** | [React Hook Form](https://react-hook-form.com/) + [Zod v4](https://zod.dev/) |
@@ -50,6 +50,19 @@ yarn ios:development       # prebuild + run iOS (dev)
 ## Project Structure
 
 ```
+├── index.ts                  # Custom entry — runs unistyles + i18n side-effects
+│                             #   BEFORE expo-router/entry (order matters)
+├── app/                      # Expo Router file-based routes
+│   ├── _layout.tsx           #   Root layout: providers, splash, fonts, storage
+│   │                         #     init, and AuthGate that redirects on isLoggedIn
+│   ├── index.tsx             #   `/` → redirects to /home (AuthGate handles auth)
+│   ├── (auth)/               #   Auth group (URL-invisible)
+│   │   ├── _layout.tsx       #     Headerless <Stack>
+│   │   └── login.tsx         #     /login
+│   └── (tabs)/               #   Tabs group (URL-invisible)
+│       ├── _layout.tsx       #     <Tabs> using unistyles theme colors
+│       ├── home.tsx          #     /home
+│       └── profile.tsx       #     /profile
 ├── src/
 │   ├── api/                  # Axios client, React Query hooks, endpoint definitions
 │   │   ├── common/           #   Base HTTP client, interceptors, query provider
@@ -59,29 +72,30 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   │   ├── TextField.tsx     #   Text input with label, error, icons
 │   │   ├── ControlledTextField.tsx  # RHF-connected TextField
 │   │   ├── ScreenWrapper.tsx #   SafeArea + StatusBar wrapper
+│   │   ├── TabBarIcon.tsx    #   Maps route.name → tab icon
+│   │   ├── TabBarLabel.tsx   #   Maps route.name → tab label
 │   │   ├── ErrorFallback.tsx #   Error boundary fallback UI
 │   │   └── ...
-│   ├── constants/            # Route enums, static values
+│   ├── constants/            # Tab route segments, ApiUrls, deviceInfo, status enums
 │   ├── hooks/                # Shared custom hooks (useAppState, useDebounce, …)
 │   ├── localization/         # i18n config, translation JSON files, type-safe hooks
-│   ├── navigation/           # Navigator definitions (Stack, Tabs)
-│   ├── screens/              # Feature screens (Login, Home, Profile)
 │   ├── storage/              # Encrypted MMKV storage — async init, keychain-backed key
 │   ├── store/                # Zustand stores (useUserStore, …) + rehydration helper
-│   ├── styles/               # Global spacing, sizing constants
-│   ├── theme/                # Unistyles themes, fonts, text styles
-│   └── utils/                # Pure utility functions
+│   ├── styles/               # Unistyles themes, breakpoints, configure call
+│   ├── theme/                # Fonts, TextStyles primitives
+│   └── utils/                # Pure utility functions + toast helpers
 ├── __mocks__/                # Jest module mocks (@env, empty-module stub)
 ├── .env.example              # Template — copy to .env.development/staging/production
 ├── env.ts                    # Zod schema — validates env vars at startup
-├── app.config.ts             # Dynamic Expo config (name, bundle ID, scheme, version)
+├── app.config.ts             # Dynamic Expo config (name, bundle ID, scheme, plugins)
 ├── jest.config.js            # Jest configuration (jest-expo preset)
 ├── jest.setup.ts             # Jest global mocks (MMKV, SecureStore, storage)
 ├── jest.pre-setup.js         # Pre-setup: neutralises Expo winter-runtime lazy getters
-├── tsconfig.test.json        # TypeScript config extended with Jest types
-├── App.tsx                   # Entry point — storage init, store rehydration
-└── plugins/                  # Custom Expo config plugins
+└── tsconfig.test.json        # TypeScript config extended with Jest types
 ```
+
+> Screens live **directly under `app/`**, not in a separate `src/screens/`
+> directory. The default export of each route file is the screen component.
 
 ## Security
 
@@ -157,6 +171,90 @@ yarn android:staging
   → Runtime code imports Env from @env for API URLs etc.
 ```
 
+## Routing (Expo Router)
+
+Routes live under `app/`. The file path becomes the URL — `app/(tabs)/home.tsx`
+serves `/home` (the `(tabs)` group is URL-invisible). Each route file's default
+export is the screen component.
+
+### Conventions used in this boilerplate
+
+| File | Purpose |
+|---|---|
+| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, `AuthGate` |
+| `app/index.tsx` | `/` — redirects to `/home` (the gate bounces to `/login` if logged out) |
+| `app/(auth)/_layout.tsx` | Headerless `<Stack>` wrapping auth screens |
+| `app/(auth)/login.tsx` | `/login` |
+| `app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
+| `app/(tabs)/home.tsx` | `/home` |
+| `app/(tabs)/profile.tsx` | `/profile` |
+
+### Adding a new screen
+
+```tsx
+// app/settings.tsx → /settings
+import { Text } from 'react-native';
+import ScreenWrapper from '@/components/ScreenWrapper';
+
+export default function SettingsScreen() {
+  return (
+    <ScreenWrapper>
+      <Text>Settings</Text>
+    </ScreenWrapper>
+  );
+}
+```
+
+To make it a tab, drop it under `app/(tabs)/` and add a `<Tabs.Screen name="settings" />`
+entry in `app/(tabs)/_layout.tsx`. Also register its icon/label in
+`src/components/TabBarIcon.tsx` and `src/components/TabBarLabel.tsx`.
+
+### Navigating
+
+```tsx
+import { Link, useRouter } from 'expo-router';
+
+// Declarative
+<Link href="/profile">Go to profile</Link>;
+
+// Imperative
+const router = useRouter();
+router.push('/profile');
+router.replace('/login');
+router.back();
+```
+
+Use URL-visible paths (`/home`, `/login`) — not the group form
+(`/(tabs)/home`). With `experiments.typedRoutes: true` (set in
+`app.config.ts`), all `href` values are typed against the route tree.
+
+### Auth gating
+
+`app/_layout.tsx` contains an `AuthGate` component that watches
+`useUserStore((s) => s.isLoggedIn)` and redirects:
+
+- Not logged in & outside `(auth)` → `/login`
+- Logged in & inside `(auth)` → `/home`
+
+Individual screens **do not** redirect themselves — just flip the store and
+the gate handles it.
+
+### Custom entry (`index.ts`)
+
+The root `package.json` `"main"` points to `./index.ts`, not directly to
+`expo-router/entry`. The custom entry runs two side-effects **before** the
+router starts crawling routes:
+
+```ts
+import '@/styles/unistyles';   // StyleSheet.configure() before any create()
+import '@/localization/i18n';  // i18next instance ready before any t() call
+import 'expo-router/entry';
+```
+
+This is required because route modules transitively load components
+(`Button.tsx`, `toast.tsx`) that call `StyleSheet.create((theme) => ...)` at
+import time — the theme must be configured first.
+
 ## API Layer
 
 ### HTTP Client (`src/api/common/client.ts`)
@@ -190,7 +288,7 @@ Zustand stores are created with `createPersistedStore`, which:
 
 - Pre-configures MMKV-backed persistence via `zustandStorage`
 - Uses `skipHydration: true` — stores start with their initial state at module-import time (before MMKV is ready)
-- Are explicitly rehydrated via `rehydrateStores()` in `App.tsx` after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
+- Are explicitly rehydrated via `rehydrateStores()` in `app/_layout.tsx` after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
 
 ### Adding a New Store
 
@@ -333,10 +431,10 @@ The `android/` and `ios/` folders are generated by `expo prebuild` and are liste
 
 MMKV cannot be created synchronously with a secure key — the key must be retrieved from the keychain first (async). To handle this cleanly:
 
-1. `App.tsx` calls `initStorage()` in a `useEffect` before rendering anything
+1. `app/_layout.tsx` calls `initStorage()` in a `useEffect` before rendering the navigator
 2. All Zustand stores use `skipHydration: true` — safe to create before MMKV is ready
 3. `rehydrateStores()` is called after `initStorage()` resolves — stores load their persisted values
-4. `storageReady` becomes `true` — the app renders with the correct session state
+4. `storageReady` becomes `true` — the app renders with the correct session state, then the `AuthGate` redirects based on `isLoggedIn`
 
 ### Path Aliases
 
@@ -354,7 +452,7 @@ Commits are enforced via [Conventional Commits](https://www.conventionalcommits.
 ```
 feat: add biometric auth
 fix: resolve token refresh race condition
-chore: update Expo SDK to 54
+chore: update Expo SDK to 55
 ```
 
 The `prepare` script automatically installs Husky Git hooks on `yarn install`.

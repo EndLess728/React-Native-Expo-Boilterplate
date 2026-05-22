@@ -6,24 +6,41 @@ import i18n from 'i18next';
 import { resources } from './resources';
 import { getLanguage } from './utils';
 
-// Get device language
-const deviceLanguage = Localization.getLocales()[0]?.languageCode ?? 'en';
+let initialized = false;
 
-// Initialize i18next
-i18n.use(initReactI18next).init({
-  resources,
-  lng: getLanguage() || deviceLanguage, // Device language
-  fallbackLng: 'en', // Fallback to "en" if translation missing
-  interpolation: {
-    escapeValue: false, // React already escapes values
-  },
-  compatibilityJSON: 'v4', // For Android compatibility
-});
+/**
+ * Initialize i18next with the user's saved language (or device locale fallback).
+ *
+ * Must be called AFTER `initStorage()` resolves — `getLanguage()` reads from
+ * MMKV, which isn't created until storage init completes. Initializing earlier
+ * would always fall back to the device locale and silently ignore the user's
+ * saved preference.
+ *
+ * Idempotent: safe to call more than once.
+ */
+export async function initI18n(): Promise<void> {
+  if (initialized) return;
+  initialized = true;
 
-// Is it a RTL language?
-export const isRTL: boolean = i18n.dir() === 'rtl';
+  const savedLanguage = getLanguage();
+  const deviceLanguage = Localization.getLocales()[0]?.languageCode ?? 'en';
 
-I18nManager.allowRTL(isRTL);
-I18nManager.forceRTL(isRTL);
+  await i18n.use(initReactI18next).init({
+    resources,
+    lng: savedLanguage || deviceLanguage,
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+    compatibilityJSON: 'v4',
+  });
+
+  // Apply RTL based on the actual active language, not a guess.
+  const isRTL = i18n.dir() === 'rtl';
+  I18nManager.allowRTL(isRTL);
+  if (I18nManager.isRTL !== isRTL) {
+    I18nManager.forceRTL(isRTL);
+  }
+}
 
 export default i18n;

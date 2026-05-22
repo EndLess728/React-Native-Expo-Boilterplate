@@ -30,13 +30,17 @@ This is a **standalone** Expo project (not a monorepo). Do not introduce
 ## Directory map — where things go
 
 ```
-index.ts                ← custom entry; runs unistyles + i18n side-effects
-                          before `expo-router/entry` (must remain in this order)
+index.ts                ← custom entry; runs unistyles side-effect before
+                          `expo-router/entry` (must remain in this order).
+                          i18n is initialized after storage in `_layout.tsx`.
 app/                    ← Expo Router file-based routes
-├── _layout.tsx         ← providers (gesture, keyboard, safe-area, error
-                          boundary, API/QueryClient, Toast); splash; fonts;
-                          storage init; `AuthGate` that redirects on isLoggedIn
-├── index.tsx           ← `/` redirect (defers to AuthGate)
+├── _layout.tsx         ← providers (gesture, keyboard, safe-area, API/Query,
+                          Toast); splash; fonts; storage + i18n init;
+                          `AuthGate` redirects on isLoggedIn;
+                          re-exports `ErrorBoundary` from expo-router
+├── index.tsx           ← `/` → <Redirect href="/home" />
+├── +not-found.tsx      ← catch-all 404 route
+├── +html.tsx           ← web-only HTML shell (no-op on iOS/Android)
 ├── (auth)/
 │   ├── _layout.tsx     ← auth `<Stack>` (headerless)
 │   └── login.tsx       ← /login
@@ -71,8 +75,8 @@ that file. Do **not** re-add a `src/screens/` folder.
 **Navigation**: use `useRouter()` + `router.push('/foo')` for imperative nav,
 `<Link href="/foo">` for declarative. Route paths are URL-visible — group
 segments like `(tabs)` and `(auth)` are NOT included in `href` strings (use
-`/home`, not `/(tabs)/home`). Auth gating lives in `app/_layout.tsx`; do not
-re-implement it inside individual screens.
+`/home`, not `/(tabs)/home`). Auth gating lives in `app/_layout.tsx`'s
+`AuthGate` effect; do not re-implement it inside individual screens.
 
 ---
 

@@ -50,12 +50,15 @@ yarn ios:development       # prebuild + run iOS (dev)
 ## Project Structure
 
 ```
-├── index.ts                  # Custom entry — runs unistyles + i18n side-effects
+├── index.ts                  # Custom entry — runs the unistyles side-effect
 │                             #   BEFORE expo-router/entry (order matters)
 ├── app/                      # Expo Router file-based routes
 │   ├── _layout.tsx           #   Root layout: providers, splash, fonts, storage
-│   │                         #     init, and AuthGate that redirects on isLoggedIn
-│   ├── index.tsx             #   `/` → redirects to /home (AuthGate handles auth)
+│   │                         #     init, i18n init, AuthGate (redirects on
+│   │                         #     isLoggedIn), ErrorBoundary re-export
+│   ├── index.tsx             #   `/` → <Redirect href="/home" />
+│   ├── +not-found.tsx        #   404 catch-all
+│   ├── +html.tsx             #   Web-only HTML shell (no-op on iOS/Android)
 │   ├── (auth)/               #   Auth group (URL-invisible)
 │   │   ├── _layout.tsx       #     Headerless <Stack>
 │   │   └── login.tsx         #     /login
@@ -74,7 +77,6 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   │   ├── ScreenWrapper.tsx #   SafeArea + StatusBar wrapper
 │   │   ├── TabBarIcon.tsx    #   Maps route.name → tab icon
 │   │   ├── TabBarLabel.tsx   #   Maps route.name → tab label
-│   │   ├── ErrorFallback.tsx #   Error boundary fallback UI
 │   │   └── ...
 │   ├── constants/            # Tab route segments, ApiUrls, deviceInfo, status enums
 │   ├── hooks/                # Shared custom hooks (useAppState, useDebounce, …)
@@ -181,8 +183,10 @@ export is the screen component.
 
 | File | Purpose |
 |---|---|
-| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, `AuthGate` |
-| `app/index.tsx` | `/` — redirects to `/home` (the gate bounces to `/login` if logged out) |
+| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `AuthGate`, `ErrorBoundary` re-export |
+| `app/index.tsx` | `/` → `<Redirect href="/home" />` |
+| `app/+not-found.tsx` | 404 catch-all |
+| `app/+html.tsx` | Web-only HTML shell (viewport, dark-mode background, ScrollView reset) |
 | `app/(auth)/_layout.tsx` | Headerless `<Stack>` wrapping auth screens |
 | `app/(auth)/login.tsx` | `/login` |
 | `app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
@@ -239,21 +243,48 @@ Use URL-visible paths (`/home`, `/login`) — not the group form
 Individual screens **do not** redirect themselves — just flip the store and
 the gate handles it.
 
+### Error handling
+
+`app/_layout.tsx` re-exports expo-router's built-in `ErrorBoundary`:
+
+```ts
+export { ErrorBoundary } from 'expo-router';
+```
+
+Render-phase errors anywhere in the route tree are caught and shown via the
+router-aware default. To customize, replace the re-export with your own
+component (signature: `({ error, retry }: { error: Error; retry: () => void })`).
+
+### Initial route
+
+`app/_layout.tsx` declares the deep-link / cold-start entry point via
+expo-router's `unstable_settings`:
+
+```ts
+export const unstable_settings = { initialRouteName: '(tabs)' };
+```
+
+This is the screen the router shows when no specific path was requested.
+
 ### Custom entry (`index.ts`)
 
 The root `package.json` `"main"` points to `./index.ts`, not directly to
-`expo-router/entry`. The custom entry runs two side-effects **before** the
-router starts crawling routes:
+`expo-router/entry`. The custom entry runs the unistyles side-effect **before**
+the router starts crawling routes:
 
 ```ts
 import '@/styles/unistyles';   // StyleSheet.configure() before any create()
-import '@/localization/i18n';  // i18next instance ready before any t() call
 import 'expo-router/entry';
 ```
 
 This is required because route modules transitively load components
 (`Button.tsx`, `toast.tsx`) that call `StyleSheet.create((theme) => ...)` at
 import time — the theme must be configured first.
+
+i18next is **not** initialized here. Its saved language lives in encrypted
+MMKV, which isn't created until `initStorage()` resolves inside
+`app/_layout.tsx`'s effect. `initI18n()` runs there, right after
+`rehydrateStores()`.
 
 ## API Layer
 
@@ -315,7 +346,7 @@ Then register it in `src/store/index.ts`:
 ```ts
 export async function rehydrateStores(): Promise<void> {
   await useUserStore.persist.rehydrate();
-  await useSettingsStore.persist.rehydrate(); // ← add here
+  await useSettingsStore.persist.rehydrate();      // ← add here
 }
 ```
 
@@ -434,7 +465,8 @@ MMKV cannot be created synchronously with a secure key — the key must be retri
 1. `app/_layout.tsx` calls `initStorage()` in a `useEffect` before rendering the navigator
 2. All Zustand stores use `skipHydration: true` — safe to create before MMKV is ready
 3. `rehydrateStores()` is called after `initStorage()` resolves — stores load their persisted values
-4. `storageReady` becomes `true` — the app renders with the correct session state, then the `AuthGate` redirects based on `isLoggedIn`
+4. `initI18n()` runs next — it reads the saved language from MMKV, so it must run after storage is ready
+5. `storageReady` becomes `true` — the app renders with the correct session state, then the `AuthGate` redirects based on `isLoggedIn`
 
 ### Path Aliases
 

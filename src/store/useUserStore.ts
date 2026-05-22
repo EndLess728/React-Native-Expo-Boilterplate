@@ -1,10 +1,9 @@
-import { storage } from '@/storage';
+import { clearTokens } from '@/storage/token';
 
 import { createPersistedStore } from './storage';
 
 export interface User {
   email: string;
-  password: string;
   [key: string]: unknown;
 }
 
@@ -26,7 +25,8 @@ export const useUserStore = createPersistedStore<UserState>(
     },
 
     logout: () => {
-      storage.clearAll();
+      // Only clear auth tokens — not all MMKV data (e.g. language preference)
+      clearTokens();
       set({ isLoggedIn: false, user: null });
     },
   }),

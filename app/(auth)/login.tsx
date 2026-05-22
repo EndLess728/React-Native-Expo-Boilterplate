@@ -20,10 +20,6 @@ import { useUserStore } from '@/store/useUserStore';
 import { fonts, TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
-// ─────────────────────────────────────────────────────────────
-//  Validation Schema
-// ─────────────────────────────────────────────────────────────
-
 const loginSchema = z.object({
   email: z
     .string({ error: 'Email is required' })
@@ -36,14 +32,9 @@ const loginSchema = z.object({
     .min(6, 'Password must be at least 6 characters'),
 });
 
-/** Infer TypeScript type from the schema — keeps types in sync automatically */
 type LoginFormData = z.infer<typeof loginSchema>;
 
-// ─────────────────────────────────────────────────────────────
-//  Screen Component
-// ─────────────────────────────────────────────────────────────
-
-const Login: React.FC = () => {
+export default function LoginScreen() {
   const login = useUserStore((state) => state.login);
 
   const { control, handleSubmit } = useForm<LoginFormData>({
@@ -54,12 +45,10 @@ const Login: React.FC = () => {
     },
   });
 
-  /**
-   * Only called when Zod validation passes.
-   * Replace with your actual API login call.
-   */
+  // The AuthGate in app/_layout.tsx watches isLoggedIn and redirects to /home
+  // once login() flips the store, so no router call is needed here.
   const onSubmit = (data: LoginFormData) => {
-    login({ email: data.email, password: data.password });
+    login({ email: data.email });
   };
 
   return (
@@ -97,16 +86,10 @@ const Login: React.FC = () => {
         type="primary"
         onPress={handleSubmit(onSubmit)}
       />
-      {__DEV__ && (
-        <Text
-          style={{ color: 'red', marginTop: ms(20), fontFamily: fonts.openSan.semiBold }}
-        >{`Environment : ${Env.EXPO_PUBLIC_APP_ENV}`}</Text>
-      )}
+      {__DEV__ && <Text style={styles.envLabel}>{`Environment : ${Env.EXPO_PUBLIC_APP_ENV}`}</Text>}
     </ScreenWrapper>
   );
-};
-
-export default Login;
+}
 
 const styles = StyleSheet.create(() => ({
   container: {
@@ -123,5 +106,10 @@ const styles = StyleSheet.create(() => ({
   },
   btnStyle: {
     marginTop: ms(20),
+  },
+  envLabel: {
+    color: 'red',
+    marginTop: ms(20),
+    fontFamily: fonts.openSan.semiBold,
   },
 }));

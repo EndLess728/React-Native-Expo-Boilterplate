@@ -51,10 +51,11 @@ export const darkTheme = {
     placeholder: '#f8f9fa',
     darkwhite: '#ffffff',
     primary: '#00BFFF',
+    primaryTransparent: '#001A1F',
     textGray: '#6B7F85',
     primaryText: '#394347',
-    fadedWhite: '#F7F8F9',
-    borderGray: '#E8ECF4',
+    fadedWhite: '#1A1A1A',
+    borderGray: '#2A2A2A',
     iconGray: '#8BA1A8',
   },
   margins: {

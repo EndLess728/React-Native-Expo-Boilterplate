@@ -1,0 +1,164 @@
+/**
+ * Toast — single source of truth.
+ *
+ * Wraps `react-native-toast-message` with a themed UI and ergonomic helpers.
+ *
+ * Public surface:
+ *   - `toastConfig`  → pass to <Toast config={toastConfig} /> in App.tsx
+ *   - `showSuccessToast` / `showErrorToast` / `showInfoToast` / `showWarningToast`
+ *   - `ToastParams` type (extends ToastShowParams; renames text1→title, text2→message)
+ *
+ * `CustomToast` is intentionally not exported — it's a private renderer used
+ * only by `toastConfig`.
+ */
+
+import React from 'react';
+import { Dimensions, Text, View } from 'react-native';
+import Toast, { ToastShowParams } from 'react-native-toast-message';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { Ionicons } from '@expo/vector-icons';
+
+import { fonts } from '@/theme';
+import { ms } from '@/utils/scale';
+
+const { width } = Dimensions.get('window');
+
+type ToastType = 'success' | 'error' | 'info' | 'warning';
+
+// ─────────────────────────────────────────────────────────────
+//  UI (private)
+// ─────────────────────────────────────────────────────────────
+
+const TYPE_COLORS: Record<ToastType, string> = {
+  success: '#22C55E',
+  error: '#EF4444',
+  info: '#3B82F6',
+  warning: '#F59E0B',
+};
+
+// Ionicons names — see https://icons.expo.fyi/Index for the full set.
+const TYPE_ICONS: Record<ToastType, keyof typeof Ionicons.glyphMap> = {
+  success: 'checkmark-circle',
+  error: 'close-circle',
+  info: 'information-circle',
+  warning: 'warning',
+};
+
+interface CustomToastProps {
+  type: ToastType;
+  title: string;
+  message?: string;
+}
+
+const CustomToast: React.FC<CustomToastProps> = ({ type, title, message }) => {
+  const { theme } = useUnistyles();
+  const accentColor = TYPE_COLORS[type];
+
+  return (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background, borderColor: accentColor },
+      ]}
+    >
+      <Ionicons color={accentColor} name={TYPE_ICONS[type]} size={ms(24)} style={styles.icon} />
+      <View style={styles.contentContainer}>
+        <Text numberOfLines={2} style={[styles.title, { color: accentColor }]}>
+          {title}
+        </Text>
+        {message ? (
+          <Text numberOfLines={2} style={[styles.message, { color: theme.colors.textGray }]}>
+            {message}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create((theme) => ({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: ms(16),
+    marginTop: ms(8),
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(12),
+    borderRadius: ms(12),
+    borderWidth: 0.4,
+    minHeight: ms(56),
+    maxWidth: width - ms(32),
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  icon: {
+    marginRight: ms(12),
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: ms(15),
+    fontFamily: fonts.openSan.semiBold,
+    lineHeight: ms(20),
+    marginBottom: ms(2),
+  },
+  message: {
+    fontSize: ms(12),
+    fontFamily: fonts.openSan.regular,
+    lineHeight: ms(16),
+  },
+}));
+
+// ─────────────────────────────────────────────────────────────
+//  Config — passed to <Toast />
+// ─────────────────────────────────────────────────────────────
+
+type ToastConfigProps = { text1?: string; text2?: string };
+
+export const toastConfig = {
+  success: (props: ToastConfigProps) => (
+    <CustomToast message={props.text2} title={props.text1 ?? ''} type="success" />
+  ),
+  error: (props: ToastConfigProps) => (
+    <CustomToast message={props.text2} title={props.text1 ?? ''} type="error" />
+  ),
+  info: (props: ToastConfigProps) => (
+    <CustomToast message={props.text2} title={props.text1 ?? ''} type="info" />
+  ),
+  warning: (props: ToastConfigProps) => (
+    <CustomToast message={props.text2} title={props.text1 ?? ''} type="warning" />
+  ),
+};
+
+// ─────────────────────────────────────────────────────────────
+//  Helpers
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Extends `ToastShowParams` from react-native-toast-message so callers can pass
+ * any supported option (`position`, `visibilityTime`, `autoHide`, `onPress`,
+ * `topOffset`, `bottomOffset`, `swipeable`, `props`, …) — see the library's
+ * types for the full list.
+ *
+ * - `type` is overridden internally by each helper.
+ * - `text1` / `text2` are renamed to `title` / `message` for ergonomics.
+ */
+export type ToastParams = Omit<ToastShowParams, 'type' | 'text1' | 'text2'> & {
+  title: string;
+  message?: string;
+};
+
+const show = (type: ToastType, params: ToastParams): void => {
+  const { title, message, ...rest } = params;
+  Toast.show({ ...rest, type, text1: title, text2: message });
+};
+
+export const showSuccessToast = (params: ToastParams): void => show('success', params);
+export const showErrorToast = (params: ToastParams): void => show('error', params);
+export const showInfoToast = (params: ToastParams): void => show('info', params);
+export const showWarningToast = (params: ToastParams): void => show('warning', params);

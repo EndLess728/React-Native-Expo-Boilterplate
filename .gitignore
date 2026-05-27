@@ -81,4 +81,6 @@ expo-env.d.ts
 
 # @end expo-cli
 extract_DSR.sh
-.claude/settings.local.json
+.claude/
+.vscode/mcp.json
+.codex/

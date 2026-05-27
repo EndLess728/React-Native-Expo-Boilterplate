@@ -42,7 +42,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-localization',
-    'expo-font',
+    [
+      'expo-font',
+      {
+        fonts: [
+          './src/assets/fonts/OpenSans-Regular.ttf',
+          './src/assets/fonts/OpenSans-Italic.ttf',
+          './src/assets/fonts/OpenSans-Semibold.ttf',
+          './src/assets/fonts/OpenSans-SemiboldItalic.ttf',
+          './src/assets/fonts/OpenSans-Bold.ttf',
+          './src/assets/fonts/OpenSans-BoldItalic.ttf',
+        ],
+      },
+    ],
     // Required from SDK 55 onward — registers the SecureStore native module.
     'expo-secure-store',
     'react-native-edge-to-edge',

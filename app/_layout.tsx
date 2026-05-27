@@ -4,12 +4,13 @@
 // in `prepare()` because its language preference is stored in MMKV, which
 // isn't available until `initStorage()` resolves.
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import { useFonts } from 'expo-font';
+import { useUnistyles } from 'react-native-unistyles';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -18,7 +19,6 @@ import { initI18n } from '@/localization/i18n';
 import { initStorage } from '@/storage';
 import { rehydrateStores } from '@/store';
 import { useUserStore } from '@/store/useUserStore';
-import { customFontsToLoad } from '@/theme/fonts';
 import { toastConfig } from '@/utils/toast';
 
 // Re-export expo-router's built-in ErrorBoundary so render-phase exceptions in
@@ -45,6 +45,13 @@ function AuthGate(): React.JSX.Element {
       router.replace('/login');
     } else if (isLoggedIn && inAuthGroup) {
       router.replace('/home');
+    } else {
+      // We are already on the correct route for the current auth state —
+      // safe to hide the splash now. Hiding it earlier (in RootLayout, on
+      // storageReady) would briefly reveal the wrong screen before the
+      // redirect above lands, causing an auth-flash on cold launch.
+      // hideAsync() is idempotent, so repeat calls on later renders no-op.
+      SplashScreen.hideAsync();
     }
   }, [isLoggedIn, segments, router]);
 
@@ -59,7 +66,7 @@ function AuthGate(): React.JSX.Element {
 
 export default function RootLayout(): React.JSX.Element | null {
   const [storageReady, setStorageReady] = useState(false);
-  const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
+  const { theme } = useUnistyles();
 
   useEffect(() => {
     async function prepare() {
@@ -72,6 +79,11 @@ export default function RootLayout(): React.JSX.Element | null {
         await initI18n();
       } catch (error) {
         if (__DEV__) console.error('[RootLayout] App initialization failed:', error);
+        // On init failure we still need to release the splash — otherwise
+        // the user sees the splash screen forever. AuthGate normally owns
+        // the hide once it lands on the correct route, but it will never
+        // mount if storageReady stays false.
+        SplashScreen.hideAsync();
       } finally {
         setStorageReady(true);
       }
@@ -79,30 +91,28 @@ export default function RootLayout(): React.JSX.Element | null {
     prepare();
   }, []);
 
-  const onLayoutReady = useCallback(async () => {
-    if (storageReady && (fontsLoaded || fontError)) {
-      await SplashScreen.hideAsync();
-    }
-  }, [storageReady, fontsLoaded, fontError]);
-
-  useEffect(() => {
-    onLayoutReady();
-  }, [onLayoutReady]);
-
-  if (!storageReady || (!fontsLoaded && !fontError)) {
+  if (!storageReady) {
     return null;
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <KeyboardProvider>
-        <SafeAreaProvider>
-          <APIProvider>
-            <AuthGate />
-          </APIProvider>
-        </SafeAreaProvider>
-      </KeyboardProvider>
-      <Toast config={toastConfig} position="top" />
-    </GestureHandlerRootView>
+    <>
+      <SystemBars
+        style={{
+          statusBar: theme.colors.barStyle === 'light-content' ? 'light' : 'dark',
+          navigationBar: theme.colors.barStyle === 'light-content' ? 'light' : 'dark',
+        }}
+      />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <KeyboardProvider>
+          <SafeAreaProvider>
+            <APIProvider>
+              <AuthGate />
+            </APIProvider>
+          </SafeAreaProvider>
+        </KeyboardProvider>
+        <Toast config={toastConfig} position="top" />
+      </GestureHandlerRootView>
+    </>
   );
 }

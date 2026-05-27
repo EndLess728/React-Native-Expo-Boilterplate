@@ -12,14 +12,9 @@ import { AppState, type AppStateStatus } from 'react-native';
  */
 export function useAppState(): AppStateStatus {
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
-  const appStateRef = useRef(AppState.currentState);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      appStateRef.current = nextState;
-      setAppState(nextState);
-    });
-
+    const subscription = AppState.addEventListener('change', setAppState);
     return () => subscription.remove();
   }, []);
 

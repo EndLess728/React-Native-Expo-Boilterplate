@@ -7,7 +7,7 @@ import ScreenWrapper from '@/components/ScreenWrapper';
 import type { Language } from '@/localization/resources';
 import { useSelectedLanguage, useTranslate } from '@/localization/utils';
 import { useUserStore } from '@/store/useUserStore';
-import { fonts } from '@/theme';
+import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 const LANGUAGES: {
@@ -26,27 +26,34 @@ export default function ProfileScreen() {
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={styles.title}>{translate('auth.profile')}</Text>
+      <Text style={TextStyles.h1}>{translate('auth.profile')}</Text>
 
       <View style={styles.languageSection}>
-        <Text style={styles.languageLabel}>{translate('settings.language')}</Text>
+        <Text style={[TextStyles.bodyLargeSemiBold, styles.languageLabel]}>
+          {translate('settings.language')}
+        </Text>
         <View style={styles.languageOptions}>
-          {LANGUAGES.map((lang) => (
-            <Pressable
-              key={lang.code}
-              style={[styles.languageButton, language === lang.code && styles.languageButtonActive]}
-              onPress={() => setLanguage(lang.code)}
-            >
-              <Text
-                style={[
-                  styles.languageButtonText,
-                  language === lang.code && styles.languageButtonTextActive,
-                ]}
+          {LANGUAGES.map((lang) => {
+            const isActive = language === lang.code;
+            return (
+              <Pressable
+                key={lang.code}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isActive }}
+                style={[styles.languageButton, isActive && styles.languageButtonActive]}
+                onPress={() => setLanguage(lang.code)}
               >
-                {translate(lang.labelKey)}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    TextStyles.bodySmallSemiBold,
+                    isActive ? styles.languageButtonTextActive : styles.languageButtonText,
+                  ]}
+                >
+                  {translate(lang.labelKey)}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
@@ -61,18 +68,12 @@ const styles = StyleSheet.create((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontFamily: fonts.openSan.bold,
-    fontSize: ms(30),
-  },
   languageSection: {
     marginTop: ms(30),
     width: '100%',
     alignItems: 'center',
   },
   languageLabel: {
-    fontFamily: fonts.openSan.semiBold,
-    fontSize: ms(18),
     marginBottom: ms(15),
     color: theme.colors.typography,
   },
@@ -85,20 +86,18 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: ms(20),
     borderRadius: ms(8),
     borderWidth: 1,
-    borderColor: theme.colors.grey,
-    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.borderGray,
+    backgroundColor: theme.colors.surface,
   },
   languageButtonActive: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
   },
   languageButtonText: {
-    fontFamily: fonts.openSan.semiBold,
-    fontSize: ms(14),
-    color: theme.colors.black,
+    color: theme.colors.typography,
   },
   languageButtonTextActive: {
-    color: theme.colors.white,
+    color: theme.colors.onPrimary,
   },
   btnStyle: {
     marginTop: ms(40),

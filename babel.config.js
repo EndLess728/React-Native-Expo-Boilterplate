@@ -24,11 +24,12 @@ module.exports = function (api) {
           root: 'src',
         },
       ],
-      'react-native-worklets/plugin',
       // Strip console.log / console.info / console.debug from production
       // bundles. Keep console.error and console.warn so crash reporters
       // (Sentry, Bugsnag, etc.) still receive them.
       ...(isProduction ? [['transform-remove-console', { exclude: ['error', 'warn'] }]] : []),
+      // react-native-worklets/plugin MUST be the last plugin in the list.
+      'react-native-worklets/plugin',
     ],
   };
 };

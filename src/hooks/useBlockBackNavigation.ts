@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { Alert, BackHandler } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { Alert } from 'react-native';
+import { useNavigation, usePreventRemove } from '@react-navigation/native';
 
 interface Options {
   /** Title shown in the confirm dialog. Defaults to "Discard changes?". */
@@ -14,8 +14,10 @@ interface Options {
 }
 
 /**
- * Blocks back navigation (Android hardware back + React Navigation gesture)
- * when `shouldBlock` is true, prompting the user to confirm.
+ * Blocks back navigation (Android hardware back, iOS swipe-back, and any
+ * programmatic `navigation.goBack()`) when `shouldBlock` is true, prompting
+ * the user to confirm before leaving. On confirm, the originally-attempted
+ * navigation action is dispatched so the user ends up where they wanted.
  *
  * Common use case: a form with unsaved changes.
  *
@@ -34,25 +36,21 @@ export function useBlockBackNavigation(shouldBlock: boolean, options: Options = 
     confirmLabel = 'Leave',
   } = options;
 
-  const promptUser = useCallback(
-    (onConfirm: () => void): void => {
+  const navigation = useNavigation();
+
+  const handlePreventRemove = useCallback(
+    ({ data }: { data: { action: Parameters<typeof navigation.dispatch>[0] } }) => {
       Alert.alert(title, message, [
         { text: cancelLabel, style: 'cancel' },
-        { text: confirmLabel, style: 'destructive', onPress: onConfirm },
+        {
+          text: confirmLabel,
+          style: 'destructive',
+          onPress: () => navigation.dispatch(data.action),
+        },
       ]);
     },
-    [title, message, cancelLabel, confirmLabel],
+    [navigation, title, message, cancelLabel, confirmLabel],
   );
 
-  // Block the Android hardware back button while the screen is focused.
-  useFocusEffect(
-    useCallback(() => {
-      if (!shouldBlock) return;
-      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-        promptUser(() => BackHandler.exitApp());
-        return true; // prevent default back behavior
-      });
-      return () => sub.remove();
-    }, [shouldBlock, promptUser]),
-  );
+  usePreventRemove(shouldBlock, handlePreventRemove);
 }

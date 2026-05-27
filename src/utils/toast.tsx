@@ -13,15 +13,13 @@
  */
 
 import React from 'react';
-import { Dimensions, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Toast, { ToastShowParams } from 'react-native-toast-message';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { Ionicons } from '@expo/vector-icons';
 
 import { fonts } from '@/theme';
 import { ms } from '@/utils/scale';
-
-const { width } = Dimensions.get('window');
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -76,7 +74,7 @@ const CustomToast: React.FC<CustomToastProps> = ({ type, title, message }) => {
   );
 };
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, rt) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,7 +85,10 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: ms(12),
     borderWidth: 0.4,
     minHeight: ms(56),
-    maxWidth: width - ms(32),
+    // `rt.screen.width` is reactive — unistyles recomputes the style on
+    // rotation / iPad split-view so the toast resizes instead of staying
+    // pinned to the cold-start width.
+    maxWidth: rt.screen.width - ms(32),
     shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

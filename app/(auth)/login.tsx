@@ -17,7 +17,7 @@ import Button from '@/components/Button';
 import { ControlledTextField } from '@/components/ControlledTextField';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { useUserStore } from '@/store/useUserStore';
-import { fonts, TextStyles } from '@/theme';
+import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 const loginSchema = z.object({
@@ -86,12 +86,16 @@ export default function LoginScreen() {
         type="primary"
         onPress={handleSubmit(onSubmit)}
       />
-      {__DEV__ && <Text style={styles.envLabel}>{`Environment : ${Env.EXPO_PUBLIC_APP_ENV}`}</Text>}
+      {__DEV__ && (
+        <Text style={[TextStyles.bodySemiBold, styles.envLabel]}>
+          {`Environment : ${Env.EXPO_PUBLIC_APP_ENV}`}
+        </Text>
+      )}
     </ScreenWrapper>
   );
 }
 
-const styles = StyleSheet.create(() => ({
+const styles = StyleSheet.create((theme) => ({
   container: {
     padding: ms(20),
     justifyContent: 'center',
@@ -108,8 +112,7 @@ const styles = StyleSheet.create(() => ({
     marginTop: ms(20),
   },
   envLabel: {
-    color: 'red',
+    color: theme.colors.danger,
     marginTop: ms(20),
-    fontFamily: fonts.openSan.semiBold,
   },
 }));

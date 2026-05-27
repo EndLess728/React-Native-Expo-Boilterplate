@@ -9,7 +9,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -18,7 +17,6 @@ import { initI18n } from '@/localization/i18n';
 import { initStorage } from '@/storage';
 import { rehydrateStores } from '@/store';
 import { useUserStore } from '@/store/useUserStore';
-import { customFontsToLoad } from '@/theme/fonts';
 import { toastConfig } from '@/utils/toast';
 
 // Re-export expo-router's built-in ErrorBoundary so render-phase exceptions in
@@ -59,7 +57,6 @@ function AuthGate(): React.JSX.Element {
 
 export default function RootLayout(): React.JSX.Element | null {
   const [storageReady, setStorageReady] = useState(false);
-  const [fontsLoaded, fontError] = useFonts(customFontsToLoad);
 
   useEffect(() => {
     async function prepare() {
@@ -80,16 +77,16 @@ export default function RootLayout(): React.JSX.Element | null {
   }, []);
 
   const onLayoutReady = useCallback(async () => {
-    if (storageReady && (fontsLoaded || fontError)) {
+    if (storageReady) {
       await SplashScreen.hideAsync();
     }
-  }, [storageReady, fontsLoaded, fontError]);
+  }, [storageReady]);
 
   useEffect(() => {
     onLayoutReady();
   }, [onLayoutReady]);
 
-  if (!storageReady || (!fontsLoaded && !fontError)) {
+  if (!storageReady) {
     return null;
   }
 

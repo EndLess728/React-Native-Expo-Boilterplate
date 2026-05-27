@@ -1,2 +1,2 @@
-export { customFontsToLoad, fonts } from '@/theme/fonts';
+export { fonts } from '@/theme/fonts';
 export { TextStyles } from '@/theme/TextStyles';

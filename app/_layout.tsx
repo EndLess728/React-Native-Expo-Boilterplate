@@ -5,10 +5,12 @@
 // isn't available until `initStorage()` resolves.
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import { useUnistyles } from 'react-native-unistyles';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -57,6 +59,7 @@ function AuthGate(): React.JSX.Element {
 
 export default function RootLayout(): React.JSX.Element | null {
   const [storageReady, setStorageReady] = useState(false);
+  const { theme } = useUnistyles();
 
   useEffect(() => {
     async function prepare() {
@@ -91,15 +94,23 @@ export default function RootLayout(): React.JSX.Element | null {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <KeyboardProvider>
-        <SafeAreaProvider>
-          <APIProvider>
-            <AuthGate />
-          </APIProvider>
-        </SafeAreaProvider>
-      </KeyboardProvider>
-      <Toast config={toastConfig} position="top" />
-    </GestureHandlerRootView>
+    <>
+      <SystemBars
+        style={{
+          statusBar: theme.colors.barStyle === 'light-content' ? 'light' : 'dark',
+          navigationBar: theme.colors.barStyle === 'light-content' ? 'light' : 'dark',
+        }}
+      />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <KeyboardProvider>
+          <SafeAreaProvider>
+            <APIProvider>
+              <AuthGate />
+            </APIProvider>
+          </SafeAreaProvider>
+        </KeyboardProvider>
+        <Toast config={toastConfig} position="top" />
+      </GestureHandlerRootView>
+    </>
   );
 }

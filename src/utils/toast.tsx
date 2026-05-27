@@ -27,6 +27,10 @@ type ToastType = 'success' | 'error' | 'info' | 'warning';
 //  UI (private)
 // ─────────────────────────────────────────────────────────────
 
+// Toast accent colors are intentionally NOT pulled from the theme. They are
+// semantic UI signals (green = success, red = error, …) that should read the
+// same in light and dark mode, and keeping them here makes the toast
+// self-contained — no theme migration is needed to drop it into another app.
 const TYPE_COLORS: Record<ToastType, string> = {
   success: '#22C55E',
   error: '#EF4444',

@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native-unistyles';
 import { Link, Stack } from 'expo-router';
 
 import ScreenWrapper from '@/components/ScreenWrapper';
-import { fonts, TextStyles } from '@/theme';
+import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 export default function NotFound() {
@@ -14,7 +14,7 @@ export default function NotFound() {
       <ScreenWrapper style={styles.container}>
         <Text style={TextStyles.h1}>This screen doesn&apos;t exist.</Text>
         <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen</Text>
+          <Text style={[TextStyles.link, styles.linkText]}>Go to home screen</Text>
         </Link>
       </ScreenWrapper>
     </>
@@ -32,7 +32,5 @@ const styles = StyleSheet.create((theme) => ({
   },
   linkText: {
     color: theme.colors.primary,
-    fontFamily: fonts.openSan.semiBold,
-    fontSize: ms(16),
   },
 }));

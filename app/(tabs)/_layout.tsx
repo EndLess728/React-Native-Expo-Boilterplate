@@ -12,7 +12,9 @@ export default function TabsLayout(): React.JSX.Element {
     <Tabs
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.typography,
+        // Inactive tabs use a muted gray; using `typography` here renders
+        // them as full-strength black/white, indistinguishable from active.
+        tabBarInactiveTintColor: theme.colors.iconGray,
         headerShown: false,
         tabBarIcon: ({ color }: { color: string }) => (
           <TabBarIcon color={color} routeName={route.name} />

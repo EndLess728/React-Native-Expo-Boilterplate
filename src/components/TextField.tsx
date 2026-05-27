@@ -114,6 +114,7 @@ const styles = StyleSheet.create((theme) => ({
     height: ms(50),
   },
   eyeIcon: {
+    width: ms(25),
     height: ms(25),
     resizeMode: 'contain',
     tintColor: theme.colors.typography,

@@ -17,7 +17,7 @@ import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import Env from '@env';
-import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
+import { getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
 import { useUserStore } from '@/store/useUserStore';
 import { showErrorToast } from '@/utils/toast';
 
@@ -101,16 +101,29 @@ export const client = axios.create({
 // ─────────────────────────────────────────────────────────────
 
 /**
+ * Guards against concurrent 401 responses. When N requests fail at once we
+ * only want one alert, one logout, and one token-clear — not N of each.
+ */
+let isLoggingOut = false;
+
+/**
  * Gracefully handles session expiry by:
- * 1. Clearing all stored tokens from MMKV
- * 2. Showing a native alert so the user knows what happened
- * 3. Logging the user out only after they acknowledge the alert
+ * 1. Logging the user out immediately so screens stop firing more requests
+ *    with the now-invalid token.
+ * 2. Showing a native alert so the user knows what happened.
  *
- * This avoids the jarring UX of being silently kicked to the
- * login screen without explanation.
+ * Idempotent across concurrent 401s — the `isLoggingOut` guard ensures only
+ * the first call does the work; subsequent calls are no-ops until the alert
+ * is acknowledged.
  */
 const forceLogout = () => {
-  clearTokens();
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+
+  // Flip auth state synchronously — `logout()` clears tokens via the store —
+  // so any in-flight screens stop issuing requests with the stale token
+  // before the user has even tapped OK on the alert.
+  useUserStore.getState().logout();
 
   Alert.alert(
     'Session Expired',
@@ -118,7 +131,9 @@ const forceLogout = () => {
     [
       {
         text: 'OK',
-        onPress: () => useUserStore.getState().logout(),
+        onPress: () => {
+          isLoggingOut = false;
+        },
       },
     ],
     { cancelable: false },

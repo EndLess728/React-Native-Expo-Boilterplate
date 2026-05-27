@@ -4,7 +4,7 @@
 // in `prepare()` because its language preference is stored in MMKV, which
 // isn't available until `initStorage()` resolves.
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -45,6 +45,13 @@ function AuthGate(): React.JSX.Element {
       router.replace('/login');
     } else if (isLoggedIn && inAuthGroup) {
       router.replace('/home');
+    } else {
+      // We are already on the correct route for the current auth state —
+      // safe to hide the splash now. Hiding it earlier (in RootLayout, on
+      // storageReady) would briefly reveal the wrong screen before the
+      // redirect above lands, causing an auth-flash on cold launch.
+      // hideAsync() is idempotent, so repeat calls on later renders no-op.
+      SplashScreen.hideAsync();
     }
   }, [isLoggedIn, segments, router]);
 
@@ -72,22 +79,17 @@ export default function RootLayout(): React.JSX.Element | null {
         await initI18n();
       } catch (error) {
         if (__DEV__) console.error('[RootLayout] App initialization failed:', error);
+        // On init failure we still need to release the splash — otherwise
+        // the user sees the splash screen forever. AuthGate normally owns
+        // the hide once it lands on the correct route, but it will never
+        // mount if storageReady stays false.
+        SplashScreen.hideAsync();
       } finally {
         setStorageReady(true);
       }
     }
     prepare();
   }, []);
-
-  const onLayoutReady = useCallback(async () => {
-    if (storageReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [storageReady]);
-
-  useEffect(() => {
-    onLayoutReady();
-  }, [onLayoutReady]);
 
   if (!storageReady) {
     return null;

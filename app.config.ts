@@ -57,7 +57,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     // Required from SDK 55 onward — registers the SecureStore native module.
     'expo-secure-store',
-    'react-native-edge-to-edge',
+    ['react-native-edge-to-edge', { android: { enforceNavigationBarContrast: false } }],
     [
       'expo-splash-screen',
       {

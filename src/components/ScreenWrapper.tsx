@@ -7,15 +7,17 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { StyleSheet } from 'react-native-unistyles';
 
 import FullscreenLoader from '@/components/FullScreenLoader';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
+  /** Layout style (padding, justifyContent, alignItems, etc.). Routed to the content container in scrollable mode, or the outer View otherwise. */
   style?: ViewStyle;
   showLoader?: boolean;
+  /** Enable for any screen with text inputs. Scrolls only when needed to keep the focused input above the keyboard. */
   scrollable?: boolean;
   /** Optional full-screen background image. Renders behind all content. */
   backgroundImage?: ImageSourcePropType;
@@ -29,7 +31,7 @@ interface ScreenWrapperProps {
 
 const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
-  style = {},
+  style,
   showLoader = false,
   scrollable = false,
   backgroundImage,
@@ -40,17 +42,15 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   const content = scrollable ? (
     <KeyboardAwareScrollView
       bottomOffset={keyboardBottomOffset}
-      contentContainerStyle={styles.scrollContainer}
+      contentContainerStyle={[styles.scrollContainer, style]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
-      style={[styles.container, style]}
+      style={styles.container}
     >
       {children}
     </KeyboardAwareScrollView>
   ) : (
-    <KeyboardAvoidingView behavior="padding" style={[styles.container, style]}>
-      {children}
-    </KeyboardAvoidingView>
+    <View style={[styles.viewContainer, style]}>{children}</View>
   );
 
   const body = backgroundImage ? (
@@ -83,9 +83,13 @@ const styles = StyleSheet.create((theme, rt) => ({
   },
   container: {
     flex: 1,
+  },
+  viewContainer: {
+    flex: 1,
     paddingBottom: rt.insets.bottom,
   },
   scrollContainer: {
     flexGrow: 1,
+    paddingBottom: rt.insets.bottom,
   },
 }));

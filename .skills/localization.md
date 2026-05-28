@@ -433,4 +433,4 @@ Understanding the type pipeline helps you debug autocomplete issues:
 | App init sequence (storage → i18n)         | `app/_layout.tsx`                              |
 | Language picker UI                         | `app/(tabs)/profile.tsx`                       |
 | MMKV storage initialization                | `src/storage/index.ts`                         |
-| Translation usage in a screen              | `app/(tabs)/home.tsx`, `app/(tabs)/profile.tsx`|
+| Translation usage in a screen              | `app/(tabs)/index.tsx`, `app/(tabs)/profile.tsx`|

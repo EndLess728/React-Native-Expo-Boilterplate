@@ -54,9 +54,8 @@ yarn ios:development       # prebuild + run iOS (dev)
 │                             #   BEFORE expo-router/entry (order matters)
 ├── app/                      # Expo Router file-based routes
 │   ├── _layout.tsx           #   Root layout: providers, splash, fonts, storage
-│   │                         #     init, i18n init, AuthGate (redirects on
-│   │                         #     isLoggedIn), ErrorBoundary re-export
-│   ├── index.tsx             #   `/` → <Redirect href="/home" />
+│   │                         #     init, i18n init, ErrorBoundary re-export,
+│   │                         #     and <Stack.Protected> auth routing
 │   ├── +not-found.tsx        #   404 catch-all
 │   ├── +html.tsx             #   Web-only HTML shell (no-op on iOS/Android)
 │   ├── (auth)/               #   Auth group (URL-invisible)
@@ -64,7 +63,7 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   │   └── login.tsx         #     /login
 │   └── (tabs)/               #   Tabs group (URL-invisible)
 │       ├── _layout.tsx       #     <Tabs> using unistyles theme colors
-│       ├── home.tsx          #     /home
+│       ├── index.tsx         #     /
 │       └── profile.tsx       #     /profile
 ├── src/
 │   ├── api/                  # Axios client, React Query hooks, endpoint definitions
@@ -183,14 +182,9 @@ export is the screen component.
 
 | File | Purpose |
 |---|---|
-| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `AuthGate`, `ErrorBoundary` re-export |
-| `app/index.tsx` | `/` → `<Redirect href="/home" />` |
-| `app/+not-found.tsx` | 404 catch-all |
-| `app/+html.tsx` | Web-only HTML shell (viewport, dark-mode background, ScrollView reset) |
-| `app/(auth)/_layout.tsx` | Headerless `<Stack>` wrapping auth screens |
-| `app/(auth)/login.tsx` | `/login` |
+| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
 | `app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
-| `app/(tabs)/home.tsx` | `/home` |
+| `app/(tabs)/index.tsx` | `/` (Home tab) |
 | `app/(tabs)/profile.tsx` | `/profile` |
 
 ### Adding a new screen
@@ -228,20 +222,18 @@ router.replace('/login');
 router.back();
 ```
 
-Use URL-visible paths (`/home`, `/login`) — not the group form
-(`/(tabs)/home`). With `experiments.typedRoutes: true` (set in
+Use URL-visible paths (`/`, `/login`) — not the group form
+(`/(tabs)/index`). With `experiments.typedRoutes: true` (set in
 `app.config.ts`), all `href` values are typed against the route tree.
 
 ### Auth gating
 
-`app/_layout.tsx` contains an `AuthGate` component that watches
-`useUserStore((s) => s.isLoggedIn)` and redirects:
+`app/_layout.tsx` handles authentication gating directly in the root navigator using `<Stack.Protected>` components:
 
-- Not logged in & outside `(auth)` → `/login`
-- Logged in & inside `(auth)` → `/home`
+- `<Stack.Protected guard={isLoggedIn}>` wraps the `(tabs)` group.
+- `<Stack.Protected guard={!isLoggedIn}>` wraps the `(auth)` group.
 
-Individual screens **do not** redirect themselves — just flip the store and
-the gate handles it.
+Individual screens **do not** redirect themselves — just flip the `useUserStore` state and the navigator automatically mounts/unmounts the correct route tree.
 
 ### Error handling
 
@@ -466,7 +458,7 @@ MMKV cannot be created synchronously with a secure key — the key must be retri
 2. All Zustand stores use `skipHydration: true` — safe to create before MMKV is ready
 3. `rehydrateStores()` is called after `initStorage()` resolves — stores load their persisted values
 4. `initI18n()` runs next — it reads the saved language from MMKV, so it must run after storage is ready
-5. `storageReady` becomes `true` — the app renders with the correct session state, then the `AuthGate` redirects based on `isLoggedIn`
+5. `storageReady` becomes `true` — the app renders with the correct session state, then `<Stack.Protected>` mounts the correct route group based on `isLoggedIn`
 
 ### Path Aliases
 

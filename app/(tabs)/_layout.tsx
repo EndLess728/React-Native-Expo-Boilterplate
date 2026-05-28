@@ -4,9 +4,11 @@ import { Tabs } from 'expo-router';
 
 import { TabBarIcon } from '@/components/TabBarIcon';
 import { TabBarLabel } from '@/components/TabBarLabel';
+import { useTranslate } from '@/localization/utils';
 
 export default function TabsLayout(): React.JSX.Element {
   const { theme } = useUnistyles();
+  const t = useTranslate();
 
   return (
     <Tabs
@@ -24,8 +26,8 @@ export default function TabsLayout(): React.JSX.Element {
         ),
       })}
     >
-      <Tabs.Screen name="home" options={{ headerShown: true }} />
-      <Tabs.Screen name="profile" options={{ headerShown: true }} />
+      <Tabs.Screen name="index" options={{ headerShown: true, title: t('tabs.home') }} />
+      <Tabs.Screen name="profile" options={{ headerShown: true, title: t('tabs.profile') }} />
     </Tabs>
   );
 }

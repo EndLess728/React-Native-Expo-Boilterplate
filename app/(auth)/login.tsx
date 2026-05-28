@@ -43,8 +43,6 @@ export default function LoginScreen() {
     },
   });
 
-  // The AuthGate in app/_layout.tsx watches isLoggedIn and redirects to /home
-  // once login() flips the store, so no router call is needed here.
   const onSubmit = (data: LoginFormData) => {
     login({ email: data.email });
   };

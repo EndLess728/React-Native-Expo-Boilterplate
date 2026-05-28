@@ -36,9 +36,8 @@ index.ts                ← custom entry; runs unistyles side-effect before
 app/                    ← Expo Router file-based routes
 ├── _layout.tsx         ← providers (gesture, keyboard, safe-area, API/Query,
                           Toast); splash; fonts; storage + i18n init;
-                          `AuthGate` redirects on isLoggedIn;
+                          <Stack.Protected> auth gating;
                           re-exports `ErrorBoundary` from expo-router
-├── index.tsx           ← `/` → <Redirect href="/home" />
 ├── +not-found.tsx      ← catch-all 404 route
 ├── +html.tsx           ← web-only HTML shell (no-op on iOS/Android)
 ├── (auth)/
@@ -46,7 +45,7 @@ app/                    ← Expo Router file-based routes
 │   └── login.tsx       ← /login
 └── (tabs)/
     ├── _layout.tsx     ← `<Tabs>` using unistyles theme colors
-    ├── home.tsx        ← /home
+    ├── index.tsx       ← /
     └── profile.tsx     ← /profile
 
 src/
@@ -75,8 +74,8 @@ that file. Do **not** re-add a `src/screens/` folder.
 **Navigation**: use `useRouter()` + `router.push('/foo')` for imperative nav,
 `<Link href="/foo">` for declarative. Route paths are URL-visible — group
 segments like `(tabs)` and `(auth)` are NOT included in `href` strings (use
-`/home`, not `/(tabs)/home`). Auth gating lives in `app/_layout.tsx`'s
-`AuthGate` effect; do not re-implement it inside individual screens.
+`/`, not `/(tabs)/index`). Auth gating lives in `app/_layout.tsx`'s
+`<Stack.Protected>` guard; do not re-implement it inside individual screens.
 
 ---
 
@@ -118,7 +117,7 @@ Import `StyleSheet` **from `react-native-unistyles`**, never from `react-native`
 | `AsyncStorage` | MMKV via `@/storage` (`getItem`/`setItem`/`removeItem`) |
 | `Toast.show({...})` directly | `showSuccessToast` / `showErrorToast` etc. from `@/utils/toast` |
 | `process.env.EXPO_PUBLIC_*` ad-hoc | `import Env from '@env'` (Zod-validated) |
-| Hardcoded route paths | URL-visible literals (`/home`, `/login`) — typed by `experiments.typedRoutes`. `NAVIGATION.*` is only for matching `route.name` inside TabBar* helpers. |
+| Hardcoded route paths | URL-visible literals (`/`, `/login`) — typed by `experiments.typedRoutes`. `NAVIGATION.*` is only for matching `route.name` inside TabBar* helpers. |
 | Hardcoded scale values | `ms(n)` / `s(n)` / `vs(n)` from `@/utils/scale` |
 | Custom `t()` wrapper | `useTranslate()` from `@/localization/utils` |
 

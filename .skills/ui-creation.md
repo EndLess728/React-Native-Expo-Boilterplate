@@ -10,7 +10,7 @@ This is an Expo Router app styled with `react-native-unistyles` (v3). Theme toke
 
 ```
 app/                       ← Expo Router screens (file-based routing)
-  _layout.tsx              ← root layout, AuthGate, navigators
+  _layout.tsx              ← root layout, Stack.Protected auth gating
   (auth)/                  ← auth group
   (tabs)/                  ← tab group
 src/
@@ -198,7 +198,7 @@ This project uses **Expo Router** (file-based). Adding a screen = adding a file 
 - Use route groups `(group)/` to share a layout without affecting URL.
 - Use `_layout.tsx` for stack/tab configuration.
 - For programmatic navigation use `router.push|replace|back` from `expo-router`.
-- For redirects driven by global state, prefer a single `AuthGate` (already wired in `app/_layout.tsx`) over per-screen `useEffect` redirects.
+- For redirects driven by global state, prefer the built-in `<Stack.Protected>` guard (already wired in `app/_layout.tsx`) over per-screen `useEffect` redirects.
 
 Don't install or import `@react-navigation/*` directly — Expo Router re-exports what's needed.
 

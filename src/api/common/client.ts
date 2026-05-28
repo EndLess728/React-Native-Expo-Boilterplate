@@ -17,6 +17,7 @@ import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import Env from '@env';
+import { translate } from '@/localization/utils';
 import { getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
 import { useUserStore } from '@/store/useUserStore';
 import { showErrorToast } from '@/utils/toast';
@@ -126,11 +127,11 @@ const forceLogout = () => {
   useUserStore.getState().logout();
 
   Alert.alert(
-    'Session Expired',
-    'Your session has expired. Please log in again.',
+    translate('errors.session_expired'),
+    translate('errors.session_expired_message'),
     [
       {
-        text: 'OK',
+        text: translate('common.ok'),
         onPress: () => {
           isLoggingOut = false;
         },
@@ -237,7 +238,7 @@ client.interceptors.request.use(
     const netState = await NetInfo.fetch();
 
     if (!netState.isConnected) {
-      showErrorToast({ title: 'No internet connection' });
+      showErrorToast({ title: translate('errors.no_internet') });
       return Promise.reject(new axios.Cancel('No internet connection'));
     }
 
@@ -378,12 +379,14 @@ client.interceptors.response.use(
     if (error.response?.data) {
       const { error: apiError, errors, message } = error.response.data;
       const errorList = apiError ?? errors;
-      const errorMessage = errorList ? errorList.join(', ') : message || 'Something went wrong';
+      const errorMessage = errorList
+        ? errorList.join(', ')
+        : message || translate('errors.something_went_wrong');
 
       showErrorToast({ title: errorMessage });
     } else if (!error.response) {
       // No response at all — likely a network timeout or DNS failure
-      showErrorToast({ title: 'Network error. Please try again.' });
+      showErrorToast({ title: translate('errors.network_error') });
     }
 
     return Promise.reject(error);

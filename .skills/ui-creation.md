@@ -79,9 +79,13 @@ All `<Text>` styles come from `src/theme/TextStyles.ts`. Do not inline `fontSize
 
 ```tsx
 import { TextStyles } from '@/theme';
+import { useTranslate } from '@/localization/utils';
 
-<Text style={TextStyles.h1}>Login</Text>
-<Text style={TextStyles.body}>Welcome back</Text>
+// Inside your component:
+// const t = useTranslate();
+
+<Text style={TextStyles.h1}>{t('auth.login')}</Text>
+<Text style={TextStyles.body}>{t('auth.welcome_back')}</Text>
 <Text style={[TextStyles.bodySmall, { color: theme.colors.textGray }]}>...</Text>
 ```
 
@@ -148,11 +152,19 @@ Rules:
 `react-hook-form` + `zod` + `@hookform/resolvers/zod` + `ControlledTextField`.
 
 ```tsx
-const schema = z.object({
-  email: z.string({ error: 'Email is required' }).min(1, 'Email is required').email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+import { useTranslate } from '@/localization/utils';
+
+// 1. Define the schema generation function (so translations evaluate at render time)
+const getFormSchema = (t: ReturnType<typeof useTranslate>) => z.object({
+  email: z.string({ error: t('validation.email_required') }).min(1, t('validation.email_required')).email(t('validation.email_invalid')),
+  password: z.string().min(6, t('validation.password_min_length')),
 });
-type FormData = z.infer<typeof schema>;
+
+type FormData = z.infer<ReturnType<typeof getFormSchema>>;
+
+// 2. Inside the component, memoize the schema with the reactive `t`
+const t = useTranslate();
+const schema = React.useMemo(() => getFormSchema(t), [t]);
 
 const { control, handleSubmit } = useForm<FormData>({
   resolver: zodResolver(schema),
@@ -162,7 +174,7 @@ const { control, handleSubmit } = useForm<FormData>({
 <ControlledTextField<FormData>
   control={control}
   name="email"
-  placeholder="Enter your email"
+  placeholder={t('auth.enter_email')}
   keyboardType="email-address"
   autoCapitalize="none"
   autoComplete="email"
@@ -172,8 +184,8 @@ const { control, handleSubmit } = useForm<FormData>({
 ```
 
 Rules:
-- **One schema per form**, defined at the top of the screen file (or in a sibling `<screen>.schema.ts` when shared).
-- **Validation messages live in the schema**, not in the component.
+- **One schema per form**, generated via a function so validation messages can be translated reactively.
+- **Validation messages live in the schema**, translated via `t()`, not hardcoded.
 - Wrap form screens in `<ScreenWrapper scrollable>` so the focused field is kept visible.
 - Use `react-hook-form` for any input — never `useState` for individual fields.
 
@@ -194,7 +206,8 @@ Don't install or import `@react-navigation/*` directly — Expo Router re-export
 
 ## Step 8 — i18n & env
 
-- User-facing strings go through `useTranslate()` from `@/localization/utils`. No raw English literals in screens (debug labels gated by `__DEV__` are fine).
+- User-facing strings must be fully translated. See the **[Localization Skill](file://.skills/localization.md)**.
+- Use `useTranslate()` from `@/localization/utils`. No raw English literals in screens (debug labels gated by `__DEV__` are fine).
 - Public runtime config goes through `Env` from `@env`. Never read `process.env.*` directly in components.
 
 ---

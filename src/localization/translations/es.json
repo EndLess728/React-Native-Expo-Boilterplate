@@ -2,12 +2,21 @@
   "auth": {
     "welcome": "Bienvenido",
     "login": "Iniciar sesión",
+    "sign_in": "Iniciar sesión",
     "profile": "Perfil",
     "logout": "Cerrar sesión",
     "home": "Inicio",
     "email": "Correo electrónico",
     "password": "Contraseña",
-    "login_description": "Ingrese su correo electrónico y contraseña para iniciar sesión"
+    "login_description": "Ingrese su correo electrónico y contraseña para iniciar sesión",
+    "enter_email": "Ingrese su correo electrónico",
+    "enter_password": "Ingrese su contraseña"
+  },
+  "validation": {
+    "email_required": "El correo electrónico es obligatorio",
+    "email_invalid": "Por favor ingrese un correo electrónico válido",
+    "password_required": "La contraseña es obligatoria",
+    "password_min_length": "La contraseña debe tener al menos 6 caracteres"
   },
   "settings": {
     "language": "Idioma",
@@ -15,5 +24,25 @@
     "english": "Inglés",
     "spanish": "Español",
     "arabic": "Árabe"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "ok": "OK"
+  },
+  "errors": {
+    "session_expired": "Sesión expirada",
+    "session_expired_message": "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+    "no_internet": "Sin conexión a internet",
+    "network_error": "Error de red. Por favor intente de nuevo.",
+    "something_went_wrong": "Algo salió mal"
+  },
+  "not_found": {
+    "title": "¡Ups!",
+    "message": "Esta pantalla no existe.",
+    "go_home": "Ir a la pantalla de inicio"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "profile": "Perfil"
   }
 }

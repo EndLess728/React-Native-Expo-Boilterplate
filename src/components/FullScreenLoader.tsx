@@ -1,6 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
-import ReactNativeModal from 'react-native-modal';
+import { ActivityIndicator, Modal, Text, View } from 'react-native';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
 import { translate } from '@/localization/utils';
@@ -21,27 +20,18 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
   const { theme } = useUnistyles();
 
   return (
-    <ReactNativeModal
-      coverScreen
-      statusBarTranslucent
-      animationIn={'fadeIn'}
-      animationOut={'fadeOut'}
-      backdropOpacity={0}
-      isVisible={visible}
-      style={styles.modal}
-    >
+    <Modal statusBarTranslucent transparent animationType="fade" visible={visible}>
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
           <ActivityIndicator color={color || theme.colors.primary} size={size} />
           <Text style={[TextStyles.label, styles.loadingText]}>{translate('common.loading')}</Text>
         </View>
       </View>
-    </ReactNativeModal>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create((theme) => ({
-  modal: { margin: 0 },
   modalBackground: {
     flex: 1,
     justifyContent: 'center',

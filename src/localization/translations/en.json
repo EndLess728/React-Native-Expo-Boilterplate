@@ -2,12 +2,21 @@
   "auth": {
     "welcome": "Welcome",
     "login": "Login",
+    "sign_in": "Sign in",
     "profile": "Profile",
     "logout": "Logout",
     "home": "Home",
     "email": "Email",
     "password": "Password",
-    "login_description": "Enter your email and password to login"
+    "login_description": "Enter your email and password to login",
+    "enter_email": "Enter your email",
+    "enter_password": "Enter your password"
+  },
+  "validation": {
+    "email_required": "Email is required",
+    "email_invalid": "Please enter a valid email",
+    "password_required": "Password is required",
+    "password_min_length": "Password must be at least 6 characters"
   },
   "settings": {
     "language": "Language",
@@ -15,5 +24,25 @@
     "english": "English",
     "spanish": "Spanish",
     "arabic": "Arabic"
+  },
+  "common": {
+    "loading": "Loading...",
+    "ok": "OK"
+  },
+  "errors": {
+    "session_expired": "Session Expired",
+    "session_expired_message": "Your session has expired. Please log in again.",
+    "no_internet": "No internet connection",
+    "network_error": "Network error. Please try again.",
+    "something_went_wrong": "Something went wrong"
+  },
+  "not_found": {
+    "title": "Oops!",
+    "message": "This screen doesn't exist.",
+    "go_home": "Go to home screen"
+  },
+  "tabs": {
+    "home": "Home",
+    "profile": "Profile"
   }
 }

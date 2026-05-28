@@ -11,7 +11,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { useUnistyles } from 'react-native-unistyles';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { APIProvider } from '@/api/common/api-provider';
@@ -33,32 +33,17 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({ duration: 500, fade: true });
 
-function AuthGate(): React.JSX.Element {
+function RootNavigator(): React.JSX.Element {
   const isLoggedIn = useUserStore((s) => s.isLoggedIn);
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!isLoggedIn && !inAuthGroup) {
-      router.replace('/login');
-    } else if (isLoggedIn && inAuthGroup) {
-      router.replace('/home');
-    } else {
-      // We are already on the correct route for the current auth state —
-      // safe to hide the splash now. Hiding it earlier (in RootLayout, on
-      // storageReady) would briefly reveal the wrong screen before the
-      // redirect above lands, causing an auth-flash on cold launch.
-      // hideAsync() is idempotent, so repeat calls on later renders no-op.
-      SplashScreen.hideAsync();
-    }
-  }, [isLoggedIn, segments, router]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(tabs)" />
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
       <Stack.Screen name="+not-found" />
     </Stack>
   );
@@ -79,17 +64,18 @@ export default function RootLayout(): React.JSX.Element | null {
         await initI18n();
       } catch (error) {
         if (__DEV__) console.error('[RootLayout] App initialization failed:', error);
-        // On init failure we still need to release the splash — otherwise
-        // the user sees the splash screen forever. AuthGate normally owns
-        // the hide once it lands on the correct route, but it will never
-        // mount if storageReady stays false.
-        SplashScreen.hideAsync();
       } finally {
         setStorageReady(true);
       }
     }
     prepare();
   }, []);
+
+  useEffect(() => {
+    if (storageReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [storageReady]);
 
   if (!storageReady) {
     return null;
@@ -107,7 +93,7 @@ export default function RootLayout(): React.JSX.Element | null {
         <KeyboardProvider>
           <SafeAreaProvider>
             <APIProvider>
-              <AuthGate />
+              <RootNavigator />
             </APIProvider>
           </SafeAreaProvider>
         </KeyboardProvider>

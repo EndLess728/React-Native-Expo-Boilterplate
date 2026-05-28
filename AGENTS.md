@@ -19,7 +19,7 @@ sibling file rather than inventing a new pattern.
 - **Styling**: Unistyles v3 (`StyleSheet.create((theme) => ({...}))` only).
 - **Navigation**: **Expo Router** (file-based, on top of React Navigation v7).
   Routes live in `app/`; there is no `src/navigation/` or `src/screens/`.
-- **i18n**: i18next + `react-i18next`, translations in `src/localization/translations/`.
+- **i18n**: i18next + `react-i18next`, translations in `src/localization/translations/`. See [`.skills/localization.md`](file://.skills/localization.md) for full instructions.
 - **Toast**: `react-native-toast-message` wrapped in `src/utils/toast.tsx`.
 
 This is a **standalone** Expo project (not a monorepo). Do not introduce

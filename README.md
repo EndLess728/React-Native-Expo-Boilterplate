@@ -489,6 +489,17 @@ chore: update Expo SDK to 55
 
 The `prepare` script automatically installs Husky Git hooks on `yarn install`.
 
+## AI Agent Skills
+
+This project utilizes a `.skills/` directory to store specialized, task-specific instructions for AI coding assistants (like Claude, Cursor, or Aider). 
+
+These skills ensure that any AI working on the codebase follows the exact same architectural patterns as human developers.
+
+- **`ui-creation.md`** — Rules for building screens, styling with Unistyles, and form validation.
+- **`localization.md`** — Strict guidelines on how to add, consume, and modify i18n translations across the app.
+
+When prompting an AI to build a feature, you can explicitly reference these skills (e.g., `@.skills/localization.md`) to guarantee adherence to the project's standards.
+
 ## Customizing for Your Project
 
 1. **Update the package name** in `env.ts` — change `com.expo.template` to your actual bundle identifier. If you need a distinct package per environment (e.g. to install dev and production side-by-side), see the commented `PACKAGE_NAMES` block in `env.ts`

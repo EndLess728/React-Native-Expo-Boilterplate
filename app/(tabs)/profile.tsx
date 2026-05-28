@@ -12,11 +12,11 @@ import { ms } from '@/utils';
 
 const LANGUAGES: {
   code: Language;
-  labelKey: 'settings.english' | 'settings.spanish' | 'settings.arabic';
+  label: string;
 }[] = [
-  { code: 'en', labelKey: 'settings.english' },
-  { code: 'es', labelKey: 'settings.spanish' },
-  { code: 'ar', labelKey: 'settings.arabic' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'ar', label: 'العربية' },
 ];
 
 export default function ProfileScreen() {
@@ -49,7 +49,7 @@ export default function ProfileScreen() {
                     isActive ? styles.languageButtonTextActive : styles.languageButtonText,
                   ]}
                 >
-                  {translate(lang.labelKey)}
+                  {lang.label}
                 </Text>
               </Pressable>
             );

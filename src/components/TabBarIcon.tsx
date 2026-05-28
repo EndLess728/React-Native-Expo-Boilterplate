@@ -1,12 +1,14 @@
 import React from 'react';
 import { Image, type ImageSourcePropType } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 
 import { homeIcon, settingsIcon } from '@/assets';
 import { NAVIGATION } from '@/constants';
+import { ms } from '@/utils';
 
 const tabIcon: Record<string, ImageSourcePropType> = {
-  [NAVIGATION.homeNavigator]: homeIcon,
-  [NAVIGATION.profileNavigator]: settingsIcon,
+  [NAVIGATION.home]: homeIcon,
+  [NAVIGATION.profile]: settingsIcon,
 };
 
 interface TabBarIconProps {
@@ -19,7 +21,15 @@ export function TabBarIcon({ color, routeName }: TabBarIconProps) {
     <Image
       accessibilityIgnoresInvertColors
       source={tabIcon[routeName]}
-      style={{ tintColor: color }}
+      style={[styles.icon, { tintColor: color }]}
     />
   );
 }
+
+const styles = StyleSheet.create(() => ({
+  icon: {
+    width: ms(24),
+    height: ms(24),
+    resizeMode: 'contain',
+  },
+}));

@@ -63,6 +63,13 @@ yarn-error.*
 # local env files
 .env*.local
 
+# Environment-specific files with real values — use .env.example as template
+# Run: git rm --cached .env .env.development .env.staging .env.production
+.env
+.env.development
+.env.staging
+.env.production
+
 # typescript
 *.tsbuildinfo
 
@@ -74,3 +81,6 @@ expo-env.d.ts
 
 # @end expo-cli
 extract_DSR.sh
+.claude/
+.vscode/mcp.json
+.codex/

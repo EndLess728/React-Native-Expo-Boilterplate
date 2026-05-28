@@ -2,11 +2,13 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { NAVIGATION } from '@/constants';
+import type { TxKeyPath } from '@/localization/utils';
+import { useTranslate } from '@/localization/utils';
 import { TextStyles } from '@/theme';
 
-const tabLabel: Record<string, string> = {
-  [NAVIGATION.homeNavigator]: 'Home',
-  [NAVIGATION.profileNavigator]: 'Profile',
+const tabLabel: Record<string, TxKeyPath> = {
+  [NAVIGATION.home]: 'tabs.home',
+  [NAVIGATION.profile]: 'tabs.profile',
 };
 
 interface TabBarLabelProps {
@@ -15,5 +17,7 @@ interface TabBarLabelProps {
 }
 
 export function TabBarLabel({ color, routeName }: TabBarLabelProps) {
-  return <Text style={[TextStyles.caption, { color }]}>{tabLabel[routeName]}</Text>;
+  const t = useTranslate();
+
+  return <Text style={[TextStyles.caption, { color }]}>{t(tabLabel[routeName])}</Text>;
 }

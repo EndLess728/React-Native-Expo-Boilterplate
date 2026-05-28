@@ -4,6 +4,8 @@
  * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
+// Colors that look correct on both light and dark surfaces — kept in a
+// single map so each theme only declares its differences.
 const constantsColors = {
   danger: '#dc3545',
   grey: '#B0B0B0',
@@ -13,12 +15,20 @@ const constantsColors = {
   light: '#f8f9fa',
   green: '#62EA9F',
   cancel: '#EB5757',
+  // Text color to use on top of a primary-colored fill (white reads on
+  // the cyan primary in both themes).
+  onPrimary: '#ffffff',
 };
 export const lightTheme = {
   colors: {
     ...constantsColors,
     typography: '#000000',
     background: '#ffffff',
+    // Elevated UI surface (cards, segmented controls, language pills, …).
+    // Different from `background` so screens render a subtle layer on the
+    // root background — in dark mode this becomes a near-black charcoal
+    // instead of pure-black, which is what users actually want.
+    surface: '#ffffff',
     barStyle: 'dark-content',
     opacity50: 'rgba(1,1,1,0.5)',
     textInputColor: 'rgba(217, 217, 217,0.2)',
@@ -45,16 +55,18 @@ export const darkTheme = {
     ...constantsColors,
     typography: '#ffffff',
     background: '#000000',
+    surface: '#1A1A1A',
     barStyle: 'light-content',
     opacity50: 'rgba(201, 201, 201,0.5)',
     textInputColor: '#000000',
     placeholder: '#f8f9fa',
     darkwhite: '#ffffff',
     primary: '#00BFFF',
+    primaryTransparent: '#001A1F',
     textGray: '#6B7F85',
     primaryText: '#394347',
-    fadedWhite: '#F7F8F9',
-    borderGray: '#E8ECF4',
+    fadedWhite: '#1A1A1A',
+    borderGray: '#2A2A2A',
     iconGray: '#8BA1A8',
   },
   margins: {

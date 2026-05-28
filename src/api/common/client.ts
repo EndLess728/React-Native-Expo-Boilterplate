@@ -16,9 +16,11 @@ import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
-import { showErrorToast } from '@/components/ToastAlert';
-import { clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
+import Env from '@env';
+import { translate } from '@/localization/utils';
+import { getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
 import { useUserStore } from '@/store/useUserStore';
+import { showErrorToast } from '@/utils/toast';
 
 // ─────────────────────────────────────────────────────────────
 //  Types
@@ -87,7 +89,7 @@ const MAX_RETRIES = 1;
 // ─────────────────────────────────────────────────────────────
 
 export const client = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_BASE_URL,
+  baseURL: Env.EXPO_PUBLIC_API_URL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -100,24 +102,39 @@ export const client = axios.create({
 // ─────────────────────────────────────────────────────────────
 
 /**
+ * Guards against concurrent 401 responses. When N requests fail at once we
+ * only want one alert, one logout, and one token-clear — not N of each.
+ */
+let isLoggingOut = false;
+
+/**
  * Gracefully handles session expiry by:
- * 1. Clearing all stored tokens from MMKV
- * 2. Showing a native alert so the user knows what happened
- * 3. Logging the user out only after they acknowledge the alert
+ * 1. Logging the user out immediately so screens stop firing more requests
+ *    with the now-invalid token.
+ * 2. Showing a native alert so the user knows what happened.
  *
- * This avoids the jarring UX of being silently kicked to the
- * login screen without explanation.
+ * Idempotent across concurrent 401s — the `isLoggingOut` guard ensures only
+ * the first call does the work; subsequent calls are no-ops until the alert
+ * is acknowledged.
  */
 const forceLogout = () => {
-  clearTokens();
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+
+  // Flip auth state synchronously — `logout()` clears tokens via the store —
+  // so any in-flight screens stop issuing requests with the stale token
+  // before the user has even tapped OK on the alert.
+  useUserStore.getState().logout();
 
   Alert.alert(
-    'Session Expired',
-    'Your session has expired. Please log in again.',
+    translate('errors.session_expired'),
+    translate('errors.session_expired_message'),
     [
       {
-        text: 'OK',
-        onPress: () => useUserStore.getState().logout(),
+        text: translate('common.ok'),
+        onPress: () => {
+          isLoggingOut = false;
+        },
       },
     ],
     { cancelable: false },
@@ -193,7 +210,7 @@ const refreshToken = async (): Promise<string> => {
   }
 
   // NOTE: Using plain `axios.post` here, NOT `client.post`
-  const { data } = await axios.post(`${process.env.EXPO_PUBLIC_BASE_URL}/auth/refresh`, {
+  const { data } = await axios.post(`${Env.EXPO_PUBLIC_API_URL}/auth/refresh`, {
     refreshToken: currentRefreshToken,
   });
 
@@ -221,7 +238,7 @@ client.interceptors.request.use(
     const netState = await NetInfo.fetch();
 
     if (!netState.isConnected) {
-      showErrorToast({ title: 'No internet connection' });
+      showErrorToast({ title: translate('errors.no_internet') });
       return Promise.reject(new axios.Cancel('No internet connection'));
     }
 
@@ -362,12 +379,14 @@ client.interceptors.response.use(
     if (error.response?.data) {
       const { error: apiError, errors, message } = error.response.data;
       const errorList = apiError ?? errors;
-      const errorMessage = errorList ? errorList.join(', ') : message || 'Something went wrong';
+      const errorMessage = errorList
+        ? errorList.join(', ')
+        : message || translate('errors.something_went_wrong');
 
       showErrorToast({ title: errorMessage });
     } else if (!error.response) {
       // No response at all — likely a network timeout or DNS failure
-      showErrorToast({ title: 'Network error. Please try again.' });
+      showErrorToast({ title: translate('errors.network_error') });
     }
 
     return Promise.reject(error);

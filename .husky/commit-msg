@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env sh
 . "$(dirname "$0")/common.sh"
 
-npx --no -- commitlint --edit "${1}"
+# Validate commit message against the Conventional Commits spec.
+# Config lives at the root commitlint.config.js.
+npx --no -- commitlint --edit "$1"

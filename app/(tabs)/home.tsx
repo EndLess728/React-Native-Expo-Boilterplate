@@ -10,8 +10,9 @@ import { useUserStore } from '@/store/useUserStore';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
-const Home: React.FC = () => {
-  const { user, logout } = useUserStore();
+export default function HomeScreen() {
+  const user = useUserStore((s) => s.user);
+  const logout = useUserStore((s) => s.logout);
   const translate = useTranslate();
 
   const { data } = usePosts();
@@ -25,12 +26,10 @@ const Home: React.FC = () => {
       <Text style={TextStyles.h1}>
         {translate('auth.welcome')} {user?.email}
       </Text>
-      <Button style={styles.btnStyle} title="Logout" onPress={logout} />
+      <Button style={styles.btnStyle} title={translate('auth.logout')} onPress={logout} />
     </ScreenWrapper>
   );
-};
-
-export default Home;
+}
 
 const styles = StyleSheet.create(() => ({
   container: {

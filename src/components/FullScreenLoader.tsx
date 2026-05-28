@@ -3,6 +3,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import ReactNativeModal from 'react-native-modal';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
+import { translate } from '@/localization/utils';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
@@ -21,19 +22,18 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
 
   return (
     <ReactNativeModal
-      // backdropColor="black"
       coverScreen
       statusBarTranslucent
       animationIn={'fadeIn'}
       animationOut={'fadeOut'}
       backdropOpacity={0}
       isVisible={visible}
-      style={{ margin: 0 }}
+      style={styles.modal}
     >
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
           <ActivityIndicator color={color || theme.colors.primary} size={size} />
-          <Text style={[TextStyles.label, styles.loadingText]}>Loading...</Text>
+          <Text style={[TextStyles.label, styles.loadingText]}>{translate('common.loading')}</Text>
         </View>
       </View>
     </ReactNativeModal>
@@ -41,6 +41,7 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
+  modal: { margin: 0 },
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -48,8 +49,8 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.opacity50,
   },
   activityIndicatorWrapper: {
-    padding: 20,
-    borderRadius: 10,
+    padding: ms(20),
+    borderRadius: ms(10),
     alignItems: 'center',
     justifyContent: 'center',
   },

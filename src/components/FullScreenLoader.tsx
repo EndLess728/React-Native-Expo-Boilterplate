@@ -3,6 +3,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import ReactNativeModal from 'react-native-modal';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 
+import { translate } from '@/localization/utils';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
@@ -32,7 +33,7 @@ const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
       <View style={styles.modalBackground}>
         <View style={styles.activityIndicatorWrapper}>
           <ActivityIndicator color={color || theme.colors.primary} size={size} />
-          <Text style={[TextStyles.label, styles.loadingText]}>Loading...</Text>
+          <Text style={[TextStyles.label, styles.loadingText]}>{translate('common.loading')}</Text>
         </View>
       </View>
     </ReactNativeModal>

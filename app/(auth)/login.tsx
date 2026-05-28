@@ -1,10 +1,3 @@
-/**
- * Login Screen
- *
- * Uses React Hook Form + Zod for form validation.
- * Validation errors are displayed inline below each field.
- */
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
@@ -16,29 +9,34 @@ import Env from '@env';
 import Button from '@/components/Button';
 import { ControlledTextField } from '@/components/ControlledTextField';
 import ScreenWrapper from '@/components/ScreenWrapper';
+import { useTranslate } from '@/localization/utils';
 import { useUserStore } from '@/store/useUserStore';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
-const loginSchema = z.object({
-  email: z
-    .string({ error: 'Email is required' })
-    .min(1, 'Email is required')
-    .email('Please enter a valid email'),
+const getLoginSchema = (t: ReturnType<typeof useTranslate>) =>
+  z.object({
+    email: z
+      .string({ error: t('validation.email_required') })
+      .min(1, t('validation.email_required'))
+      .email(t('validation.email_invalid')),
 
-  password: z
-    .string({ error: 'Password is required' })
-    .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-});
+    password: z
+      .string({ error: t('validation.password_required') })
+      .min(1, t('validation.password_required'))
+      .min(6, t('validation.password_min_length')),
+  });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<ReturnType<typeof getLoginSchema>>;
 
 export default function LoginScreen() {
   const login = useUserStore((state) => state.login);
+  const t = useTranslate();
+
+  const schema = React.useMemo(() => getLoginSchema(t), [t]);
 
   const { control, handleSubmit } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: '',
       password: '',
@@ -53,7 +51,7 @@ export default function LoginScreen() {
 
   return (
     <ScreenWrapper style={styles.container}>
-      <Text style={TextStyles.h1}>Login</Text>
+      <Text style={TextStyles.h1}>{t('auth.login')}</Text>
       <View style={styles.formContainer}>
         <ControlledTextField<LoginFormData>
           autoCapitalize="none"
@@ -62,7 +60,7 @@ export default function LoginScreen() {
           control={control}
           keyboardType="email-address"
           name="email"
-          placeholder="Enter your email"
+          placeholder={t('auth.enter_email')}
           returnKeyType="next"
           textContentType="emailAddress"
         />
@@ -74,7 +72,7 @@ export default function LoginScreen() {
           containerStyle={styles.textFieldContainer}
           control={control}
           name="password"
-          placeholder="Enter your password"
+          placeholder={t('auth.enter_password')}
           returnKeyType="done"
           textContentType="password"
         />
@@ -82,7 +80,7 @@ export default function LoginScreen() {
 
       <Button
         style={styles.btnStyle}
-        title="Sign in"
+        title={t('auth.sign_in')}
         type="primary"
         onPress={handleSubmit(onSubmit)}
       />

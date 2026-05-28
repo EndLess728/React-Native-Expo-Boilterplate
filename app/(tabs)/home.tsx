@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <Text style={TextStyles.h1}>
         {translate('auth.welcome')} {user?.email}
       </Text>
-      <Button style={styles.btnStyle} title="Logout" onPress={logout} />
+      <Button style={styles.btnStyle} title={translate('auth.logout')} onPress={logout} />
     </ScreenWrapper>
   );
 }

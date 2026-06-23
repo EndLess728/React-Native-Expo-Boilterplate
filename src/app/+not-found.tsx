@@ -16,7 +16,7 @@ export default function NotFound() {
       <Stack.Screen options={{ title: t('not_found.title') }} />
       <ScreenWrapper style={styles.container}>
         <Text style={TextStyles.h1}>{t('not_found.message')}</Text>
-        <Link href="/" style={styles.link}>
+        <Link href="/(tabs)" style={styles.link}>
           <Text style={[TextStyles.link, styles.linkText]}>{t('not_found.go_home')}</Text>
         </Link>
       </ScreenWrapper>

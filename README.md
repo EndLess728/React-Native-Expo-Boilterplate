@@ -1,12 +1,12 @@
 # React Native Expo Boilerplate
 
-Production-grade React Native starter built on **Expo SDK 55**, **React Native 0.83**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
+Production-grade React Native starter built on **Expo SDK 56**, **React Native 0.85**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
 
 ## Tech Stack
 
 | Category | Library |
 |---|---|
-| **Framework** | [Expo](https://expo.dev/) (SDK 55) with React Compiler |
+| **Framework** | [Expo](https://expo.dev/) (SDK 56) with React Compiler |
 | **Navigation** | [Expo Router](https://docs.expo.dev/router/introduction/) — File-based routing on top of [React Navigation v7](https://reactnavigation.org/) (Native Stack, Bottom Tabs, Drawer). Typed routes enabled. |
 | **State** | [Zustand](https://github.com/pmndrs/zustand) — Atomic global state with MMKV persistence |
 | **Data Fetching** | [TanStack Query v5](https://tanstack.com/query) + [Axios](https://axios-http.com/) + [react-query-kit](https://github.com/nichenqin/react-query-kit) |
@@ -52,20 +52,20 @@ yarn ios:development       # prebuild + run iOS (dev)
 ```
 ├── index.ts                  # Custom entry — runs the unistyles side-effect
 │                             #   BEFORE expo-router/entry (order matters)
-├── app/                      # Expo Router file-based routes
-│   ├── _layout.tsx           #   Root layout: providers, splash, fonts, storage
-│   │                         #     init, i18n init, ErrorBoundary re-export,
-│   │                         #     and <Stack.Protected> auth routing
-│   ├── +not-found.tsx        #   404 catch-all
-│   ├── +html.tsx             #   Web-only HTML shell (no-op on iOS/Android)
-│   ├── (auth)/               #   Auth group (URL-invisible)
-│   │   ├── _layout.tsx       #     Headerless <Stack>
-│   │   └── login.tsx         #     /login
-│   └── (tabs)/               #   Tabs group (URL-invisible)
-│       ├── _layout.tsx       #     <Tabs> using unistyles theme colors
-│       ├── index.tsx         #     /
-│       └── profile.tsx       #     /profile
 ├── src/
+│   ├── app/                  # Expo Router file-based routes
+│   │   ├── _layout.tsx       #   Root layout: providers, splash, fonts, storage
+│   │   │                     #     init, i18n init, ErrorBoundary re-export,
+│   │   │                     #     and <Stack.Protected> auth routing
+│   │   ├── +not-found.tsx    #   404 catch-all
+│   │   ├── +html.tsx         #   Web-only HTML shell (no-op on iOS/Android)
+│   │   ├── (auth)/           #   Auth group (URL-invisible)
+│   │   │   ├── _layout.tsx   #     Headerless <Stack>
+│   │   │   └── login.tsx     #     /login
+│   │   └── (tabs)/           #   Tabs group (URL-invisible)
+│   │       ├── _layout.tsx   #     <Tabs> using unistyles theme colors
+│   │       ├── index.tsx     #     /
+│   │       └── profile.tsx   #     /profile
 │   ├── api/                  # Axios client, React Query hooks, endpoint definitions
 │   │   ├── common/           #   Base HTTP client, interceptors, query provider
 │   │   └── posts/            #   Example domain — CRUD hooks via react-query-kit
@@ -95,7 +95,7 @@ yarn ios:development       # prebuild + run iOS (dev)
 └── tsconfig.test.json        # TypeScript config extended with Jest types
 ```
 
-> Screens live **directly under `app/`**, not in a separate `src/screens/`
+> Screens live **directly under `src/app/`**, not in a separate `src/screens/`
 > directory. The default export of each route file is the screen component.
 
 ## Security
@@ -174,7 +174,7 @@ yarn android:staging
 
 ## Routing (Expo Router)
 
-Routes live under `app/`. The file path becomes the URL — `app/(tabs)/home.tsx`
+Routes live under `src/app/`. The file path becomes the URL — `src/app/(tabs)/home.tsx`
 serves `/home` (the `(tabs)` group is URL-invisible). Each route file's default
 export is the screen component.
 
@@ -182,15 +182,15 @@ export is the screen component.
 
 | File | Purpose |
 |---|---|
-| `app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
-| `app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
-| `app/(tabs)/index.tsx` | `/` (Home tab) |
-| `app/(tabs)/profile.tsx` | `/profile` |
+| `src/app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
+| `src/app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
+| `src/app/(tabs)/index.tsx` | `/` (Home tab) |
+| `src/app/(tabs)/profile.tsx` | `/profile` |
 
 ### Adding a new screen
 
 ```tsx
-// app/settings.tsx → /settings
+// src/app/settings.tsx → /settings
 import { Text } from 'react-native';
 import ScreenWrapper from '@/components/ScreenWrapper';
 
@@ -203,8 +203,8 @@ export default function SettingsScreen() {
 }
 ```
 
-To make it a tab, drop it under `app/(tabs)/` and add a `<Tabs.Screen name="settings" />`
-entry in `app/(tabs)/_layout.tsx`. Also register its icon/label in
+To make it a tab, drop it under `src/app/(tabs)/` and add a `<Tabs.Screen name="settings" />`
+entry in `src/app/(tabs)/_layout.tsx`. Also register its icon/label in
 `src/components/TabBarIcon.tsx` and `src/components/TabBarLabel.tsx`.
 
 ### Navigating
@@ -228,7 +228,7 @@ Use URL-visible paths (`/`, `/login`) — not the group form
 
 ### Auth gating
 
-`app/_layout.tsx` handles authentication gating directly in the root navigator using `<Stack.Protected>` components:
+`src/app/_layout.tsx` handles authentication gating directly in the root navigator using `<Stack.Protected>` components:
 
 - `<Stack.Protected guard={isLoggedIn}>` wraps the `(tabs)` group.
 - `<Stack.Protected guard={!isLoggedIn}>` wraps the `(auth)` group.
@@ -237,7 +237,7 @@ Individual screens **do not** redirect themselves — just flip the `useUserStor
 
 ### Error handling
 
-`app/_layout.tsx` re-exports expo-router's built-in `ErrorBoundary`:
+`src/app/_layout.tsx` re-exports expo-router's built-in `ErrorBoundary`:
 
 ```ts
 export { ErrorBoundary } from 'expo-router';
@@ -249,7 +249,7 @@ component (signature: `({ error, retry }: { error: Error; retry: () => void })`)
 
 ### Initial route
 
-`app/_layout.tsx` declares the deep-link / cold-start entry point via
+`src/app/_layout.tsx` declares the deep-link / cold-start entry point via
 expo-router's `unstable_settings`:
 
 ```ts
@@ -275,7 +275,7 @@ import time — the theme must be configured first.
 
 i18next is **not** initialized here. Its saved language lives in encrypted
 MMKV, which isn't created until `initStorage()` resolves inside
-`app/_layout.tsx`'s effect. `initI18n()` runs there, right after
+`src/app/_layout.tsx`'s effect. `initI18n()` runs there, right after
 `rehydrateStores()`.
 
 ## API Layer
@@ -311,7 +311,7 @@ Zustand stores are created with `createPersistedStore`, which:
 
 - Pre-configures MMKV-backed persistence via `zustandStorage`
 - Uses `skipHydration: true` — stores start with their initial state at module-import time (before MMKV is ready)
-- Are explicitly rehydrated via `rehydrateStores()` in `app/_layout.tsx` after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
+- Are explicitly rehydrated via `rehydrateStores()` in `src/app/_layout.tsx` after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
 
 ### Adding a New Store
 
@@ -454,7 +454,7 @@ The `android/` and `ios/` folders are generated by `expo prebuild` and are liste
 
 MMKV cannot be created synchronously with a secure key — the key must be retrieved from the keychain first (async). To handle this cleanly:
 
-1. `app/_layout.tsx` calls `initStorage()` in a `useEffect` before rendering the navigator
+1. `src/app/_layout.tsx` calls `initStorage()` in a `useEffect` before rendering the navigator
 2. All Zustand stores use `skipHydration: true` — safe to create before MMKV is ready
 3. `rehydrateStores()` is called after `initStorage()` resolves — stores load their persisted values
 4. `initI18n()` runs next — it reads the saved language from MMKV, so it must run after storage is ready
@@ -476,7 +476,7 @@ Commits are enforced via [Conventional Commits](https://www.conventionalcommits.
 ```
 feat: add biometric auth
 fix: resolve token refresh race condition
-chore: update Expo SDK to 55
+chore: update Expo SDK to 56
 ```
 
 The `prepare` script automatically installs Husky Git hooks on `yarn install`.

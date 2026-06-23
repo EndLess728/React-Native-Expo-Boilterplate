@@ -33,20 +33,21 @@ This is a **standalone** Expo project (not a monorepo). Do not introduce
 index.ts                ← custom entry; runs unistyles side-effect before
                           `expo-router/entry` (must remain in this order).
                           i18n is initialized after storage in `_layout.tsx`.
-app/                    ← Expo Router file-based routes
-├── _layout.tsx         ← providers (gesture, keyboard, safe-area, API/Query,
-                          Toast); splash; fonts; storage + i18n init;
-                          <Stack.Protected> auth gating;
-                          re-exports `ErrorBoundary` from expo-router
-├── +not-found.tsx      ← catch-all 404 route
-├── +html.tsx           ← web-only HTML shell (no-op on iOS/Android)
-├── (auth)/
-│   ├── _layout.tsx     ← auth `<Stack>` (headerless)
-│   └── login.tsx       ← /login
-└── (tabs)/
-    ├── _layout.tsx     ← `<Tabs>` using unistyles theme colors
-    ├── index.tsx       ← /
-    └── profile.tsx     ← /profile
+src/
+├── app/                ← Expo Router file-based routes
+│   ├── _layout.tsx     ← providers (gesture, keyboard, safe-area, API/Query,
+│   │                     Toast); splash; fonts; storage + i18n init;
+│   │                     <Stack.Protected> auth gating;
+│   │                     re-exports `ErrorBoundary` from expo-router
+│   ├── +not-found.tsx  ← catch-all 404 route
+│   ├── +html.tsx       ← web-only HTML shell (no-op on iOS/Android)
+│   ├── (auth)/
+│   │   ├── _layout.tsx ← auth `<Stack>` (headerless)
+│   │   └── login.tsx   ← /login
+│   └── (tabs)/
+│       ├── _layout.tsx ← `<Tabs>` using unistyles theme colors
+│       ├── index.tsx   ← /
+│       └── profile.tsx ← /profile
 
 src/
 ├── api/
@@ -63,8 +64,8 @@ src/
 └── utils/              ← side-effect helpers (toast.tsx, scale.ts)
 ```
 
-**Adding a new screen**: create a file under `app/` matching the desired URL
-(`app/foo.tsx` → `/foo`, `app/(tabs)/foo.tsx` → tab named `foo`). The default
+**Adding a new screen**: create a file under `src/app/` matching the desired URL
+(`src/app/foo.tsx` → `/foo`, `src/app/(tabs)/foo.tsx` → tab named `foo`). The default
 export is the screen component — put the JSX, hooks, and styles directly in
 that file. Do **not** re-add a `src/screens/` folder.
 
@@ -74,7 +75,7 @@ that file. Do **not** re-add a `src/screens/` folder.
 **Navigation**: use `useRouter()` + `router.push('/foo')` for imperative nav,
 `<Link href="/foo">` for declarative. Route paths are URL-visible — group
 segments like `(tabs)` and `(auth)` are NOT included in `href` strings (use
-`/`, not `/(tabs)/index`). Auth gating lives in `app/_layout.tsx`'s
+`/`, not `/(tabs)/index`). Auth gating lives in `src/app/_layout.tsx`'s
 `<Stack.Protected>` guard; do not re-implement it inside individual screens.
 
 ---
@@ -140,7 +141,7 @@ Import `StyleSheet` **from `react-native-unistyles`**, never from `react-native`
 - After creation, **add the store to `rehydrateStores()` in `src/store/index.ts`**
   so it hydrates on app start.
 - Stores use `skipHydration: true`; never access `storage` (raw MMKV) before
-  `initStorage()` resolves in `app/_layout.tsx`.
+  `initStorage()` resolves in `src/app/_layout.tsx`.
 
 ### 6. API client
 

@@ -5,12 +5,8 @@
     "jsx": "react-native",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@env": [
-        "./env"
-      ]
+      "@/*": ["./src/*"],
+      "@env": ["./env"]
     },
     "esModuleInterop": true,
     "checkJs": true,
@@ -28,10 +24,5 @@
     "**/__tests__/**",
     "**/__mocks__/**"
   ],
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

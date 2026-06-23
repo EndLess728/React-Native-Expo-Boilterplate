@@ -13,7 +13,8 @@
       ]
     },
     "esModuleInterop": true,
-    "checkJs": true
+    "checkJs": true,
+    "ignoreDeprecations": "6.0"
   },
   "exclude": [
     "node_modules",

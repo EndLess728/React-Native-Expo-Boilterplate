@@ -56,26 +56,19 @@ export default function RootLayout(): React.JSX.Element | null {
   useEffect(() => {
     async function prepare() {
       try {
-        await initStorage();
-        await rehydrateStores();
+        await initStorage().then(rehydrateStores);
         // initI18n() must run AFTER initStorage — it reads the saved language
         // from MMKV. Initializing earlier would always fall back to the
         // device locale.
         await initI18n();
       } catch (error) {
         if (__DEV__) console.error('[RootLayout] App initialization failed:', error);
-      } finally {
-        setStorageReady(true);
       }
+      setStorageReady(true);
+      SplashScreen.hideAsync();
     }
     prepare();
   }, []);
-
-  useEffect(() => {
-    if (storageReady) {
-      SplashScreen.hideAsync();
-    }
-  }, [storageReady]);
 
   if (!storageReady) {
     return null;

@@ -27,6 +27,11 @@ const replacements = {
   URLSearchParams: NodeURLSearchParams,
   structuredClone: safeStructuredClone,
   __ExpoImportMetaRegistry: undefined,
+  DOMException: typeof DOMException !== 'undefined' ? DOMException : Error,
+  fetch: typeof fetch !== 'undefined' ? fetch : undefined,
+  Headers: typeof Headers !== 'undefined' ? Headers : undefined,
+  Request: typeof Request !== 'undefined' ? Request : undefined,
+  Response: typeof Response !== 'undefined' ? Response : undefined,
 };
 
 for (const [name, value] of Object.entries(replacements)) {

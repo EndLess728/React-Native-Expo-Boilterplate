@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 import { useMMKVString } from 'react-native-mmkv';
@@ -36,7 +35,7 @@ export function translate(key: TxKeyPath, options?: TOptions): string {
  */
 export const useTranslate = () => {
   const { t } = useTranslation();
-  return useCallback((key: TxKeyPath, options?: TOptions): string => t(key, options), [t]);
+  return (key: TxKeyPath, options?: TOptions): string => t(key, options);
 };
 
 export const changeLanguage = (lang: Language) => {
@@ -68,13 +67,10 @@ export const changeLanguage = (lang: Language) => {
 export const useSelectedLanguage = () => {
   const [language, setLang] = useMMKVString(LOCAL, storage);
 
-  const setLanguage = useCallback(
-    (lang: Language) => {
-      setLang(lang);
-      changeLanguage(lang);
-    },
-    [setLang],
-  );
+  const setLanguage = (lang: Language) => {
+    setLang(lang);
+    changeLanguage(lang);
+  };
 
   return { language: language as Language, setLanguage };
 };

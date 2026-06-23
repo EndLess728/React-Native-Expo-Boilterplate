@@ -3,8 +3,8 @@ import { act, renderHook } from '@testing-library/react-native';
 import { useUserStore } from '../useUserStore';
 
 // Reset store state between tests to prevent bleed-through
-beforeEach(() => {
-  act(() => {
+beforeEach(async () => {
+  await act(() => {
     useUserStore.setState({ isLoggedIn: false, user: null });
   });
 });
@@ -16,10 +16,10 @@ describe('useUserStore', () => {
     expect(result.current.user).toBeNull();
   });
 
-  it('login() sets isLoggedIn and user', () => {
+  it('login() sets isLoggedIn and user', async () => {
     const { result } = renderHook(() => useUserStore());
 
-    act(() => {
+    await act(() => {
       result.current.login({ email: 'test@example.com' });
     });
 
@@ -27,14 +27,14 @@ describe('useUserStore', () => {
     expect(result.current.user?.email).toBe('test@example.com');
   });
 
-  it('logout() clears isLoggedIn and user', () => {
+  it('logout() clears isLoggedIn and user', async () => {
     const { result } = renderHook(() => useUserStore());
 
-    act(() => {
+    await act(() => {
       result.current.login({ email: 'test@example.com' });
     });
 
-    act(() => {
+    await act(() => {
       result.current.logout();
     });
 
@@ -42,10 +42,10 @@ describe('useUserStore', () => {
     expect(result.current.user).toBeNull();
   });
 
-  it('user does not contain a password field', () => {
+  it('user does not contain a password field', async () => {
     const { result } = renderHook(() => useUserStore());
 
-    act(() => {
+    await act(() => {
       result.current.login({ email: 'test@example.com' });
     });
 

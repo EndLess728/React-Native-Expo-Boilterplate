@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useEffect } from 'react';
 import { Alert } from 'react-native';
-import { useNavigation, usePreventRemove } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 
 interface Options {
   /** Title shown in the confirm dialog. Defaults to "Discard changes?". */
@@ -38,19 +38,25 @@ export function useBlockBackNavigation(shouldBlock: boolean, options: Options = 
 
   const navigation = useNavigation();
 
-  const handlePreventRemove = useCallback(
-    ({ data }: { data: { action: Parameters<typeof navigation.dispatch>[0] } }) => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (!shouldBlock) {
+        return;
+      }
+
+      // Prevent default behavior of leaving the screen
+      e.preventDefault();
+
       Alert.alert(title, message, [
-        { text: cancelLabel, style: 'cancel' },
+        { text: cancelLabel, style: 'cancel', isPreferred: true },
         {
           text: confirmLabel,
           style: 'destructive',
-          onPress: () => navigation.dispatch(data.action),
+          onPress: () => navigation.dispatch(e.data.action),
         },
       ]);
-    },
-    [navigation, title, message, cancelLabel, confirmLabel],
-  );
+    });
 
-  usePreventRemove(shouldBlock, handlePreventRemove);
+    return unsubscribe;
+  }, [navigation, shouldBlock, title, message, cancelLabel, confirmLabel]);
 }

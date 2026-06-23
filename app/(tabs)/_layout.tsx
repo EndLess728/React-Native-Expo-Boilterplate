@@ -18,12 +18,8 @@ export default function TabsLayout(): React.JSX.Element {
         // them as full-strength black/white, indistinguishable from active.
         tabBarInactiveTintColor: theme.colors.iconGray,
         headerShown: false,
-        tabBarIcon: ({ color }: { color: string }) => (
-          <TabBarIcon color={color} routeName={route.name} />
-        ),
-        tabBarLabel: ({ color }: { color: string }) => (
-          <TabBarLabel color={color} routeName={route.name} />
-        ),
+        tabBarIcon: ({ color }) => <TabBarIcon color={color as string} routeName={route.name} />,
+        tabBarLabel: ({ color }) => <TabBarLabel color={color as string} routeName={route.name} />,
       })}
     >
       <Tabs.Screen name="index" options={{ headerShown: true, title: t('tabs.home') }} />

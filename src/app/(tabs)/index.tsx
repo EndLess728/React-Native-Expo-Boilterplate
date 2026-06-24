@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 import { usePosts } from '@/api/posts/use-posts';
 import Button from '@/components/Button';
@@ -11,6 +12,7 @@ import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
 
 export default function HomeScreen() {
+  const { theme } = useUnistyles();
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
   const translate = useTranslate();
@@ -23,6 +25,12 @@ export default function HomeScreen() {
 
   return (
     <ScreenWrapper style={styles.container}>
+      <Ionicons
+        color={theme.colors.primary}
+        name="home-outline"
+        size={ms(48)}
+        style={styles.icon}
+      />
       <Text style={TextStyles.h1}>
         {translate('auth.welcome')} {user?.email}
       </Text>
@@ -36,6 +44,9 @@ const styles = StyleSheet.create(() => ({
     padding: ms(20),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  icon: {
+    marginBottom: ms(16),
   },
   btnStyle: {
     marginTop: ms(40),

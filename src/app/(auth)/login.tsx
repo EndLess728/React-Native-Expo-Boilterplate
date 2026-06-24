@@ -1,8 +1,9 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 import { z } from 'zod';
 
 import Env from '@env';
@@ -30,6 +31,7 @@ const getLoginSchema = (t: ReturnType<typeof useTranslate>) =>
 type LoginFormData = z.infer<ReturnType<typeof getLoginSchema>>;
 
 export default function LoginScreen() {
+  const { theme } = useUnistyles();
   const login = useUserStore((state) => state.login);
   const t = useTranslate();
 
@@ -49,6 +51,12 @@ export default function LoginScreen() {
 
   return (
     <ScreenWrapper style={styles.container}>
+      <Ionicons
+        color={theme.colors.primary}
+        name="lock-closed-outline"
+        size={ms(48)}
+        style={styles.icon}
+      />
       <Text style={TextStyles.h1}>{t('auth.login')}</Text>
       <View style={styles.formContainer}>
         <ControlledTextField<LoginFormData>
@@ -96,6 +104,9 @@ const styles = StyleSheet.create((theme) => ({
     padding: ms(20),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  icon: {
+    marginBottom: ms(16),
   },
   formContainer: {
     width: '100%',

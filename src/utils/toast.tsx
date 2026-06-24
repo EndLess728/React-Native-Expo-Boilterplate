@@ -16,7 +16,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import Toast, { ToastShowParams } from 'react-native-toast-message';
 import { StyleSheet, useUnistyles } from 'react-native-unistyles';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 import { fonts } from '@/theme';
 import { ms } from '@/utils/scale';
@@ -38,8 +38,9 @@ const TYPE_COLORS: Record<ToastType, string> = {
   warning: '#F59E0B',
 };
 
-// Ionicons names — see https://icons.expo.fyi/Index for the full set.
-const TYPE_ICONS: Record<ToastType, keyof typeof Ionicons.glyphMap> = {
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
+const TYPE_ICONS: Record<ToastType, IoniconsName> = {
   success: 'checkmark-circle',
   error: 'close-circle',
   info: 'information-circle',

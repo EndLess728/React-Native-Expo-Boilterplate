@@ -17,6 +17,7 @@ Production-grade React Native starter built on **Expo SDK 56**, **React Native 0
 | **i18n** | [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/) |
 | **Animations** | [Reanimated](https://docs.swmansion.com/react-native-reanimated/) + [Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) |
 | **Testing** | [jest-expo](https://github.com/expo/expo/tree/main/packages/jest-expo) + [React Native Testing Library](https://callstack.github.io/react-native-testing-library/) |
+| **Icons** | [@react-native-vector-icons/ionicons](https://github.com/oblador/react-native-vector-icons/tree/master/packages/ionicons) — Modular per-family import (replaces deprecated `@expo/vector-icons`) |
 | **Linting** | ESLint 9 (flat config) + Prettier + Husky + lint-staged + Commitlint |
 
 ## Quick Start

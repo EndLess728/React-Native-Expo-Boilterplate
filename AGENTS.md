@@ -9,7 +9,7 @@ sibling file rather than inventing a new pattern.
 
 ## Stack
 
-- **Expo SDK 55** (`react-native ^0.83`), Hermes default, React Compiler enabled
+- **Expo SDK 56** (`react-native ^0.85`), Hermes default, React Compiler enabled
   (`app.config.ts → experiments.reactCompiler: true`). Typed routes enabled via
   `experiments.typedRoutes: true`.
 - **TypeScript** strict mode. Path aliases: `@` → `./src`, `@env` → `./env`.
@@ -18,7 +18,8 @@ sibling file rather than inventing a new pattern.
 - **Forms**: React Hook Form + Zod.
 - **Styling**: Unistyles v3 (`StyleSheet.create((theme) => ({...}))` only).
 - **Navigation**: **Expo Router** (file-based, on top of React Navigation v7).
-  Routes live in `app/`; there is no `src/navigation/` or `src/screens/`.
+  Routes live in `src/app/`; there is no `src/navigation/` or `src/screens/`.
+- **Icons**: `@react-native-vector-icons/ionicons` (modular per-family import — replaces deprecated `@expo/vector-icons`)
 - **i18n**: i18next + `react-i18next`, translations in `src/localization/translations/`. See [`.skills/localization.md`](file://.skills/localization.md) for full instructions.
 - **Toast**: `react-native-toast-message` wrapped in `src/utils/toast.tsx`.
 
@@ -121,6 +122,7 @@ Import `StyleSheet` **from `react-native-unistyles`**, never from `react-native`
 | Hardcoded route paths | URL-visible literals (`/`, `/login`) — typed by `experiments.typedRoutes`. `NAVIGATION.*` is only for matching `route.name` inside TabBar* helpers. |
 | Hardcoded scale values | `ms(n)` / `s(n)` / `vs(n)` from `@/utils/scale` |
 | Custom `t()` wrapper | `useTranslate()` from `@/localization/utils` |
+| `@expo/vector-icons` / `react-native-vector-icons` | `@react-native-vector-icons/ionicons` (modular per-family)` |
 
 ### 4. Env vars
 

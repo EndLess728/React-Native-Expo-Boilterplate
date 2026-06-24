@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { StyleSheet } from 'react-native-unistyles';
+import { StyleSheet, useUnistyles } from 'react-native-unistyles';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 import Button from '@/components/Button';
 import ScreenWrapper from '@/components/ScreenWrapper';
@@ -20,12 +21,19 @@ const LANGUAGES: {
 ];
 
 export default function ProfileScreen() {
+  const { theme } = useUnistyles();
   const logout = useUserStore((state) => state.logout);
   const { language, setLanguage } = useSelectedLanguage();
   const translate = useTranslate();
 
   return (
     <ScreenWrapper style={styles.container}>
+      <Ionicons
+        color={theme.colors.primary}
+        name="person-outline"
+        size={ms(48)}
+        style={styles.icon}
+      />
       <Text style={TextStyles.h1}>{translate('auth.profile')}</Text>
 
       <View style={styles.languageSection}>
@@ -67,6 +75,9 @@ const styles = StyleSheet.create((theme) => ({
     padding: ms(20),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  icon: {
+    marginBottom: ms(16),
   },
   languageSection: {
     marginTop: ms(30),

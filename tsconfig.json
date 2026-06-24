@@ -3,14 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@env": ["./env"]
     },
     "esModuleInterop": true,
-    "checkJs": true,
-    "ignoreDeprecations": "6.0"
+    "checkJs": true
   },
   "exclude": [
     "node_modules",

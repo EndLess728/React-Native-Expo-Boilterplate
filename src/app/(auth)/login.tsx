@@ -14,6 +14,7 @@ import { useTranslate } from '@/localization/utils';
 import { useUserStore } from '@/store/useUserStore';
 import { TextStyles } from '@/theme';
 import { ms } from '@/utils';
+import { showSuccessToast } from '@/utils/toast';
 
 const getLoginSchema = (t: ReturnType<typeof useTranslate>) =>
   z.object({
@@ -47,6 +48,7 @@ export default function LoginScreen() {
 
   const onSubmit = (data: LoginFormData) => {
     login({ email: data.email });
+    showSuccessToast({ title: 'Login Successful' });
   };
 
   return (

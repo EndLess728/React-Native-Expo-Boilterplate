@@ -23,7 +23,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": ["Flashlist", "Lato", "unistyles", "persistor", "mmkv", "Reanimated"],
-  "i18n-ally.localesPaths": ["src/localization/"],
+  "i18n-ally.localesPaths": ["src/localization/translations"],
   "i18n-ally.keystyle": "nested",
-  "i18n-ally.disabled": false
+  "i18n-ally.disabled": false,
+  "i18n-ally.sourceLanguage": "en"
 }

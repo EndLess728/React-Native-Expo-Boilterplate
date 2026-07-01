@@ -2,11 +2,11 @@
 
 > Source of truth for adding or modifying any API hook in this project. Intended to be read by humans and AI coding assistants alike (Claude Code, Cursor, Copilot, Codex, Aider, etc.). Follow it verbatim — do not invent a parallel structure.
 
-This is a standalone Expo / React Native app. All API access goes through `react-query-kit` hooks under `src/api/`, routed via a single configured Axios client in `src/api/common/client.ts`. The client does most of the heavy lifting so individual hooks stay short, predictable, and easy to delete.
+This is a standalone Expo / React Native app. All API access goes through `react-query-kit` hooks under `src/api/`, routed via a single configured Axios client in `src/services/client.ts`. The client does most of the heavy lifting so individual hooks stay short, predictable, and easy to delete.
 
 ---
 
-## What `src/api/common/client.ts` already handles
+## What `src/services/client.ts` already handles
 
 Do **not** re-implement any of these in a hook:
 
@@ -40,20 +40,21 @@ Do not guess. If the requester has not provided one of these, ask before proceed
 ## Step 2 — File layout (rigid; do not deviate)
 
 ```
-src/api/
-├── index.tsx                ← re-exports common, types, and every module
-├── types.ts                 ← cross-module types (PaginateQuery<T>)
-├── common/
-│   ├── index.tsx            ← re-exports api-provider, client, utils
+src/
+├── services/                ← HTTP infrastructure (Axios client, QueryClientProvider, pagination utils)
+│   ├── index.ts             ← re-exports api-provider, client, utils
 │   ├── api-provider.tsx     ← APIProvider (QueryClientProvider) — do not touch unless intentionally changing query defaults
 │   ├── client.ts            ← shared Axios instance — never recreate, never `import axios` elsewhere
-│   └── utils.tsx            ← DEFAULT_LIMIT, getQueryKey, normalizePages, getNextPageParam, getPreviousPageParam
-└── <module>/
-    ├── index.ts             ← exports types + every hook in this folder (alphabetical)
-    ├── types.ts             ← request + response interfaces for this module
-    ├── use-<action-1>.ts    ← one hook per file
-    ├── use-<action-2>.ts
-    └── ...
+│   └── utils.ts             ← DEFAULT_LIMIT, getQueryKey, normalizePages, getNextPageParam, getPreviousPageParam
+└── api/
+    ├── index.tsx            ← re-exports types and every module
+    ├── types.ts             ← cross-module types (PaginateQuery<T>)
+    └── <module>/
+        ├── index.ts         ← exports types + every hook in this folder (alphabetical)
+        ├── types.ts         ← request + response interfaces for this module
+        ├── use-<action-1>.ts ← one hook per file
+        ├── use-<action-2>.ts
+        └── ...
 ```
 
 Rules:
@@ -61,6 +62,7 @@ Rules:
 - **Types live in the module's `types.ts`.** Never inline a non-trivial request or response type in the hook file. Tiny one-line `Variables` aliases (`{ id: string }`) at the top of the hook are fine.
 - **Module's `index.ts` re-exports** every sibling alphabetically: `export * from './types'; export * from './use-<action>';`.
 - **New module folder** → add `export * from './<module>';` to `src/api/index.tsx`.
+- **Hooks import `client` and helpers from `@/services`**, never from a relative `../common` path (that folder no longer exists).
 
 ---
 
@@ -122,6 +124,8 @@ export type PostsListResponse = PaginateQuery<Post>;
 
 Reference: `src/api/posts/types.ts`.
 
+> **Note:** `PaginateQuery<T>` is imported from `src/api/types.ts`, not from `@/services`.
+
 ---
 
 ## Step 5 — Hook file template
@@ -138,7 +142,7 @@ Reference: `src/api/posts/use-add-post.ts`.
 import { createMutation } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
 import type { AddPostRequest, Post } from './types';
 
 type Variables = AddPostRequest;
@@ -162,7 +166,7 @@ Destructure the path param out of `variables`; send the rest as the body.
 import { createMutation } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
 import type { Post, UpdatePostRequest } from './types';
 
 type Variables = UpdatePostRequest; // { id: string; ...rest }
@@ -188,7 +192,7 @@ The client auto-detects `FormData` and sets the correct `Content-Type` with the 
 import { createMutation } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
 
 // Expected FormData fields:
 //   - `file`: { uri, name, type } — the image/document blob
@@ -214,7 +218,7 @@ Reference: `src/api/posts/use-posts.ts`.
 import { createQuery } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
 import type { Post } from './types';
 
 type Variables = void;
@@ -237,7 +241,7 @@ Reference: `src/api/posts/use-post.ts`.
 import { createQuery } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
 import type { Post } from './types';
 
 type Variables = { id: string };
@@ -252,13 +256,13 @@ export const usePost = createQuery<Response, Variables, AxiosError>({
 
 ### 5f. Infinite query (paginated list)
 
-Use `createInfiniteQuery`. Import `DEFAULT_LIMIT`, `getNextPageParam`, `getPreviousPageParam` from `../common`. Our pagination shape is offset/URL-based — the helpers read the `next` / `previous` URLs from the page and extract `offset`.
+Use `createInfiniteQuery`. Import `DEFAULT_LIMIT`, `getNextPageParam`, `getPreviousPageParam` from `@/services`. Our pagination shape is offset/URL-based — the helpers read the `next` / `previous` URLs from the page and extract `offset`.
 
 ```ts
 import { createInfiniteQuery } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client, DEFAULT_LIMIT, getNextPageParam, getPreviousPageParam } from '../common';
+import { client, DEFAULT_LIMIT, getNextPageParam, getPreviousPageParam } from '@/services';
 import type { PaginateQuery } from '../types';
 import type { Post } from './types';
 
@@ -284,7 +288,7 @@ export const usePostsInfinite = createInfiniteQuery<Response, Variables, AxiosEr
 });
 ```
 
-In the consumer, flatten pages with `normalizePages(data?.pages)` from `../common` before passing to `FlatList` / `FlashList`.
+In the consumer, flatten pages with `normalizePages(data?.pages)` from `@/services` before passing to `FlatList` / `FlashList`.
 
 ---
 
@@ -363,10 +367,11 @@ mutate(draft, {
 
 ## Hard rules — never violate these
 
-- **Never `import axios` directly** in a hook. Always use `client` from `../common`.
+- **Never `import axios` directly** in a hook. Always use `client` from `@/services`.
+- **Never import from a relative `../common` path** — that folder no longer exists. The infrastructure lives in `src/services/`; always import via the `@/services` alias.
 - **Never inline a non-trivial request or response type in the hook file.** Declare it in the module's `types.ts`. Tiny one-line `Variables` aliases are fine.
 - **Never use `useQuery` / `useMutation` directly from `@tanstack/react-query`.** The convention is `createQuery` / `createMutation` / `createInfiniteQuery` from `react-query-kit`.
-- **Never add interceptors, headers, or auth-token logic in a hook.** That all lives in `src/api/common/client.ts`. The only header you'll ever set manually is when you genuinely need a non-standard one for a single endpoint (rare).
+- **Never add interceptors, headers, or auth-token logic in a hook.** That all lives in `src/services/client.ts`. The only header you'll ever set manually is when you genuinely need a non-standard one for a single endpoint (rare).
 - **Never bypass the response unwrap.** Always end the chain with `.then((response) => response.data)` (or `response.data.<field>` when the API nests, see `use-posts.ts`). Consumers must never see the raw Axios wrapper.
 - **Never multiplex two endpoints in one file.** One hook per file.
 - **Never reference `Env.EXPO_PUBLIC_API_URL` or any `process.env.*` in a hook.** The base URL lives in `client`. Hooks pass relative paths only.
@@ -378,7 +383,7 @@ mutate(draft, {
 ## Final checklist before reporting done
 
 - [ ] Hook file at `src/api/<module>/use-<kebab-action>.ts` follows the right template (mutation / query / infinite query)
-- [ ] Imports `client` from `../common` — no direct `axios`, no recreated instance
+- [ ] Imports `client` from `@/services` — no direct `axios`, no recreated instance, no `../common` path
 - [ ] Relative URL only — no `Env.EXPO_PUBLIC_API_URL` reference, no `http(s)://...` literal
 - [ ] Request and response interfaces in `<module>/types.ts` with a section divider comment
 - [ ] Type aliases `type Variables = ...; type Response = ...;` at the top
@@ -386,7 +391,7 @@ mutate(draft, {
 - [ ] `signal` forwarded on every UI-backing `GET`
 - [ ] `<module>/index.ts` re-exports the new hook (alphabetical)
 - [ ] If a new module was created: `src/api/index.tsx` re-exports it
-- [ ] Paginated list uses `createInfiniteQuery` + `PaginateQuery<T>` + `getNextPageParam` / `getPreviousPageParam`
+- [ ] Paginated list uses `createInfiniteQuery` + `PaginateQuery<T>` + `getNextPageParam` / `getPreviousPageParam` (imported from `@/services`)
 - [ ] FormData upload relies on the client's auto-detection — no manual `Content-Type` header
 - [ ] `yarn type-check` passes
 - [ ] `yarn lint` passes
@@ -401,7 +406,7 @@ mutate(draft, {
 | GET with path param | `src/api/posts/use-post.ts` |
 | Plain POST mutation | `src/api/posts/use-add-post.ts` |
 | Cross-module response / pagination types | `src/api/types.ts` |
-| Shared Axios client (auth, network, 401, FormData, toasts, dev logs) | `src/api/common/client.ts` |
-| Pagination + query-key helpers | `src/api/common/utils.tsx` |
-| QueryClientProvider wiring | `src/api/common/api-provider.tsx` |
+| Shared Axios client (auth, network, 401, FormData, toasts, dev logs) | `src/services/client.ts` |
+| Pagination + query-key helpers | `src/services/utils.ts` |
+| QueryClientProvider wiring | `src/services/api-provider.tsx` |
 | Token read/write/clear | `src/storage/token.ts` |

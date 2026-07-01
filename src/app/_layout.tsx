@@ -14,8 +14,8 @@ import { useUnistyles } from 'react-native-unistyles';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { APIProvider } from '@/api/common/api-provider';
 import { initI18n } from '@/localization/i18n';
+import { APIProvider } from '@/services/api-provider';
 import { initStorage } from '@/storage';
 import { rehydrateStores } from '@/store';
 import { useUserStore } from '@/store/useUserStore';

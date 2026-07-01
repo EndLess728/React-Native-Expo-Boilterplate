@@ -1,7 +1,8 @@
 import { createQuery } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
-import { client } from '../common';
+import { client } from '@/services';
+
 import type { Post } from './types';
 
 type Variables = { id: string };

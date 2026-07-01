@@ -67,9 +67,9 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   │       ├── _layout.tsx   #     <Tabs> using unistyles theme colors
 │   │       ├── index.tsx     #     /
 │   │       └── profile.tsx   #     /profile
-│   ├── api/                  # Axios client, React Query hooks, endpoint definitions
-│   │   ├── common/           #   Base HTTP client, interceptors, query provider
+│   ├── api/                  # Axios hooks and endpoint definitions (react-query-kit)
 │   │   └── posts/            #   Example domain — CRUD hooks via react-query-kit
+│   ├── services/             # HTTP infrastructure (Axios client, QueryClientProvider, pagination helpers)
 │   ├── components/           # Shared UI primitives
 │   │   ├── Button.tsx        #   Themed pressable button
 │   │   ├── TextField.tsx     #   Text input with label, error, icons
@@ -281,7 +281,7 @@ MMKV, which isn't created until `initStorage()` resolves inside
 
 ## API Layer
 
-### HTTP Client (`src/api/common/client.ts`)
+### HTTP Client (`src/services/client.ts`)
 
 The Axios client handles:
 
@@ -292,12 +292,32 @@ The Axios client handles:
 - **Error toasts** — parses API error shapes and shows user-facing messages
 - **Dev logging** — logs every request/response in `__DEV__` mode
 
+### Structure
+
+```
+src/
+├── services/         ← HTTP infrastructure (never import axios elsewhere)
+│   ├── client.ts     ← shared Axios instance with all interceptors
+│   ├── api-provider.tsx  ← QueryClientProvider wiring
+│   ├── utils.ts      ← pagination helpers (getNextPageParam, normalizePages, …)
+│   └── index.ts      ← re-exports everything above
+└── api/
+    ├── index.tsx     ← re-exports types + every module
+    ├── types.ts      ← PaginateQuery<T> and other cross-module types
+    └── posts/        ← one folder per API resource
+        ├── types.ts
+        ├── use-posts.ts
+        ├── use-post.ts
+        ├── use-add-post.ts
+        └── index.ts
+```
+
 ### Adding a New Endpoint
 
 ```ts
 // src/api/todos/use-todos.ts
 import { createQuery } from 'react-query-kit';
-import { client } from '../common';
+import { client } from '@/services';   // ← always @/services, never ../common
 
 export const useTodos = createQuery({
   queryKey: ['todos'],
@@ -488,10 +508,11 @@ This project utilizes a `.skills/` directory to store specialized, task-specific
 
 These skills ensure that any AI working on the codebase follows the exact same architectural patterns as human developers.
 
+- **`api-hook-creation.md`** — How to create API hooks: file layout (`src/services/` for infrastructure, `src/api/<module>/` for hooks), code templates for mutations/queries/infinite queries, import conventions (`@/services`), and hard rules.
 - **`ui-creation.md`** — Rules for building screens, styling with Unistyles, and form validation.
 - **`localization.md`** — Strict guidelines on how to add, consume, and modify i18n translations across the app.
 
-When prompting an AI to build a feature, you can explicitly reference these skills (e.g., `@.skills/localization.md`) to guarantee adherence to the project's standards.
+When prompting an AI to build a feature, you can explicitly reference these skills (e.g., `@.skills/api-hook-creation.md`) to guarantee adherence to the project's standards.
 
 ## Customizing for Your Project
 

@@ -1,12 +1,12 @@
 # React Native Expo Boilerplate
 
-Production-grade React Native starter built on **Expo SDK 56**, **React Native 0.85**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
+Production-grade React Native starter built on **Expo SDK 57**, **React Native 0.85**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
 
 ## Tech Stack
 
 | Category | Library |
 |---|---|
-| **Framework** | [Expo](https://expo.dev/) (SDK 56) with React Compiler |
+| **Framework** | [Expo](https://expo.dev/) (SDK 57) with React Compiler |
 | **Navigation** | [Expo Router](https://docs.expo.dev/router/introduction/) — File-based routing on top of [React Navigation v7](https://reactnavigation.org/) (Native Stack, Bottom Tabs, Drawer). Typed routes enabled. |
 | **State** | [Zustand](https://github.com/pmndrs/zustand) — Atomic global state with MMKV persistence |
 | **Data Fetching** | [TanStack Query v5](https://tanstack.com/query) + [Axios](https://axios-http.com/) + [react-query-kit](https://github.com/nichenqin/react-query-kit) |
@@ -497,7 +497,7 @@ Commits are enforced via [Conventional Commits](https://www.conventionalcommits.
 ```
 feat: add biometric auth
 fix: resolve token refresh race condition
-chore: update Expo SDK to 56
+chore: update Expo SDK to 57
 ```
 
 The `prepare` script automatically installs Husky Git hooks on `yarn install`.

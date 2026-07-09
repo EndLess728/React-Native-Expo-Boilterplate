@@ -32,6 +32,8 @@
     "eas:build:ios:development": "cross-env APP_ENV=development EXPO_PUBLIC_APP_ENV=development eas build --platform ios --profile development",
     "eas:build:ios:staging": "cross-env APP_ENV=staging EXPO_PUBLIC_APP_ENV=staging eas build --platform ios --profile staging",
     "eas:build:ios:production": "cross-env APP_ENV=production EXPO_PUBLIC_APP_ENV=production eas build --platform ios --profile production",
+    "ios-build-production-auto-submit": "eas build -p ios --profile production --auto-submit",
+    "android-build-production-auto-submit": "eas build -p android --profile production --auto-submit",
     "env:pull:development": "eas env:pull development --path .env.development",
     "env:pull:staging": "eas env:pull preview --path .env.staging",
     "env:pull:production": "eas env:pull production --path .env.production",

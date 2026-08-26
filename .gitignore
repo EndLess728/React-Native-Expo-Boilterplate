@@ -84,3 +84,7 @@ extract_DSR.sh
 .claude/
 .vscode/mcp.json
 .codex/
+
+# Repack cache: source binaries from the last full native build, their
+# fingerprints, and the repacked artifacts. Machine-local build output.
+.repack/

@@ -77,9 +77,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           // Strip unused resources (drawables, strings, layouts) from the APK/AAB.
           enableShrinkResourcesInReleaseBuilds: true,
         },
-        // ios: { useFrameworks: 'static' },  // opt-in: smaller binary + faster
-        //                                       startup but breaks libs that
-        //                                       expect dynamic frameworks.
+        // Exclude emulator-only ABIs from release builds — reduces APK/AAB size.
+        // x86 / x86_64 are only needed for emulators; real devices use ARM.
+        //
+        // The key is `buildArchs`, NOT `abiFilters`. It writes
+        // `reactNativeArchitectures` into gradle.properties, which is what
+        // the RN Gradle plugin actually reads. `expo-build-properties`
+        // validates its android block WITHOUT `additionalProperties: false`,
+        // so a misspelled key is accepted, ignored, and never warned about —
+        // `abiFilters` sat here through a prebuild and a release build while
+        // all four ABIs kept shipping.
+        buildArchs: ['arm64-v8a', 'armeabi-v7a'],
       },
     ],
   ],

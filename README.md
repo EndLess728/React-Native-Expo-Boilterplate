@@ -441,6 +441,52 @@ yarn build:ios:production      # prebuild --clean → open .xcworkspace
 
 > All build and prebuild scripts use `--clean` and `STRICT_ENV_VALIDATION=1` to ensure fresh native projects with validated env vars.
 
+### Fast Rebuilds (Repack)
+
+`build:android:*` runs `expo prebuild --clean` plus a full Gradle release build every single time — minutes of work even when the only thing that changed is a TypeScript file. Repack takes the APK from the last real native build and swaps in a freshly bundled JS payload instead, which turns that into a few seconds.
+
+```bash
+yarn repack:android:staging                    # repack, or full build if stale
+yarn repack:android:staging --install          # …and adb install -r onto the device
+yarn repack:android:staging --force-build      # ignore the cache, rebuild native
+yarn repack:android:staging --no-build         # fail instead of falling back
+yarn repack:android:staging --js-bundle-only   # keep the binary's app metadata
+
+yarn repack:ios:staging --source-app path/to/App.app   # seed the cache from an Xcode build
+yarn repack:ios:staging                                # repack from the cached artifact
+```
+
+All three environments are wired for both platforms (`repack:android:development`, `repack:ios:production`, and so on).
+
+#### When to use it
+
+| Use repack | Use a full build |
+|---|---|
+| Only JS/TS changed — screens, components, hooks, styles, translations, business logic | You added or removed a native dependency |
+| Handing a fresh staging APK to QA or a stakeholder | You edited a config plugin or anything in `app.config.ts` that feeds the native projects |
+| Iterating on release-mode behaviour (where Fast Refresh does not apply) | You bumped the Expo SDK or React Native |
+| Re-testing the same build with a different `.env` value | You are cutting a store release — those go through EAS Build |
+
+Repack is **not** for the Metro dev client. `yarn start` already loads JS over the network, so Fast Refresh covers that case. This is for release-mode builds you install and hand to someone.
+
+#### The one rule: native must be unchanged
+
+A repacked artifact is only valid while the native half is untouched. Add a native module, change a config plugin, or bump the SDK, and the new JS will call native APIs the old binary does not contain — which fails **at runtime on the device**, not here, where you would notice it.
+
+The script does not trust you to remember. It fingerprints the project with `@expo/fingerprint`, stores the hash next to the cached artifact in `.repack/`, and compares before every repack. On a mismatch it falls back to a full native build instead of producing a broken artifact — or exits with an error if you passed `--no-build`.
+
+This means the **first run seeds the cache** and is therefore slow (full prebuild + Gradle). Every run after that is the fast path, until something native moves.
+
+#### iOS needs one manual step
+
+iOS is deliberately not automated: `yarn build:ios:*` opens Xcode rather than producing an artifact at a known path, so there is nothing for the script to shell out to. Build or archive in Xcode once, seed the cache with `--source-app`, and subsequent `yarn repack:ios:*` runs are fast. Both simulator `.app` bundles and device `.ipa` files work.
+
+#### Signing (Android)
+
+Repack rewrites the archive, so the result must be re-signed — and signing with a different key than the binary already on the device makes the install fail with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`. The default is the debug keystore, which is correct rather than a placeholder: local release builds are debug-signed on purpose (`android/app/build.gradle` signs `release` with `signingConfigs.debug`), while store releases go through EAS Build, which holds the real keystore in the cloud. Override with `--ks`, `--ks-pass`, `--ks-key-alias` and `--ks-key-pass` when repacking an artifact EAS built.
+
+> `.repack/` holds the cached source binaries, their fingerprints and the repacked output. It is gitignored — machine-local build output. The script runs the pinned `@expo/repack-app` devDependency rather than `npx …@latest`, so it behaves the same on every machine and works offline.
+
 ### EAS Cloud Builds
 
 ```bash
@@ -450,6 +496,82 @@ eas build --profile production --platform all
 ```
 
 EAS profiles are defined in `eas.json`. Each profile injects `EXPO_PUBLIC_APP_ENV`, and the `eas-build-pre-install` script copies the matching `.env` file to `.env.local`.
+
+Profiles all extend a shared `base` (pinned Node/Yarn, 4 GB heap for Metro):
+
+| Profile | EAS environment | Distribution | Android artifact | Notes |
+|---|---|---|---|---|
+| `debug` | `development` | internal | apk (implicit) | Dev client build (`developmentClient: true`) |
+| `development` | `development` | internal | apk | Standalone dev build, no Metro |
+| `staging` | `preview` | internal | apk | QA / stakeholder drops |
+| `production` | `production` | store | aab | `autoIncrement: true` — version comes from EAS (`appVersionSource: remote`) |
+
+### EAS Workflows
+
+The three files in `.eas/workflows/` run multi-job pipelines on EAS instead of a single `eas build` call. All three are **manual trigger only** (`workflow_dispatch`) — nothing runs on push, because every run spends paid build minutes and most commits are never installed by anyone.
+
+| Workflow | Script | What it does | Reach for it when |
+|---|---|---|---|
+| `build.yml` | `yarn eas:workflow:build` | Plain build, Android + iOS **in parallel** | You want an artifact — QA drop, device build, release candidate |
+| `build-fast.yml` | `yarn eas:workflow:build:fast` | Fingerprints, reuses a matching build and repacks it; compiles only if none matches | Iterating on JS-only changes and you don't want to pay for a full compile |
+| `release.yml` | `yarn eas:workflow:release` | Approval gate → production build → store submission | Cutting an actual release to TestFlight / Play |
+
+Validate all three before pushing changes to them:
+
+```bash
+yarn eas:workflow:validate
+```
+
+#### Passing inputs
+
+Both build workflows take `profile` and `platform`, and both default to `staging` / `all`. Override with `-F`:
+
+```bash
+yarn eas:workflow:build                                   # staging, both platforms
+yarn eas:workflow:build -F profile=production             # production, both platforms
+yarn eas:workflow:build -F profile=development -F platform=ios
+yarn eas:workflow:build:fast -F platform=android
+
+# Convenience wrappers for the common profiles:
+yarn eas:workflow:build:development
+yarn eas:workflow:build:staging
+yarn eas:workflow:build:production
+```
+
+> Inputs are declared `required: false` on purpose. Marking one `required: true` makes EAS ignore its `default` and prompt for a value instead, which turns every scripted run into an interactive one.
+
+In `build.yml` the two platform jobs have no dependency between them, so a both-platform run takes as long as the *slower* platform rather than the sum. Single-platform runs skip the other job rather than needing a separate file per platform.
+
+#### `build-fast.yml` — the cloud counterpart to `yarn repack`
+
+Same idea as [Fast Rebuilds (Repack)](#fast-rebuilds-repack), except the cache is every build your team has ever run on EAS rather than one APK on one machine. Per platform it:
+
+1. **Fingerprints** the project's native inputs.
+2. **Looks for a finished build** with that exact fingerprint *and* the same profile — profile is part of the query because a build from another profile can share a fingerprint, and repacking it would ship the wrong configuration. If a matching build is still running it waits for it instead of starting a second identical compile.
+3. **Repacks** that binary with the new JS if one was found — otherwise **compiles from scratch**.
+
+So the first run after a native change pays full price and becomes the source binary for every JS-only run after it. It offers only `staging` and `development` profiles, and the fingerprint job pins the EAS environment to match (`development` → `development`, `staging` → `preview`) — `app.config.ts` reads `EXPO_PUBLIC_APP_ENV`, so a fingerprint taken under the wrong environment makes every run look like a native change.
+
+**Releases deliberately do not use it.** Expo's guidance is that production builds should go through the complete pipeline for correct symbolication and signing, so what reaches a store is always compiled, never repacked.
+
+#### `release.yml` — production build and submit
+
+```bash
+yarn eas:workflow:release                      # both platforms, submit
+yarn eas:workflow:release -F platform=ios      # one platform
+yarn eas:workflow:release -F submit=false      # build only, don't upload
+```
+
+The **approval gate runs first**, before any build. Approving afterwards would waste the minutes it exists to protect, and a production build increments the remote version whether or not anyone wanted it. After approval each platform is an independent build → submit chain, so a failure on one store doesn't hold up the other.
+
+What submission does *not* do is release anything:
+
+- **Android** — the `.aab` goes to the Play `internal` track with `releaseStatus: draft`. Nothing reaches users until someone promotes it in the Play Console.
+- **iOS** — the `.ipa` lands in TestFlight once Apple finishes processing (usually 10–15 minutes). Releasing to the App Store stays a deliberate act in App Store Connect.
+
+> **One-time setup.** Submission keys are separate from build signing: a Google Service Account key and an App Store Connect API key, uploaded once via `eas credentials --platform <android|ios>`. Without them the build succeeds and the submit job fails at upload — after the minutes are already spent.
+
+For a one-off release without the workflow, `yarn ios-build-production-auto-submit` and `yarn android-build-production-auto-submit` run `eas build … --auto-submit` directly, skipping the approval gate.
 
 ### Code Quality
 
@@ -488,7 +610,7 @@ Two aliases are configured in `tsconfig.json` and `babel.config.js`:
 | Alias | Maps to | Example |
 |---|---|---|
 | `@/*` | `./src/*` | `import { Button } from '@/components'` |
-| `@env` | `./env.ts` | `import Env from '@env'` |
+| `@env` | `./env.ts` (`./__mocks__/@env.ts` under Jest) | `import Env from '@env'` |
 
 ### Commit Conventions
 

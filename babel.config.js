@@ -3,6 +3,7 @@ module.exports = function (api) {
   // transform-remove-console plugin below is picked up correctly.
   api.cache.using(() => process.env.NODE_ENV);
   const isProduction = process.env.NODE_ENV === 'production';
+  const isTest = process.env.NODE_ENV === 'test';
 
   return {
     presets: ['babel-preset-expo'],
@@ -14,7 +15,13 @@ module.exports = function (api) {
           extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.ts', '.tsx', '.json'],
           alias: {
             '@': './src',
-            '@env': './env',
+            // This alias rewrites `@env` to a relative path at transform time,
+            // which happens BEFORE Jest applies `moduleNameMapper` — so the
+            // `^@env$` mapping in jest.config.js never matches and cannot swap
+            // in the mock. Pointing the alias itself at the mock under test is
+            // what actually loads it; otherwise the real env.ts runs and warns
+            // about missing variables, since no .env file is loaded in Jest.
+            '@env': isTest ? './__mocks__/@env' : './env',
           },
         },
       ],

@@ -1,0 +1,107 @@
+# Production build for both stores, then submit, with a human gate in front.
+#
+# Separate from build.yml because a release is a different act from a build: it
+# uses the production profile, auto-increments the version (eas.json sets
+# `autoIncrement` there), and ends with binaries in App Store Connect and the
+# Play Console.
+#
+#   yarn eas:workflow:release
+#
+# Each platform is an independent chain — build → submit — so a failure on one
+# store does not hold up the other. Both chains start together.
+#
+# Build signing is already configured on EAS (this project has shipped STORE
+# builds on both platforms). Submission keys are separate: a Google Service
+# Account key and an App Store Connect API key, uploaded once via
+# `eas credentials --platform <android|ios>`. Without them the build succeeds
+# and the submit job fails at upload, after the minutes are already spent.
+name: Production release
+
+on:
+  # Inputs are optional so their defaults apply. Marking one `required: true`
+  # makes EAS ignore its `default` and prompt for a value instead, which turns
+  # every scripted run into an interactive one.
+  workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        description: Which platform to release
+        required: false
+        default: all
+        options:
+          - all
+          - android
+          - ios
+      submit:
+        type: boolean
+        description: Submit the builds to the stores after they finish
+        required: false
+        default: true
+
+# No `concurrency` block: EAS only ever CANCELS in-progress runs, never queues
+# them, and killing a half-finished release build is worse than letting it
+# finish. Two overlapping runs are safe anyway — eas.json sets
+# `appVersionSource: remote`, so each build takes its own version number from
+# the server rather than racing a local counter.
+jobs:
+  # The gate comes first on purpose. Approving after the builds have run wastes
+  # the minutes it was meant to protect, and a production build increments the
+  # remote version whether or not anyone wanted it.
+  approve:
+    name: Approve release
+    type: require-approval
+
+  # ── Android ────────────────────────────────────────────────────────────────
+
+  android:
+    name: Android (production)
+    type: build
+    needs: [approve]
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
+    params:
+      platform: android
+      profile: production
+      message: release · ${{ github.ref_name }}
+
+  # Uploads the .aab to Google Play. eas.json puts it on the `internal` track
+  # with `releaseStatus: draft`, so nothing reaches users until someone promotes
+  # it in the Play Console — the upload is automated, the rollout is not.
+  submit_android:
+    name: Submit to Google Play
+    type: submit
+    needs: [android]
+    if: ${{ inputs.submit }}
+    params:
+      profile: production
+      build_id: ${{ needs.android.outputs.build_id }}
+
+  # ── iOS ────────────────────────────────────────────────────────────────────
+
+  ios:
+    name: iOS (production)
+    type: build
+    needs: [approve]
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+    params:
+      platform: ios
+      profile: production
+      message: release · ${{ github.ref_name }}
+
+  # Uploads the .ipa to App Store Connect. It lands in TestFlight once Apple
+  # finishes processing (usually 10-15 minutes); releasing to the App Store is
+  # still a deliberate act in App Store Connect, not something this triggers.
+  #
+  # There is deliberately no `submit.production.ios` block in eas.json: EAS
+  # matches the app through the App Store Connect API key and the bundle
+  # identifier. If this job ever fails saying it cannot find the app, add the
+  # ascAppId (App Store Connect → your app → App Information → Apple ID):
+  #
+  #   "submit": { "production": { "ios": { "ascAppId": "1234567890" } } }
+  submit_ios:
+    name: Submit to App Store Connect
+    type: submit
+    needs: [ios]
+    if: ${{ inputs.submit }}
+    params:
+      profile: production
+      build_id: ${{ needs.ios.outputs.build_id }}

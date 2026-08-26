@@ -1,0 +1,127 @@
+# Build only what actually changed: repack when the native side is untouched,
+# fall back to a full native build when it is not.
+#
+#   yarn eas:workflow:build:fast
+#   yarn eas:workflow:build:fast -F profile=development -F platform=ios
+#
+# EAS fingerprints the project's native inputs, looks for an existing build with
+# that same fingerprint, and then either repacks that binary with the new JS
+# (fast) or compiles from scratch (slow). Same decision the local
+# `yarn repack:android:*` script makes, except the cache is every build your
+# team has ever run on EAS rather than one APK on one machine.
+#
+# The first run after a native change pays full price and becomes the source
+# binary for every JS-only run after it.
+#
+# ─── Not for releases ────────────────────────────────────────────────────────
+# release.yml deliberately does NOT use this. Expo's own guidance is that
+# production builds should go through the complete pipeline for correct
+# symbolication and signing, so what reaches a store is always compiled, never
+# repacked.
+name: Build (fingerprint-aware)
+
+on:
+  # Inputs are optional so their defaults apply. Marking one `required: true`
+  # makes EAS ignore its `default` and prompt for a value instead, which turns
+  # every scripted run into an interactive one.
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        description: Build profile from eas.json
+        required: false
+        default: staging
+        options:
+          - staging
+          - development
+      platform:
+        type: choice
+        description: Which platform to build
+        required: false
+        default: all
+        options:
+          - all
+          - android
+          - ios
+
+jobs:
+  # A fingerprint is only comparable to one taken with the same environment —
+  # app.config.ts reads EXPO_PUBLIC_APP_ENV, so the app name and other native
+  # config differ per environment. eas.json maps staging to the `preview`
+  # environment and development to `development`, which is what this expression
+  # reproduces; get it wrong and every run looks like a native change.
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: ${{ inputs.profile == 'development' && 'development' || 'preview' }}
+
+  # ── Android ────────────────────────────────────────────────────────────────
+
+  # Look for a finished build with this exact native fingerprint. `profile` is
+  # part of the query on purpose: a build from another profile can share a
+  # fingerprint, and repacking it would ship the wrong configuration.
+  android_source:
+    name: Find Android source build
+    type: get-build
+    needs: [fingerprint]
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
+    params:
+      platform: android
+      profile: ${{ inputs.profile }}
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      # A teammate's build of the same commit is usually already running. Wait
+      # for it rather than starting a second identical compile.
+      wait_for_in_progress: true
+
+  android_repack:
+    name: Android (repack)
+    type: repack
+    needs: [android_source]
+    if: ${{ needs.android_source.outputs.build_id }}
+    params:
+      build_id: ${{ needs.android_source.outputs.build_id }}
+      profile: ${{ inputs.profile }}
+      message: repack · ${{ github.ref_name }}
+
+  android_build:
+    name: Android (full native build)
+    type: build
+    needs: [android_source]
+    if: ${{ !needs.android_source.outputs.build_id }}
+    params:
+      platform: android
+      profile: ${{ inputs.profile }}
+      message: native · ${{ github.ref_name }}
+
+  # ── iOS ────────────────────────────────────────────────────────────────────
+
+  ios_source:
+    name: Find iOS source build
+    type: get-build
+    needs: [fingerprint]
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+    params:
+      platform: ios
+      profile: ${{ inputs.profile }}
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  ios_repack:
+    name: iOS (repack)
+    type: repack
+    needs: [ios_source]
+    if: ${{ needs.ios_source.outputs.build_id }}
+    params:
+      build_id: ${{ needs.ios_source.outputs.build_id }}
+      profile: ${{ inputs.profile }}
+      message: repack · ${{ github.ref_name }}
+
+  ios_build:
+    name: iOS (full native build)
+    type: build
+    needs: [ios_source]
+    if: ${{ !needs.ios_source.outputs.build_id }}
+    params:
+      platform: ios
+      profile: ${{ inputs.profile }}
+      message: native · ${{ github.ref_name }}

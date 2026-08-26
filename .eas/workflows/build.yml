@@ -1,0 +1,58 @@
+# Build the app on EAS for either platform, on demand.
+#
+# Manual trigger only, and deliberately so: every run consumes paid EAS build
+# minutes, and this project pushes often enough that building on each commit
+# would spend the plan on commits nobody installs. Reach for this when you want
+# an artifact — a QA drop, a device build, a release candidate.
+#
+#   eas workflow:run .eas/workflows/build.yml -F profile=staging -F platform=all
+#
+# The two build jobs have no `needs` between them, so EAS runs them in parallel:
+# a both-platform run takes as long as the slower platform, not the sum.
+name: Build
+
+on:
+  # Inputs are optional so their defaults apply. Marking one `required: true`
+  # makes EAS ignore its `default` and prompt for a value instead, which turns
+  # every scripted run into an interactive one.
+  workflow_dispatch:
+    inputs:
+      profile:
+        type: choice
+        description: Build profile from eas.json
+        required: false
+        default: staging
+        options:
+          - development
+          - staging
+          - production
+      platform:
+        type: choice
+        description: Which platform to build
+        required: false
+        default: all
+        options:
+          - all
+          - android
+          - ios
+
+jobs:
+  android:
+    name: Android (${{ inputs.profile }})
+    type: build
+    # Skipped rather than absent when a single platform is chosen, so one
+    # workflow covers all three cases instead of needing a file per platform.
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
+    params:
+      platform: android
+      profile: ${{ inputs.profile }}
+      message: ${{ inputs.profile }} · ${{ github.ref_name }}
+
+  ios:
+    name: iOS (${{ inputs.profile }})
+    type: build
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+    params:
+      platform: ios
+      profile: ${{ inputs.profile }}
+      message: ${{ inputs.profile }} · ${{ github.ref_name }}

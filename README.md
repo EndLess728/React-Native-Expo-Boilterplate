@@ -37,9 +37,10 @@ git clone <your-repo-url>
 cd React-Native-Expo-Boilterplate
 yarn install
 
-# 2. Copy and fill in the env file for your target environment
-cp .env.example .env.development
-# Edit .env.development with your API URLs
+# 2. Fill in your API URLs
+#    postinstall already created .env.development / .staging / .production
+#    from .env.example — they hold placeholders until you edit them.
+$EDITOR .env.development
 
 # 3. Generate native projects and run
 yarn android:development   # prebuild + run Android (dev)
@@ -87,7 +88,9 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   ├── theme/                # Fonts, TextStyles primitives
 │   └── utils/                # Pure utility functions + toast helpers
 ├── __mocks__/                # Jest module mocks (@env, empty-module stub)
-├── .env.example              # Template — copy to .env.development/staging/production
+├── scripts/                  # setup-env.mjs (seeds .env.* on postinstall),
+│                             #   repack.mjs, eas-pre-install.sh
+├── .env.example              # The only committed env file — seeds the other three
 ├── env.ts                    # Zod schema — validates env vars at startup
 ├── app.config.ts             # Dynamic Expo config (name, bundle ID, scheme, plugins)
 ├── jest.config.js            # Jest configuration (jest-expo preset)
@@ -120,16 +123,35 @@ Raw passwords are **never persisted**. `useUserStore` only stores safe profile d
 
 ### Environment Variables
 
-Real `.env.*` files are **gitignored**. Only `.env.example` (with placeholder values) is committed.
+Real `.env.*` files are **gitignored and untracked**. Only `.env.example` (with
+placeholder values) is committed.
+
+You do not create them by hand — `scripts/setup-env.mjs` runs on `postinstall`
+and seeds all three from `.env.example`, with `EXPO_PUBLIC_APP_ENV` already set
+per file:
 
 ```bash
-# Copy and fill in for each environment — never commit the real files
-cp .env.example .env.development
-cp .env.example .env.staging
-cp .env.example .env.production
+yarn install        # creates .env.development / .staging / .production if absent
+yarn env:init       # the same thing, on demand
+```
 
-# If you already committed the real files, un-track them:
-git rm --cached .env .env.development .env.staging .env.production
+The generator **never writes to a file that already exists**. It runs on every
+install, so overwriting the file holding your staging credentials would be a
+worse bug than the one it solves — existing files are only read, to report keys
+they are missing. It is also skipped entirely on EAS and in CI, where env vars
+are injected into `process.env` rather than read from disk.
+
+> **Why untracked, not just gitignored?** Ignore rules do not apply to files git
+> already tracks. A tracked-but-ignored env file accepts a real API key and
+> commits it with no warning at all — the failure mode is silent, which is the
+> worst kind. Keeping them untracked means `git status` has nothing to offer and
+> the key cannot leak by accident.
+
+If you ever find one tracked again (`git ls-files | grep '^\.env'` should print
+only `.env.example`), un-track it without deleting your values:
+
+```bash
+git rm --cached .env.development .env.staging .env.production
 ```
 
 ## Multi-Environment Setup
@@ -155,9 +177,16 @@ EXPO_PUBLIC_SOCKET_URL=https://ws.example.com/
 ```
 
 Adding a new variable:
-1. Add it to `.env.example` and all your local `.env.*` files
-2. Add the key to the Zod schema in `env.ts`
-3. Reference it statically via `process.env.EXPO_PUBLIC_YOUR_VAR` (Metro requires dot notation) or import from `@env`
+1. Add it to `.env.example` — the committed template every local file is seeded from
+2. Run `yarn env:init`. It will not touch your existing files, but it names each
+   one missing the new key, so you know exactly what to fill in
+3. Add the key to the Zod schema in `env.ts`
+4. Reference it statically via `process.env.EXPO_PUBLIC_YOUR_VAR` (Metro requires dot notation) or import from `@env`
+5. Push it to EAS for cloud builds — `yarn env:push:staging` and friends
+
+> Step 2 matters more than it looks: a missing key does not fail where you added
+> it. It fails later, during someone else's prebuild, as a Zod error about a
+> variable they have never heard of.
 
 > **Validation:** `env.ts` validates all variables via Zod on every startup. In development, invalid vars log a warning. During prebuild (`STRICT_ENV_VALIDATION=1`), it throws — catching config errors before native code is generated.
 
@@ -401,6 +430,19 @@ it('renders the button title', () => {
 
 ## Available Scripts
 
+### Environment Files
+
+```bash
+yarn env:init                  # Create any missing .env.* from .env.example
+                               #   (never overwrites; runs on postinstall too)
+yarn env:pull:development      # Pull values down from EAS into .env.development
+yarn env:pull:staging          # …from the EAS `preview` environment
+yarn env:pull:production       # …from the EAS `production` environment
+yarn env:push:development      # Push .env.development up to EAS
+yarn env:push:staging          # …to the EAS `preview` environment
+yarn env:push:production       # …to the EAS `production` environment
+```
+
 ### Development
 
 ```bash
@@ -495,7 +537,20 @@ eas build --profile staging --platform ios
 eas build --profile production --platform all
 ```
 
-EAS profiles are defined in `eas.json`. Each profile injects `EXPO_PUBLIC_APP_ENV`, and the `eas-build-pre-install` script copies the matching `.env` file to `.env.local`.
+EAS profiles are defined in `eas.json`. Each profile injects `EXPO_PUBLIC_APP_ENV`
+and names an EAS `environment` (`development` / `preview` / `production`) whose
+stored variables EAS puts straight into `process.env` on the builder.
+
+`scripts/eas-pre-install.sh` runs before install and copies the matching
+`.env.<APP_ENV>` to `.env.local` when that file made it onto the builder —
+`.easignore` un-ignores the three env files so they upload from your machine
+even though git does not track them. When the file is absent (a CI-triggered
+build, or a teammate who has not filled theirs in), the hook exits cleanly and
+the EAS-stored variables are the source of truth.
+
+> That fallback is the reason to keep EAS in sync: run `eas env:list` to confirm
+> all three environments are populated, and `yarn env:push:<env>` when they are
+> not. It is what a cloud build falls back to when there is no file on disk.
 
 Profiles all extend a shared `base` (pinned Node/Yarn, 4 GB heap for Metro):
 
@@ -642,7 +697,7 @@ When prompting an AI to build a feature, you can explicitly reference these skil
 2. **Update app display names** in `app.config.ts` — change `ExpoTemplate` to your app name
 3. **Update the slug** in `app.config.ts` — this is your Expo project identifier
 4. **Replace placeholder icons** — update `assets/icon.png` and `assets/favicon.png`
-5. **Add your API URLs** to your local `.env.*` files (copied from `.env.example`)
+5. **Add your API URLs** to your local `.env.*` files (created for you by `yarn install`; re-runnable with `yarn env:init`)
 6. **Update `env.ts`** schema with your project's environment variables
 7. **Register new stores** in `src/store/index.ts → rehydrateStores()`
 

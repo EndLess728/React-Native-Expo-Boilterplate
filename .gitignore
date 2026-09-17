@@ -63,8 +63,9 @@ yarn-error.*
 # local env files
 .env*.local
 
-# Environment-specific files with real values — use .env.example as template
-# Run: git rm --cached .env .env.development .env.staging .env.production
+# Environment-specific files with real values. Untracked on purpose: only
+# .env.example is committed, and scripts/setup-env.mjs seeds these three from
+# it on postinstall. Never `git add -f` one of them.
 .env
 .env.development
 .env.staging
@@ -88,3 +89,6 @@ extract_DSR.sh
 # Repack cache: source binaries from the last full native build, their
 # fingerprints, and the repacked artifacts. Machine-local build output.
 .repack/
+
+# Testing coverage report
+coverage/

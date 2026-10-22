@@ -1,0 +1,63 @@
+# Generates every create-expo-boilerplate combination and checks each one
+# type-checks, lints, passes its tests and evaluates its Expo config.
+# Runs when the boilerplate or the CLI changes, since either can break a
+# generated project.
+name: CLI matrix
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '.skills/**'
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '.skills/**'
+  workflow_dispatch:
+    inputs:
+      all:
+        description: Check all 48 combinations instead of the 18 core ones
+        type: boolean
+        default: false
+      export:
+        description: Also bundle every project with `expo export` (slow)
+        type: boolean
+        default: false
+
+concurrency:
+  group: cli-matrix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: cli
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Cache shared app dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/matrix/deps
+          key: matrix-deps-${{ hashFiles('package.json', 'yarn.lock', 'cli/src/versions.ts') }}
+
+      - run: npm ci
+
+      - name: Generate and check
+        env:
+          MATRIX_DIR: ${{ runner.temp }}/matrix
+        run: |
+          ARGS=""
+          if [ "${{ inputs.all }}" = "true" ]; then ARGS="$ARGS --all"; fi
+          if [ "${{ inputs.export }}" = "true" ]; then ARGS="$ARGS --export"; fi
+          node scripts/test-matrix.mjs $ARGS

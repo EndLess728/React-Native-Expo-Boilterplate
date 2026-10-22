@@ -20,6 +20,25 @@ Production-grade React Native starter built on **Expo SDK 57**, **React Native 0
 | **Icons** | [@react-native-vector-icons/ionicons](https://github.com/oblador/react-native-vector-icons/tree/master/packages/ionicons) — Modular per-family import (replaces deprecated `@expo/vector-icons`) |
 | **Linting** | ESLint 9 (flat config) + Prettier + Husky + lint-staged + Commitlint |
 
+## Create a New App (CLI)
+
+Don't clone this repo for a new project — use the CLI. It generates a fresh app from this boilerplate with the stack you pick:
+
+```bash
+npx create-expo-boilerplate my-app
+```
+
+| Option | Choices (default first) |
+|---|---|
+| State | Zustand · Redux Toolkit (Thunk or Saga) |
+| Navigation | Expo Router · React Navigation |
+| Language | TypeScript · JavaScript |
+| Tooling | ESLint on/off · Husky on/off |
+
+Everything is also available as flags (`--state redux --redux-middleware saga --navigation react-navigation --js --no-husky --yes`). The CLI lives in [`cli/`](./cli) — see its README for how it works, testing every combination, and publishing.
+
+This repo is the template itself (Expo Router + Zustand + TypeScript), so keep improving it as usual; the CLI picks changes up automatically.
+
 ## Quick Start
 
 ### Prerequisites

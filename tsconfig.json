@@ -21,7 +21,8 @@
     "ios",
     "plugins",
     "**/__tests__/**",
-    "**/__mocks__/**"
+    "**/__mocks__/**",
+    "cli"
   ],
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

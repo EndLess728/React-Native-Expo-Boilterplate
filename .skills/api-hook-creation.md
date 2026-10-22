@@ -12,7 +12,7 @@ Do **not** re-implement any of these in a hook:
 
 - **Bearer token injection** — pulled from encrypted MMKV (`src/storage/token.ts`) on every request.
 - **Network connectivity check** — requests fail fast with a "No internet" toast (via NetInfo) instead of waiting out the 30s timeout. No need to check `useNetInfo()` from a screen before firing a query.
-- **401 handling** — shows a "Session Expired" alert and triggers `useUserStore.logout()`. Or, when `ENABLE_TOKEN_REFRESH = true`, attempts a queued refresh-token flow and retries the original request transparently.
+- **401 handling** — shows a "Session Expired" alert and triggers `signOut()` from `@/features/auth`. Or, when `ENABLE_TOKEN_REFRESH = true`, attempts a queued refresh-token flow and retries the original request transparently.
 - **FormData detection** — when the request `data` is a `FormData` instance, the client sets `Content-Type: multipart/form-data` automatically. Image / file uploads work without per-call header tweaks.
 - **Error toasts** — non-401 errors are parsed from `{ error[] | errors[] | message }` shapes and shown via `showErrorToast`. A mutation can pass an `onError` to suppress or override.
 - **Dev request/response logging** — `__DEV__` only, with method + URL + status.

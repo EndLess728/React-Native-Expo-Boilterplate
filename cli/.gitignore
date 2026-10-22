@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Built from the repo root by scripts/sync-template.mjs at pack time.
+template/

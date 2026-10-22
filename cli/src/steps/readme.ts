@@ -22,8 +22,8 @@ export function renderReadme(o: ProjectOptions): string {
       } + [redux-persist](https://github.com/rt2zz/redux-persist) on MMKV`
     : '[Zustand](https://github.com/pmndrs/zustand) with MMKV persistence';
   const navLabel = isRouter
-    ? '[Expo Router](https://docs.expo.dev/router/introduction/) — file-based routing, typed routes'
-    : '[React Navigation 7](https://reactnavigation.org/) — native stack + bottom tabs, typed param lists';
+    ? `[Expo Router](https://docs.expo.dev/router/introduction/) — file-based routing${ts ? ', typed routes' : ''}`
+    : `[React Navigation 7](https://reactnavigation.org/) — native stack + bottom tabs${ts ? ', typed param lists' : ''}`;
 
   const tooling = [
     o.eslint ? 'ESLint 9 (flat config)' : null,
@@ -98,7 +98,7 @@ export function renderReadme(o: ProjectOptions): string {
     '│   ├── providers/            # AppProviders + useAppBootstrap()',
     '│   ├── services/             # Axios client (auth header, 401 handling, error toasts), QueryClient',
     isRedux
-      ? `│   ├── store/                # configureStore, redux-persist, ${saga ? 'root saga, ' : ''}typed hooks`
+      ? `│   ├── store/                # configureStore, redux-persist, ${saga ? 'root saga, ' : ''}${ts ? 'typed ' : ''}hooks`
       : '│   ├── store/                # createPersistedStore() + rehydrateStores()',
     '│   ├── storage/              # encrypted MMKV + token helpers',
     '│   ├── localization/         # i18n setup + translations',

@@ -1,8 +1,8 @@
-# API conventions for `src/api/` — React Native + Expo
+# API conventions for `src/features/<feature>/api/` — React Native + Expo
 
 > Source of truth for adding or modifying any API hook in this project. Intended to be read by humans and AI coding assistants alike (Claude Code, Cursor, Copilot, Codex, Aider, etc.). Follow it verbatim — do not invent a parallel structure.
 
-This is a standalone Expo / React Native app. All API access goes through `react-query-kit` hooks under `src/api/`, routed via a single configured Axios client in `src/services/client.ts`. The client does most of the heavy lifting so individual hooks stay short, predictable, and easy to delete.
+This is a standalone Expo / React Native app. All API access goes through `react-query-kit` hooks under `src/features/<feature>/api/`, routed via a single configured Axios client in `src/services/client.ts`. The client does most of the heavy lifting so individual hooks stay short, predictable, and easy to delete.
 
 ---
 
@@ -27,12 +27,12 @@ Do not guess. If the requester has not provided one of these, ask before proceed
 
 1. **HTTP method** — `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`.
 2. **Endpoint path** — relative to `Env.EXPO_PUBLIC_API_URL` (e.g. `posts`, `users/login`, `posts/{id}`). Never the full URL.
-3. **Module** — which folder under `src/api/`. Existing: `posts`. Create one new folder per resource (`auth`, `users`, `events`, …) using kebab-case. If unsure, propose a name and confirm.
+3. **Feature** — which folder under `src/features/`. Existing with an API: `posts`. Put the hook in the feature that owns the resource (`src/features/<feature>/api/`); create a new kebab-case feature folder when none fits. If unsure, propose a name and confirm.
 4. **Path params** (URL placeholders such as `:id`) — list them.
 5. **Query params** (e.g. `?page=1&limit=10`) — list them.
 6. **Request body shape** — for non-GET, what fields the backend expects. If it's a file upload, confirm whether the body should be `FormData`.
-7. **Response shape** — what the API actually returns. **No enforced envelope** in this project — `src/api/posts/use-posts.ts` unwraps `.data.posts`, others unwrap `.data` directly. Match reality, not an imagined wrapper.
-8. **Paginated** — if the response is a list with `count` / `next` / `previous`, use `createInfiniteQuery` and reuse `PaginateQuery<T>` from `src/api/types.ts`.
+7. **Response shape** — what the API actually returns. **No enforced envelope** in this project — `src/features/posts/api/use-posts.ts` unwraps `.data.posts`, others unwrap `.data` directly. Match reality, not an imagined wrapper.
+8. **Paginated** — if the response is a list with `count` / `next` / `previous`, use `createInfiniteQuery` and reuse `PaginateQuery<T>` from `src/services/types.ts`.
 9. **Auth required** — by default yes (every request carries the Bearer token automatically). The only call that bypasses the 401-interceptor loop is the refresh-token call itself, which is hard-wired in `client.ts`. If you have another genuinely public endpoint, mention it.
 
 ---
@@ -46,29 +46,29 @@ src/
 │   ├── api-provider.tsx     ← APIProvider (QueryClientProvider) — do not touch unless intentionally changing query defaults
 │   ├── client.ts            ← shared Axios instance — never recreate, never `import axios` elsewhere
 │   └── utils.ts             ← DEFAULT_LIMIT, getQueryKey, normalizePages, getNextPageParam, getPreviousPageParam
-└── api/
-    ├── index.tsx            ← re-exports types and every module
-    ├── types.ts             ← cross-module types (PaginateQuery<T>)
-    └── <module>/
-        ├── index.ts         ← exports types + every hook in this folder (alphabetical)
-        ├── types.ts         ← request + response interfaces for this module
-        ├── use-<action-1>.ts ← one hook per file
-        ├── use-<action-2>.ts
-        └── ...
+│   └── types.ts             ← cross-feature API types (PaginateQuery<T>)
+└── features/
+    └── <feature>/
+        ├── index.ts         ← the feature's public API: re-exports api types + every hook (alphabetical)
+        └── api/
+            ├── types.ts         ← request + response interfaces for this feature
+            ├── use-<action-1>.ts ← one hook per file
+            ├── use-<action-2>.ts
+            └── ...
 ```
 
 Rules:
 - **One hook per file.** Name: `use-<kebab-action>.ts` (e.g. `use-post.ts`, `use-add-post.ts`, `use-posts.ts`, `use-upload-avatar.ts`).
-- **Types live in the module's `types.ts`.** Never inline a non-trivial request or response type in the hook file. Tiny one-line `Variables` aliases (`{ id: string }`) at the top of the hook are fine.
-- **Module's `index.ts` re-exports** every sibling alphabetically: `export * from './types'; export * from './use-<action>';`.
-- **New module folder** → add `export * from './<module>';` to `src/api/index.tsx`.
+- **Types live in the feature's `api/types.ts`.** Never inline a non-trivial request or response type in the hook file. Tiny one-line `Variables` aliases (`{ id: string }`) at the top of the hook are fine.
+- **The feature's `index.ts` re-exports** every api file alphabetically: `export * from './api/types'; export * from './api/use-<action>';`.
+- **Consumers import from `@/features/<feature>`**, never from a file inside it (ESLint enforces this).
 - **Hooks import `client` and helpers from `@/services`**, never from a relative `../common` path (that folder no longer exists).
 
 ---
 
 ## Step 3 — Endpoint strings
 
-Inline the relative URL with a template literal — this project does **not** use a central `ENDPOINTS` constant. See `src/api/posts/use-post.ts`:
+Inline the relative URL with a template literal — this project does **not** use a central `ENDPOINTS` constant. See `src/features/posts/api/use-post.ts`:
 
 ```ts
 client.get(`posts/${variables.id}`, { signal })
@@ -110,7 +110,7 @@ export interface AddPostRequest {
 - Request body → `<Action>Request` (e.g. `AddPostRequest`, `UpdatePostRequest`).
 - Response data shape → reuse the entity (`Post`, `Post[]`) when possible; name it `<Action>Response` only when it's non-trivial.
 
-**Paginated lists** reuse `PaginateQuery<T>` from `src/api/types.ts`:
+**Paginated lists** reuse `PaginateQuery<T>` from `src/services/types.ts`:
 
 ```ts
 import type { PaginateQuery } from '../types';
@@ -118,13 +118,13 @@ import type { PaginateQuery } from '../types';
 export type PostsListResponse = PaginateQuery<Post>;
 ```
 
-`PaginateQuery<T>` is `{ results: T[]; count: number; next: string | null; previous: string | null }` — offset/URL-based, matching the DRF default. If the backend uses a different pagination shape, define a new helper in `src/api/types.ts` rather than diverging per module.
+`PaginateQuery<T>` is `{ results: T[]; count: number; next: string | null; previous: string | null }` — offset/URL-based, matching the DRF default. If the backend uses a different pagination shape, define a new helper in `src/services/types.ts` rather than diverging per module.
 
 **File uploads:** the request type is `FormData`, not a specific interface. Document the expected fields in a comment above the hook.
 
-Reference: `src/api/posts/types.ts`.
+Reference: `src/features/posts/api/types.ts`.
 
-> **Note:** `PaginateQuery<T>` is imported from `src/api/types.ts`, not from `@/services`.
+> **Note:** `PaginateQuery<T>` is imported from `src/services/types.ts`, not from `@/services`.
 
 ---
 
@@ -136,7 +136,7 @@ For any `GET` that backs UI, accept the second argument from `react-query-kit` a
 
 ### 5a. Mutation (POST / PUT / PATCH / DELETE)
 
-Reference: `src/api/posts/use-add-post.ts`.
+Reference: `src/features/posts/api/use-add-post.ts`.
 
 ```ts
 import { createMutation } from 'react-query-kit';
@@ -212,7 +212,7 @@ export const useUploadAvatar = createMutation<Response, Variables, AxiosError>({
 
 ### 5d. Query — no variables
 
-Reference: `src/api/posts/use-posts.ts`.
+Reference: `src/features/posts/api/use-posts.ts`.
 
 ```ts
 import { createQuery } from 'react-query-kit';
@@ -235,7 +235,7 @@ export const usePosts = createQuery<Response, Variables, AxiosError>({
 
 ### 5e. Query — with path param or query params
 
-Reference: `src/api/posts/use-post.ts`.
+Reference: `src/features/posts/api/use-post.ts`.
 
 ```ts
 import { createQuery } from 'react-query-kit';
@@ -294,16 +294,14 @@ In the consumer, flatten pages with `normalizePages(data?.pages)` from `@/servic
 
 ## Step 6 — Wire up the exports
 
-In `<module>/index.ts`, add the new file in **alphabetical** order:
+In `src/features/<feature>/index.ts`, add the new file in **alphabetical** order:
 
 ```ts
-export * from './types';
-export * from './use-add-post';
-export * from './use-post';
-export * from './use-posts';
+export * from './api/types';
+export * from './api/use-add-post';
+export * from './api/use-post';
+export * from './api/use-posts';
 ```
-
-If a new module folder was created, add `export * from './<module>';` to `src/api/index.tsx`.
 
 ---
 
@@ -382,7 +380,7 @@ mutate(draft, {
 
 ## Final checklist before reporting done
 
-- [ ] Hook file at `src/api/<module>/use-<kebab-action>.ts` follows the right template (mutation / query / infinite query)
+- [ ] Hook file at `src/features/<feature>/api/use-<kebab-action>.ts` follows the right template (mutation / query / infinite query)
 - [ ] Imports `client` from `@/services` — no direct `axios`, no recreated instance, no `../common` path
 - [ ] Relative URL only — no `Env.EXPO_PUBLIC_API_URL` reference, no `http(s)://...` literal
 - [ ] Request and response interfaces in `<module>/types.ts` with a section divider comment
@@ -390,7 +388,7 @@ mutate(draft, {
 - [ ] `.then((response) => response.data)` closes the request chain
 - [ ] `signal` forwarded on every UI-backing `GET`
 - [ ] `<module>/index.ts` re-exports the new hook (alphabetical)
-- [ ] If a new module was created: `src/api/index.tsx` re-exports it
+- [ ] The feature's `index.ts` re-exports the new hook
 - [ ] Paginated list uses `createInfiniteQuery` + `PaginateQuery<T>` + `getNextPageParam` / `getPreviousPageParam` (imported from `@/services`)
 - [ ] FormData upload relies on the client's auto-detection — no manual `Content-Type` header
 - [ ] `yarn type-check` passes
@@ -402,10 +400,10 @@ mutate(draft, {
 
 | Pattern | File to read |
 |---|---|
-| Static GET, no params | `src/api/posts/use-posts.ts` |
-| GET with path param | `src/api/posts/use-post.ts` |
-| Plain POST mutation | `src/api/posts/use-add-post.ts` |
-| Cross-module response / pagination types | `src/api/types.ts` |
+| Static GET, no params | `src/features/posts/api/use-posts.ts` |
+| GET with path param | `src/features/posts/api/use-post.ts` |
+| Plain POST mutation | `src/features/posts/api/use-add-post.ts` |
+| Cross-feature response / pagination types | `src/services/types.ts` |
 | Shared Axios client (auth, network, 401, FormData, toasts, dev logs) | `src/services/client.ts` |
 | Pagination + query-key helpers | `src/services/utils.ts` |
 | QueryClientProvider wiring | `src/services/api-provider.tsx` |

@@ -10,7 +10,8 @@
     "password": "كلمة المرور",
     "login_description": "أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول",
     "enter_email": "أدخل بريدك الإلكتروني",
-    "enter_password": "أدخل كلمة المرور"
+    "enter_password": "أدخل كلمة المرور",
+    "login_success": "تم تسجيل الدخول بنجاح"
   },
   "validation": {
     "email_required": "البريد الإلكتروني مطلوب",

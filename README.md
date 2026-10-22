@@ -55,38 +55,33 @@ yarn ios:development       # prebuild + run iOS (dev)
 ├── index.ts                  # Custom entry — runs the unistyles side-effect
 │                             #   BEFORE expo-router/entry (order matters)
 ├── src/
-│   ├── app/                  # Expo Router file-based routes
-│   │   ├── _layout.tsx       #   Root layout: providers, splash, fonts, storage
-│   │   │                     #     init, i18n init, ErrorBoundary re-export,
-│   │   │                     #     and <Stack.Protected> auth routing
+│   ├── app/                  # Expo Router routes — THIN files only
+│   │   ├── _layout.tsx       #   Root layout: useAppBootstrap() + <AppProviders>,
+│   │   │                     #     ErrorBoundary re-export, <Stack.Protected> auth routing
 │   │   ├── +not-found.tsx    #   404 catch-all
 │   │   ├── +html.tsx         #   Web-only HTML shell (no-op on iOS/Android)
-│   │   ├── (auth)/           #   Auth group (URL-invisible)
-│   │   │   ├── _layout.tsx   #     Headerless <Stack>
-│   │   │   └── login.tsx     #     /login
-│   │   └── (tabs)/           #   Tabs group (URL-invisible)
-│   │       ├── _layout.tsx   #     <Tabs> using unistyles theme colors
-│   │       ├── index.tsx     #     /
-│   │       └── profile.tsx   #     /profile
-│   ├── api/                  # Axios hooks and endpoint definitions (react-query-kit)
-│   │   └── posts/            #   Example domain — CRUD hooks via react-query-kit
-│   ├── services/             # HTTP infrastructure (Axios client, QueryClientProvider, pagination helpers)
-│   ├── components/           # Shared UI primitives
-│   │   ├── Button.tsx        #   Themed pressable button
-│   │   ├── TextField.tsx     #   Text input with label, error, icons
-│   │   ├── ControlledTextField.tsx  # RHF-connected TextField
-│   │   ├── ScreenWrapper.tsx #   SafeArea + StatusBar wrapper
-│   │   ├── TabBarIcon.tsx    #   Maps route.name → tab icon
-│   │   ├── TabBarLabel.tsx   #   Maps route.name → tab label
-│   │   └── ...
-│   ├── constants/            # Tab route segments, ApiUrls, deviceInfo, status enums
-│   ├── hooks/                # Shared custom hooks (useAppState, useDebounce, …)
-│   ├── localization/         # i18n config, translation JSON files, type-safe hooks
+│   │   ├── (auth)/login.tsx  #   `export { LoginScreen as default } from '@/features/auth'`
+│   │   └── (tabs)/           #   Tabs group (URL-invisible): index → Home, profile → Profile
+│   ├── features/             # One folder per feature — screens, state, API, types
+│   │   ├── auth/             #   screens/, store/, api/, hooks.ts, session.ts, types.ts
+│   │   │   └── index.ts      #     Public API — the only entry other code may import
+│   │   ├── home/             #   screens/HomeScreen.tsx
+│   │   ├── posts/            #   api/ — react-query-kit hooks for the posts resource
+│   │   └── profile/          #   screens/ProfileScreen.tsx
+│   ├── shared/               # Feature-agnostic building blocks
+│   │   ├── components/       #   Button, TextField, ControlledTextField, ScreenWrapper, Tab bar bits
+│   │   ├── constants/        #   Tab route segments, ApiUrls, deviceInfo, status enums
+│   │   ├── hooks/            #   useAppState, useDebounce, useBlockBackNavigation
+│   │   └── utils/            #   scale helpers, toast
+│   ├── providers/            # AppProviders (all context providers) + useAppBootstrap()
+│   ├── services/             # HTTP infrastructure (Axios client, QueryClientProvider, pagination)
+│   ├── store/                # App-level store wiring: rehydrateStores(), StoreProvider,
+│   │                         #   createPersistedStore() helper
 │   ├── storage/              # Encrypted MMKV storage — async init, keychain-backed key
-│   ├── store/                # Zustand stores (useUserStore, …) + rehydration helper
+│   ├── localization/         # i18n config, translation JSON files, type-safe hooks
 │   ├── styles/               # Unistyles themes, breakpoints, configure call
 │   ├── theme/                # Fonts, TextStyles primitives
-│   └── utils/                # Pure utility functions + toast helpers
+│   └── assets/               # Fonts and images
 ├── __mocks__/                # Jest module mocks (@env, empty-module stub)
 ├── scripts/                  # setup-env.mjs (seeds .env.* on postinstall),
 │                             #   repack.mjs, eas-pre-install.sh
@@ -99,8 +94,12 @@ yarn ios:development       # prebuild + run iOS (dev)
 └── tsconfig.test.json        # TypeScript config extended with Jest types
 ```
 
-> Screens live **directly under `src/app/`**, not in a separate `src/screens/`
-> directory. The default export of each route file is the screen component.
+> **Feature-based layout.** Screens live in `src/features/<feature>/screens/` and
+> each route file under `src/app/` is a one-line re-export. Other code imports a
+> feature only through its `index.ts` (`@/features/auth`) — ESLint rejects deep
+> imports like `@/features/auth/store/useUserStore`. Inside a feature, use
+> relative imports. `src/store/` is the one exception: it wires every feature's
+> persisted store into start-up.
 
 ## Security
 
@@ -119,7 +118,7 @@ Next launches: expo-secure-store → key → unlock MMKV
 
 ### Credentials
 
-Raw passwords are **never persisted**. `useUserStore` only stores safe profile data (email, display name, etc.). Auth tokens are stored separately in `src/storage/token.ts`.
+Raw passwords are **never persisted**. The auth store only keeps safe profile data (email, display name, etc.). Auth tokens are stored separately in `src/storage/token.ts`.
 
 ### Environment Variables
 
@@ -206,36 +205,43 @@ yarn android:staging
 
 Routes live under `src/app/`. The file path becomes the URL — `src/app/(tabs)/home.tsx`
 serves `/home` (the `(tabs)` group is URL-invisible). Each route file's default
-export is the screen component.
+export is the screen component, re-exported from its feature.
 
 ### Conventions used in this boilerplate
 
 | File | Purpose |
 |---|---|
-| `src/app/_layout.tsx` | Root layout — providers, splash, fonts, storage init, i18n init, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
+| `src/app/_layout.tsx` | Root layout — `useAppBootstrap()` (splash, storage, store rehydration, i18n), `<AppProviders>`, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
 | `src/app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
-| `src/app/(tabs)/index.tsx` | `/` (Home tab) |
-| `src/app/(tabs)/profile.tsx` | `/profile` |
+| `src/app/(tabs)/index.tsx` | `/` (Home tab) → `HomeScreen` from `@/features/home` |
+| `src/app/(tabs)/profile.tsx` | `/profile` → `ProfileScreen` from `@/features/profile` |
 
 ### Adding a new screen
 
 ```tsx
-// src/app/settings.tsx → /settings
+// src/features/settings/screens/SettingsScreen.tsx
 import { Text } from 'react-native';
-import ScreenWrapper from '@/components/ScreenWrapper';
 
-export default function SettingsScreen() {
+import ScreenWrapper from '@/shared/components/ScreenWrapper';
+
+export function SettingsScreen() {
   return (
     <ScreenWrapper>
       <Text>Settings</Text>
     </ScreenWrapper>
   );
 }
+
+// src/features/settings/index.ts
+export { SettingsScreen } from './screens/SettingsScreen';
+
+// src/app/settings.tsx → /settings
+export { SettingsScreen as default } from '@/features/settings';
 ```
 
 To make it a tab, drop it under `src/app/(tabs)/` and add a `<Tabs.Screen name="settings" />`
 entry in `src/app/(tabs)/_layout.tsx`. Also register its icon/label in
-`src/components/TabBarIcon.tsx` and `src/components/TabBarLabel.tsx`.
+`src/shared/components/TabBarIcon.tsx` and `src/shared/components/TabBarLabel.tsx`.
 
 ### Navigating
 
@@ -263,7 +269,7 @@ Use URL-visible paths (`/`, `/login`) — not the group form
 - `<Stack.Protected guard={isLoggedIn}>` wraps the `(tabs)` group.
 - `<Stack.Protected guard={!isLoggedIn}>` wraps the `(auth)` group.
 
-Individual screens **do not** redirect themselves — just flip the `useUserStore` state and the navigator automatically mounts/unmounts the correct route tree.
+Individual screens **do not** redirect themselves — `useLogin()` / `useLogout()` from `@/features/auth` flip the session state and the navigator automatically mounts/unmounts the correct route tree.
 
 ### Error handling
 
@@ -305,7 +311,7 @@ import time — the theme must be configured first.
 
 i18next is **not** initialized here. Its saved language lives in encrypted
 MMKV, which isn't created until `initStorage()` resolves inside
-`src/app/_layout.tsx`'s effect. `initI18n()` runs there, right after
+`useAppBootstrap()` (`src/providers/`). `initI18n()` runs there, right after
 `rehydrateStores()`.
 
 ## API Layer
@@ -330,21 +336,21 @@ src/
 │   ├── api-provider.tsx  ← QueryClientProvider wiring
 │   ├── utils.ts      ← pagination helpers (getNextPageParam, normalizePages, …)
 │   └── index.ts      ← re-exports everything above
-└── api/
-    ├── index.tsx     ← re-exports types + every module
-    ├── types.ts      ← PaginateQuery<T> and other cross-module types
-    └── posts/        ← one folder per API resource
-        ├── types.ts
-        ├── use-posts.ts
-        ├── use-post.ts
-        ├── use-add-post.ts
-        └── index.ts
+│   └── types.ts      ← PaginateQuery<T> and other cross-feature API types
+└── features/
+    └── posts/
+        ├── api/          ← one api/ folder per feature that talks to the backend
+        │   ├── types.ts
+        │   ├── use-posts.ts
+        │   ├── use-post.ts
+        │   └── use-add-post.ts
+        └── index.ts      ← re-exports the hooks + types (the feature's public API)
 ```
 
 ### Adding a New Endpoint
 
 ```ts
-// src/api/todos/use-todos.ts
+// src/features/todos/api/use-todos.ts  (then export it from src/features/todos/index.ts)
 import { createQuery } from 'react-query-kit';
 import { client } from '@/services';   // ← always @/services, never ../common
 
@@ -357,17 +363,22 @@ export const useTodos = createQuery({
 
 ## State Management
 
-Zustand stores are created with `createPersistedStore`, which:
+Each feature owns its state in `src/features/<feature>/store/`. The store stays
+private to the feature — the rest of the app uses the hooks the feature exports
+(`useIsLoggedIn`, `useCurrentUser`, `useLogin`, `useLogout` for auth). That keeps
+screens independent of the state library.
+
+Zustand stores are created with `createPersistedStore` (`src/store/createPersistedStore.ts`), which:
 
 - Pre-configures MMKV-backed persistence via `zustandStorage`
 - Uses `skipHydration: true` — stores start with their initial state at module-import time (before MMKV is ready)
-- Are explicitly rehydrated via `rehydrateStores()` in `src/app/_layout.tsx` after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
+- Are explicitly rehydrated via `rehydrateStores()` (called by `useAppBootstrap()`) after `initStorage()` resolves, ensuring the correct persisted state (e.g. `isLoggedIn: true`) is loaded before any component renders
 
 ### Adding a New Store
 
 ```ts
-// src/store/useSettingsStore.ts
-import { createPersistedStore } from './storage';
+// src/features/settings/store/useSettingsStore.ts
+import { createPersistedStore } from '@/store/createPersistedStore';
 
 interface SettingsState {
   theme: 'light' | 'dark';
@@ -386,13 +397,15 @@ export const useSettingsStore = createPersistedStore<SettingsState>(
 Then register it in `src/store/index.ts`:
 
 ```ts
+import { useSettingsStore } from '@/features/settings/store/useSettingsStore';
+
 export async function rehydrateStores(): Promise<void> {
   await useUserStore.persist.rehydrate();
   await useSettingsStore.persist.rehydrate();      // ← add here
 }
 ```
 
-## Custom Hooks (`src/hooks/`)
+## Custom Hooks (`src/shared/hooks/`)
 
 | Hook | Description |
 |---|---|
@@ -410,8 +423,8 @@ yarn test:coverage     # Generate coverage report
 
 Tests use **jest-expo** (preset) + **React Native Testing Library**. Example tests are provided for:
 
-- `src/utils/__tests__/scale.test.ts` — pure utility functions
-- `src/store/__tests__/useUserStore.test.ts` — Zustand store behaviour
+- `src/shared/utils/__tests__/scale.test.ts` — pure utility functions
+- `src/features/auth/store/__tests__/useUserStore.test.ts` — Zustand store behaviour
 
 ### Writing Tests
 
@@ -420,7 +433,7 @@ MMKV and `expo-secure-store` are auto-mocked in `jest.setup.ts` so native module
 ```ts
 // Example component test
 import { render, screen } from '@testing-library/react-native';
-import Button from '@/components/Button';
+import Button from '@/shared/components/Button';
 
 it('renders the button title', () => {
   render(<Button title="Submit" onPress={() => {}} />);
@@ -652,11 +665,11 @@ The `android/` and `ios/` folders are generated by `expo prebuild` and are liste
 
 MMKV cannot be created synchronously with a secure key — the key must be retrieved from the keychain first (async). To handle this cleanly:
 
-1. `src/app/_layout.tsx` calls `initStorage()` in a `useEffect` before rendering the navigator
+1. `useAppBootstrap()` (used by `src/app/_layout.tsx`) calls `initStorage()` in a `useEffect` before the navigator renders
 2. All Zustand stores use `skipHydration: true` — safe to create before MMKV is ready
 3. `rehydrateStores()` is called after `initStorage()` resolves — stores load their persisted values
 4. `initI18n()` runs next — it reads the saved language from MMKV, so it must run after storage is ready
-5. `storageReady` becomes `true` — the app renders with the correct session state, then `<Stack.Protected>` mounts the correct route group based on `isLoggedIn`
+5. `useAppBootstrap()` returns `true` — the app renders with the correct session state, then `<Stack.Protected>` mounts the correct route group based on `isLoggedIn`
 
 ### Path Aliases
 
@@ -664,7 +677,7 @@ Two aliases are configured in `tsconfig.json` and `babel.config.js`:
 
 | Alias | Maps to | Example |
 |---|---|---|
-| `@/*` | `./src/*` | `import { Button } from '@/components'` |
+| `@/*` | `./src/*` | `import { Button } from '@/shared/components'` |
 | `@env` | `./env.ts` (`./__mocks__/@env.ts` under Jest) | `import Env from '@env'` |
 
 ### Commit Conventions
@@ -685,7 +698,7 @@ This project utilizes a `.skills/` directory to store specialized, task-specific
 
 These skills ensure that any AI working on the codebase follows the exact same architectural patterns as human developers.
 
-- **`api-hook-creation.md`** — How to create API hooks: file layout (`src/services/` for infrastructure, `src/api/<module>/` for hooks), code templates for mutations/queries/infinite queries, import conventions (`@/services`), and hard rules.
+- **`api-hook-creation.md`** — How to create API hooks: file layout (`src/services/` for infrastructure, `src/features/<feature>/api/` for hooks), code templates for mutations/queries/infinite queries, import conventions (`@/services`), and hard rules.
 - **`ui-creation.md`** — Rules for building screens, styling with Unistyles, and form validation.
 - **`localization.md`** — Strict guidelines on how to add, consume, and modify i18n translations across the app.
 
@@ -699,7 +712,7 @@ When prompting an AI to build a feature, you can explicitly reference these skil
 4. **Replace placeholder icons** — update `assets/icon.png` and `assets/favicon.png`
 5. **Add your API URLs** to your local `.env.*` files (created for you by `yarn install`; re-runnable with `yarn env:init`)
 6. **Update `env.ts`** schema with your project's environment variables
-7. **Register new stores** in `src/store/index.ts → rehydrateStores()`
+7. **Register new persisted stores** in `src/store/index.ts → rehydrateStores()`
 
 ## Author
 

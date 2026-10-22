@@ -5,6 +5,24 @@ const unistyles = require('eslint-plugin-react-native-unistyles');
 const simpleImportSort = require('eslint-plugin-simple-import-sort');
 const unusedImports = require('eslint-plugin-unused-imports');
 
+const restrictedImportPaths = [
+  {
+    name: 'react-native',
+    importNames: ['StyleSheet'],
+    message:
+      "Please use unistyles StyleSheet instead. import { StyleSheet } from 'react-native-unistyles'",
+  },
+];
+
+// Feature boundaries: other code imports a feature through its public API
+// (`@/features/<name>`, i.e. its index.ts), never a file inside it. Inside a
+// feature, use relative imports.
+const featureBoundaryPattern = {
+  group: ['@/features/*/**'],
+  message:
+    'Import from the feature public API (@/features/<name>) instead. Inside a feature, use relative imports.',
+};
+
 module.exports = [
   // 1. Basic Ignores
   {
@@ -110,16 +128,7 @@ module.exports = [
       ],
       'no-restricted-imports': [
         'error',
-        {
-          paths: [
-            {
-              name: 'react-native',
-              importNames: ['StyleSheet'],
-              message:
-                "Please use unistyles StyleSheet instead. import { StyleSheet } from 'react-native-unistyles'",
-            },
-          ],
-        },
+        { paths: restrictedImportPaths, patterns: [featureBoundaryPattern] },
       ],
       'no-restricted-syntax': [
         'error',
@@ -129,6 +138,7 @@ module.exports = [
           message:
             'StyleSheet.create should use a callback function: StyleSheet.create(() => ({ ... }))',
         },
+        // @cli:zustand-start — the create CLI removes this block for Redux projects
         {
           // Atomic Zustand selectors. Every `use<Name>Store()` call MUST pass a
           // selector function so the subscription is scoped to a single field.
@@ -146,11 +156,21 @@ module.exports = [
           message:
             'Zustand: pass an atomic selector — useFooStore((s) => s.field). Calling the hook with no arguments subscribes to the entire store and re-renders on every state change.',
         },
+        // @cli:zustand-end
       ],
     },
   },
 
-  // 6. TypeScript specific overrides
+  // 6. App-level wiring may reach into feature internals (e.g. src/store
+  //    rehydrating every feature's persisted store).
+  {
+    files: ['src/store/**'],
+    rules: {
+      'no-restricted-imports': ['error', { paths: restrictedImportPaths }],
+    },
+  },
+
+  // 7. TypeScript specific overrides
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
@@ -158,7 +178,7 @@ module.exports = [
     },
   },
 
-  // 7. Config files specific overrides (allow require)
+  // 8. Config files specific overrides (allow require)
   {
     files: ['*.config.js', 'app.config.js'],
     rules: {

@@ -9,19 +9,22 @@ This is an Expo Router app styled with `react-native-unistyles` (v3). Theme toke
 ## Where things live
 
 ```
-app/                       ← Expo Router screens (file-based routing)
-  _layout.tsx              ← root layout, Stack.Protected auth gating
-  (auth)/                  ← auth group
-  (tabs)/                  ← tab group
 src/
-  components/              ← reusable UI primitives (PascalCase.tsx)
+  app/                     ← Expo Router routes — one-line re-exports of feature screens
+  features/<feature>/
+    screens/               ← screens (PascalCase + `Screen` suffix, named export)
+    components/            ← UI used only by this feature
+    index.ts               ← public API — export the screen from here
+  shared/
+    components/            ← reusable UI primitives (PascalCase.tsx)
+    utils/                 ← scale (ms, vs, s), toast, etc.
   theme/                   ← TextStyles, fonts (typography only)
   styles/                  ← unistyles config, themes (light/dark), breakpoints
-  utils/                   ← scale (ms, vs, s), toast, etc.
 ```
 
-- **Screens** go under `app/` using Expo Router conventions.
-- **Reusable components** go under `src/components/` as `PascalCase.tsx`, with a default export and re-export added to `src/components/index.ts`.
+- **Screens** go under `src/features/<feature>/screens/` as a named export, re-exported from the feature's `index.ts`. The route file under `src/app/` is a single line: `export { SettingsScreen as default } from '@/features/settings';`.
+- **Feature-only components** go under `src/features/<feature>/components/`. Promote one to `src/shared/components/` only once a second feature needs it.
+- **Reusable components** go under `src/shared/components/` as `PascalCase.tsx`, with a default export and re-export added to `src/shared/components/index.ts`.
 - **Never** create a new top-level folder for design tokens; extend `src/theme/` or `src/styles/themes.ts`.
 
 ---
@@ -52,10 +55,10 @@ Rules:
 
 ## Step 2 — Sizing (`ms` everywhere)
 
-All dimensions, spacing, font sizes, border radii, and icon sizes go through the scale helpers in `src/utils/scale.ts`:
+All dimensions, spacing, font sizes, border radii, and icon sizes go through the scale helpers in `src/shared/utils/scale.ts`:
 
 ```ts
-import { ms } from '@/utils';
+import { ms } from '@/shared/utils';
 
 padding: ms(20),
 borderRadius: ms(10),
@@ -69,7 +72,7 @@ fontSize: ms(16),
 
 Rules:
 - **Raw numeric dimensions are banned** in `style` blocks. `paddingHorizontal: 20` → `paddingHorizontal: ms(20)`. Exceptions: `flex: 1`, `flexGrow: 1`, `opacity`, `zIndex`, integer multipliers.
-- Designs are spec'd against the 350×680 guideline (see `src/utils/scale.ts`). Pass design-unit numbers to `ms()` and let the helper do the device scaling.
+- Designs are spec'd against the 350×680 guideline (see `src/shared/utils/scale.ts`). Pass design-unit numbers to `ms()` and let the helper do the device scaling.
 
 ---
 
@@ -104,7 +107,7 @@ Rules:
 
 ## Step 4 — Use the existing primitives
 
-Before building anything new, check `src/components/`:
+Before building anything new, check `src/shared/components/`:
 
 | Component | Use for |
 |---|---|
@@ -115,7 +118,7 @@ Before building anything new, check `src/components/`:
 | `FullScreenLoader` | Modal spinner overlay — usually triggered via `ScreenWrapper`'s `showLoader` prop. |
 | `TabBarIcon` / `TabBarLabel` | Tab navigator UI bits. |
 
-If a new pattern recurs ≥3 times across screens, lift it into `src/components/` rather than copy-pasting JSX.
+If a new pattern recurs ≥3 times across screens, lift it into `src/shared/components/` rather than copy-pasting JSX.
 
 ---
 
@@ -220,7 +223,7 @@ Don't install or import `@react-navigation/*` directly — Expo Router re-export
 - `KeyboardAvoidingView` / `KeyboardAwareScrollView` imported in a screen → use `<ScreenWrapper scrollable>`.
 - `FlatList` / `FlashList` inside a scrollable `ScreenWrapper` → use a non-scrollable wrapper.
 - `useState` for form fields → use `react-hook-form` + `ControlledTextField`.
-- Re-implementing `Button`, `TextField`, loader, screen wrapper, etc. → extend the existing primitive, or lift a new shared one into `src/components/` if the pattern recurs.
+- Re-implementing `Button`, `TextField`, loader, screen wrapper, etc. → extend the existing primitive, or lift a new shared one into `src/shared/components/` if the pattern recurs.
 - Adding a key to one theme only → both `lightTheme` and `darkTheme` must define every key.
 - `import { StyleSheet } from 'react-native'` → always `from 'react-native-unistyles'`.
 
@@ -235,4 +238,4 @@ Don't install or import `@react-navigation/*` directly — Expo Router re-export
 - [ ] No `@react-navigation/*` direct imports; routes added under `app/` follow Expo Router conventions.
 - [ ] Forms use `react-hook-form` + `zod` + `ControlledTextField`.
 - [ ] User-facing strings go through `useTranslate()`.
-- [ ] New reusable component is exported from `src/components/index.ts`.
+- [ ] New reusable component is exported from `src/shared/components/index.ts`.

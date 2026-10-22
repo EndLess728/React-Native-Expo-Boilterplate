@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native-unistyles';
 
-import { ms } from '@/utils';
+import { ms } from '@/shared/utils';
 
 import { fonts } from './fonts';
 

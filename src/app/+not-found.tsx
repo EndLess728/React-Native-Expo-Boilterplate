@@ -3,10 +3,10 @@ import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { Link, Stack } from 'expo-router';
 
-import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslate } from '@/localization/utils';
+import ScreenWrapper from '@/shared/components/ScreenWrapper';
+import { ms } from '@/shared/utils';
 import { TextStyles } from '@/theme';
-import { ms } from '@/utils';
 
 export default function NotFound() {
   const t = useTranslate();

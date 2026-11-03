@@ -28,6 +28,7 @@ const EXCLUDED = [
   /^\.github\//,
   /^README\.md$/, // every generated project gets its own README
   /^LICENSE$/, // the boilerplate's license; a generated app is its owner's to license
+  /^docs\//, // guides for this repo's own stack and CI; generated apps get a README for theirs
   /^\.env\.(development|staging|production)$/, // seeded from .env.example on install
   /^\.env(\.local)?$/,
 ];

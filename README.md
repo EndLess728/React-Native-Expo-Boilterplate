@@ -1,17 +1,17 @@
 # React Native Expo Boilerplate
 
-Production-grade React Native starter built on **Expo SDK 57**, **React Native 0.85**, and **React 19**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
+Production-grade React Native starter built on **Expo SDK 58**, **React Native 0.88**, and **React 19.3**. Ships with **Expo Router** file-based routing, multi-environment builds, type-safe config, encrypted secure storage, and an opinionated architecture so you can skip the setup and start building features.
 
 ## Tech Stack
 
 | Category | Library |
 |---|---|
-| **Framework** | [Expo](https://expo.dev/) (SDK 57) with React Compiler |
+| **Framework** | [Expo](https://expo.dev/) (SDK 58) with React Compiler |
 | **Navigation** | [Expo Router](https://docs.expo.dev/router/introduction/) — File-based routing on top of [React Navigation v7](https://reactnavigation.org/) (Native Stack, Bottom Tabs, Drawer). Typed routes enabled. |
 | **State** | [Zustand](https://github.com/pmndrs/zustand) — Atomic global state with MMKV persistence |
 | **Data Fetching** | [TanStack Query v5](https://tanstack.com/query) + [Axios](https://axios-http.com/) + [react-query-kit](https://github.com/nichenqin/react-query-kit) |
 | **Forms** | [React Hook Form](https://react-hook-form.com/) + [Zod v4](https://zod.dev/) |
-| **Styling** | [Unistyles](https://unistyl.es/) — Compiled stylesheets, light/dark themes |
+| **Styling** | [Unistyles](https://unistyl.es/) — Compiled stylesheets, light/dark themes. The CLI can swap it for plain `StyleSheet` or Tailwind ([Uniwind](https://uniwind.dev/)). |
 | **Storage** | [MMKV](https://github.com/mrousavy/react-native-mmkv) — Synchronous, AES-encrypted key-value store |
 | **Secure Storage** | [expo-secure-store](https://docs.expo.dev/versions/latest/sdk/securestore/) — iOS Keychain / Android Keystore |
 | **i18n** | [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/) |
@@ -22,30 +22,96 @@ Production-grade React Native starter built on **Expo SDK 57**, **React Native 0
 
 ## Create a New App (CLI)
 
-Don't clone this repo for a new project — use the CLI. It generates a fresh app from this boilerplate with the stack you pick:
+Don't clone this repo for a new project — generate one with the CLI. It asks which stack you want, writes a fresh app from this boilerplate with only that stack in it, installs dependencies, and makes the first git commit.
+
+### 1. Requirements
+
+- **Node.js** 22.13+ or 24.3+ (what Expo SDK 58 needs)
+- **Xcode** 26.4+ for iOS, **Android Studio** for Android
+- Optionally **yarn**, **pnpm** or **bun** — the CLI uses whichever package manager you run it with
+
+### 2. Generate the project
 
 ```bash
 npx create-expo-boilerplate my-app
+# or
+yarn create expo-boilerplate my-app
+pnpm create expo-boilerplate my-app
+bun create expo-boilerplate my-app
 ```
 
-| Option | Choices (default first) |
+Answer the prompts (press Enter to take the default):
+
+| Prompt | Choices (default first) | Flag |
+|---|---|---|
+| Project name | any folder name | first argument |
+| App display name | from the folder name | `--name "My App"` |
+| Bundle id / Android package | `com.<name>` | `--bundle-id com.company.app` |
+| State management | Zustand · Redux Toolkit | `--state zustand\|redux` |
+| Redux side effects (Redux only) | Thunk · Saga | `--redux-middleware thunk\|saga` |
+| Navigation | Expo Router · React Navigation | `--navigation expo-router\|react-navigation` |
+| Styling | Unistyles · StyleSheet · Tailwind (Uniwind) | `--styling unistyles\|stylesheet\|tailwind` |
+| Language | TypeScript · JavaScript | `--language ts\|js` (or `--js`) |
+| ESLint | yes · no | `--eslint` / `--no-eslint` |
+| Husky git hooks | yes · no | `--husky` / `--no-husky` |
+| Package manager | the one you ran the CLI with | `--pm yarn\|npm\|pnpm\|bun` |
+
+Skip the prompts by passing flags. `--yes` takes the default for anything you didn't pass:
+
+```bash
+# Tailwind + Redux Toolkit with sagas + React Navigation, no questions asked
+npx create-expo-boilerplate my-app --yes \
+  --styling tailwind \
+  --state redux --redux-middleware saga \
+  --navigation react-navigation
+
+# Everything default, but JavaScript and no git hooks
+npx create-expo-boilerplate my-app --yes --js --no-husky
+```
+
+Other flags: `--no-install` (skip installing dependencies), `--no-git` (skip `git init` and the first commit), `--help`.
+
+#### Styling options
+
+| Option | What you get |
 |---|---|
-| State | Zustand · Redux Toolkit (Thunk or Saga) |
-| Navigation | Expo Router · React Navigation |
-| Language | TypeScript · JavaScript |
-| Tooling | ESLint on/off · Husky on/off |
+| **Unistyles** (default) | `StyleSheet.create((theme, rt) => …)` from [Unistyles 3](https://unistyl.es/) — compiled, theme-aware styles. |
+| **StyleSheet** | React Native's own `StyleSheet`, plus a small `makeStyles((theme) => …)` helper for theme-aware styles. No extra dependencies. |
+| **Tailwind** | `className` on every component via [Uniwind](https://uniwind.dev/) (Tailwind CSS v4). Theme colors, fonts and text sizes live in `global.css`. |
 
-Everything is also available as flags (`--state redux --redux-middleware saga --navigation react-navigation --js --no-husky --yes`). The CLI lives in [`cli/`](./cli) — see its README for how it works, testing every combination, and publishing.
+All three ship the same screens, the same light/dark theme tokens, and a `useAppTheme()` hook for colors you pass as props. The generated `.skills/ui-creation.md` explains the conventions for the option you picked.
 
-This repo is the template itself (Expo Router + Zustand + TypeScript), so keep improving it as usual; the CLI picks changes up automatically.
+### 3. Run it
+
+```bash
+cd my-app
+$EDITOR .env.development     # fill in your API URLs (created from .env.example)
+yarn ios:development         # or android:development — builds and runs the app
+```
+
+(Use `npm run …`, `pnpm …` or `bun run …` if you picked another package manager.) The first run prebuilds the native projects, so it takes a few minutes. The generated `README.md` describes the exact stack you chose.
+
+### Running the CLI from this repo
+
+To use the CLI before it's published, or to try your own changes to it:
+
+```bash
+git clone https://github.com/EndLess728/React-Native-Expo-Boilterplate.git
+cd React-Native-Expo-Boilterplate/cli
+npm install
+npm run build
+node dist/index.js ../../my-app     # same prompts and flags as above
+```
+
+The CLI lives in [`cli/`](./cli) — see its README for how it works, testing every combination, and publishing. This repo is the template itself (Expo Router + Zustand + Unistyles + TypeScript), so keep improving it as usual; the CLI picks changes up automatically.
 
 ## Quick Start
 
 ### Prerequisites
 
-- **Node.js** ≥ 20
+- **Node.js** 22.13+ or 24.3+
 - **Yarn** v1
-- **Xcode** ≥ 16 (iOS) / **Android Studio** (Android)
+- **Xcode** ≥ 26.4 (iOS) / **Android Studio** (Android)
 - **EAS CLI** — `npm install -g eas-cli` (for cloud builds)
 
 ### Setup
@@ -304,14 +370,26 @@ component (signature: `({ error, retry }: { error: Error; retry: () => void })`)
 
 ### Initial route
 
-`src/app/_layout.tsx` declares the deep-link / cold-start entry point via
-expo-router's `unstable_settings`:
+`src/app/_layout.tsx` declares the root stack's anchor — the screen the router
+puts at the bottom of the stack and shows when no specific path was requested —
+via expo-router's `unstable_settings`:
 
 ```ts
-export const unstable_settings = { initialRouteName: '(tabs)' };
+export const unstable_settings = { anchor: '(tabs)' };
 ```
 
-This is the screen the router shows when no specific path was requested.
+Every `<Stack.Protected>` group also sets `redirectTo`. Without it, a failed
+guard falls back to the anchor — and `(tabs)` is itself guarded when logged
+out, so the app would land on `+not-found`:
+
+```tsx
+<Stack.Protected guard={isLoggedIn} redirectTo="/login">
+  <Stack.Screen name="(tabs)" />
+</Stack.Protected>
+<Stack.Protected guard={!isLoggedIn} redirectTo="/">
+  <Stack.Screen name="(auth)" />
+</Stack.Protected>
+```
 
 ### Custom entry (`index.ts`)
 
@@ -669,6 +747,16 @@ yarn type-check                # TypeScript check (--noEmit)
 yarn test                      # Run tests
 yarn test:coverage             # Run tests with coverage report
 ```
+
+## Releases
+
+Every push to `main` publishes a [GitHub Release](../../releases) with a changelog — see [`.github/workflows/release.yml`](.github/workflows/release.yml).
+
+- The version comes from the [Conventional Commits](https://www.conventionalcommits.org/) since the last `v*` tag: `feat` → minor, `fix` / `perf` / … → patch, `feat!` or `BREAKING CHANGE:` → major.
+- The release notes group those commits by type, with links (config: [`cliff.toml`](cliff.toml), generated by [git-cliff](https://git-cliff.org)).
+- Pushes with nothing releasable (only `chore`, `docs`, `ci`, …) don't create a release.
+
+Commitlint already enforces the commit format, so there's nothing extra to do — write good commit messages and merge.
 
 ## Architecture Decisions
 

@@ -433,7 +433,7 @@ src/
 │   ├── api-provider.tsx  ← QueryClientProvider wiring
 │   ├── utils.ts      ← pagination helpers (getNextPageParam, normalizePages, …)
 │   └── index.ts      ← re-exports everything above
-│   └── types.ts      ← PaginateQuery<T> and other cross-feature API types
+│   └── types.ts      ← PaginateQuery<K, T> (limit/skip pages) and other cross-feature API types
 └── features/
     └── posts/
         ├── api/          ← one api/ folder per feature that talks to the backend

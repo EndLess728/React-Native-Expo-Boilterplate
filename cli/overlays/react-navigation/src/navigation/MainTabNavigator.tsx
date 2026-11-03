@@ -1,5 +1,4 @@
 import React from 'react';
-import { useUnistyles } from 'react-native-unistyles';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { HomeScreen } from '@/features/home';
@@ -8,13 +7,14 @@ import { useTranslate } from '@/localization/utils';
 import { TabBarIcon } from '@/shared/components/TabBarIcon';
 import { TabBarLabel } from '@/shared/components/TabBarLabel';
 import { NAVIGATION } from '@/shared/constants';
+import { useAppTheme } from '@/theme';
 
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export function MainTabNavigator(): React.JSX.Element {
-  const { theme } = useUnistyles();
+  const theme = useAppTheme();
   const t = useTranslate();
 
   return (

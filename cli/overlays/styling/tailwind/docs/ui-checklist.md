@@ -1,0 +1,3 @@
+- [ ] Styling is in `className`; `style` is used only for runtime-computed values.
+- [ ] All text uses a text role + `font-opensans-*` class; new roles were added to `global.css`.
+- [ ] All colors are theme classes; new colors added to **both** variants in `global.css` and to `src/styles/themes.ts`.

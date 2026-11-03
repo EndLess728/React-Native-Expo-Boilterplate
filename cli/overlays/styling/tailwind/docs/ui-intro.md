@@ -1,0 +1,1 @@
+This is an Expo Router app styled with Tailwind CSS through [Uniwind](https://docs.uniwind.dev) — `className` on every React Native component. Theme colors, fonts, and text roles are defined once in `global.css` — screens compose them, they do not redefine them.

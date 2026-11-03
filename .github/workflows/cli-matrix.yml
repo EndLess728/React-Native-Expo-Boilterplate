@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       all:
-        description: Check all 48 combinations instead of the 18 core ones
+        description: Check all 144 combinations instead of the 26 core ones
         type: boolean
         default: false
       export:

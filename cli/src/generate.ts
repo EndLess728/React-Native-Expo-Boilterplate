@@ -1,10 +1,11 @@
-import type { ProjectOptions } from './options.js';
+import { type ProjectOptions, STYLING_LABEL } from './options.js';
 import { applyIdentity } from './steps/identity.js';
 import { convertToJavaScript } from './steps/javascript.js';
 import { applyNavigation } from './steps/navigation.js';
 import { applyPackageManager } from './steps/packageManager.js';
 import { writeReadme } from './steps/readme.js';
 import { applyState } from './steps/state.js';
+import { applyStyling } from './steps/styling.js';
 import { applyTooling } from './steps/tooling.js';
 import { formatProject } from './steps/format.js';
 import { copyBaseTemplate } from './template.js';
@@ -30,6 +31,9 @@ export async function generateProject(
 
   onStep(`Setting up ${options.navigation === 'expo-router' ? 'Expo Router' : 'React Navigation'}`);
   await applyNavigation(files, pkg, options);
+
+  onStep(`Setting up ${STYLING_LABEL[options.styling]}`);
+  await applyStyling(files, pkg, options);
 
   onStep(
     options.state === 'zustand'

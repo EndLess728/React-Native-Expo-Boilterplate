@@ -3,10 +3,10 @@
  * Generates every supported option combination and checks each one compiles,
  * lints and passes its tests.
  *
- *   node scripts/test-matrix.mjs            # core set (all stacks × languages + tooling toggles)
- *   node scripts/test-matrix.mjs --all      # every combination (48)
+ *   node scripts/test-matrix.mjs            # core set (stacks × languages, styling options, tooling toggles)
+ *   node scripts/test-matrix.mjs --all      # every combination (144)
  *   node scripts/test-matrix.mjs --export   # also bundle each project with `expo export` (slow)
- *   node scripts/test-matrix.mjs --only redux-saga.react-navigation.ts
+ *   node scripts/test-matrix.mjs --only redux-saga.react-navigation.tailwind.ts
  *
  * Dependencies are installed ONCE: the union of every generated package.json
  * goes into .matrix/deps, and each project symlinks its node_modules to it.
@@ -36,6 +36,7 @@ const STATES = [
   { id: 'redux-saga', flags: ['--state', 'redux', '--redux-middleware', 'saga'] },
 ];
 const NAVS = ['expo-router', 'react-navigation'];
+const STYLES = ['unistyles', 'stylesheet', 'tailwind'];
 const LANGS = ['ts', 'js'];
 const TOOLING = [
   { id: 'eslint-husky', eslint: true, husky: true },
@@ -47,17 +48,22 @@ const TOOLING = [
 const combos = [];
 for (const state of STATES)
   for (const nav of NAVS)
-    for (const lang of LANGS)
-      for (const tooling of TOOLING) {
-        // Core set: every stack with full tooling, plus the tooling toggles on
-        // the base stack — they only touch config files, not app code.
-        const core =
-          tooling.id === 'eslint-husky' || (state.id === 'zustand' && nav === 'expo-router');
-        if (!all && !core) continue;
-        const id = `${state.id}.${nav}.${lang}.${tooling.id}`;
-        if (only && !id.startsWith(only)) continue;
-        combos.push({ ...tooling, id, state, nav, lang });
-      }
+    for (const styling of STYLES)
+      for (const lang of LANGS)
+        for (const tooling of TOOLING) {
+          // Core set: every state × navigation stack with full tooling, every
+          // styling option on both navigators (styling overlays don't touch
+          // state code), plus the tooling toggles on the base stack — they
+          // only touch config files, not app code.
+          const base = state.id === 'zustand' && nav === 'expo-router' && styling === 'unistyles';
+          const core =
+            (tooling.id === 'eslint-husky' && (styling === 'unistyles' || state.id === 'zustand')) ||
+            base;
+          if (!all && !core) continue;
+          const id = `${state.id}.${nav}.${styling}.${lang}.${tooling.id}`;
+          if (only && !id.startsWith(only)) continue;
+          combos.push({ ...tooling, id, state, nav, styling, lang });
+        }
 
 // ── Helpers ────────────────────────────────────────────────
 function sh(cmd, cmdArgs, cwd, { quiet = true, env = {} } = {}) {
@@ -87,6 +93,8 @@ async function leftovers(dir, combo) {
   const bad = [/@cli:/, /__cli_blank_line__/];
   if (combo.nav === 'react-navigation') bad.push(/from 'expo-router'/);
   if (combo.state.id !== 'zustand') bad.push(/from 'zustand/, /useUserStore/);
+  if (combo.styling !== 'unistyles') bad.push(/react-native-unistyles/, /@\/styles\/unistyles/);
+  if (combo.styling !== 'tailwind') bad.push(/className=/);
   for (const file of await walk(dir)) {
     if (!/\.(jsx?|tsx?|json)$/.test(file)) continue;
     if (combo.lang === 'js' && /\.tsx?$/.test(file))
@@ -114,6 +122,8 @@ for (const combo of combos) {
     ...combo.state.flags,
     '--navigation',
     combo.nav,
+    '--styling',
+    combo.styling,
     '--language',
     combo.lang,
     combo.eslint ? '--eslint' : '--no-eslint',

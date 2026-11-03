@@ -1,6 +1,20 @@
-import type { ProjectOptions } from '../options.js';
+import type { ProjectOptions, Styling } from '../options.js';
 import type { ProjectFiles } from '../utils/files.js';
 import { PM } from './packageManager.js';
+
+const STYLING_README: Record<Styling, string> = {
+  unistyles: '[Unistyles 3](https://www.unistyl.es/) — themed `StyleSheet.create((theme, rt) => …)`, light/dark themes',
+  stylesheet:
+    'React Native `StyleSheet` — `makeStyles((theme) => …)` for theme-aware styles, light/dark themes',
+  tailwind:
+    '[Uniwind](https://uniwind.dev/) (Tailwind CSS v4) — `className` on every component, light/dark themes in `global.css`',
+};
+
+const STYLING_TREE: Record<Styling, string> = {
+  unistyles: '│   ├── styles/ · theme/      # Unistyles config + themes, fonts, text styles, useAppTheme()',
+  stylesheet: '│   ├── styles/ · theme/      # themes, fonts, text styles, makeStyles(), useAppTheme()',
+  tailwind: '│   ├── styles/ · theme/      # JS theme tokens (mirrors global.css), fonts, useAppTheme()',
+};
 
 /** Writes a README describing exactly the stack this project was generated with. */
 export async function writeReadme(files: ProjectFiles, options: ProjectOptions): Promise<void> {
@@ -50,7 +64,7 @@ export function renderReadme(o: ProjectOptions): string {
     `| **State** | ${stateLabel} |`,
     '| **Data fetching** | TanStack Query v5 + Axios + react-query-kit |',
     '| **Forms** | React Hook Form + Zod |',
-    '| **Styling** | Unistyles 3 — light/dark themes |',
+    `| **Styling** | ${STYLING_README[o.styling]} |`,
     '| **Storage** | MMKV, AES-encrypted, key kept in the iOS Keychain / Android Keystore |',
     '| **i18n** | i18next + react-i18next (en, es, ar with RTL) |',
     '| **Testing** | jest-expo + React Native Testing Library |',
@@ -102,9 +116,15 @@ export function renderReadme(o: ProjectOptions): string {
       : '│   ├── store/                # createPersistedStore() + rehydrateStores()',
     '│   ├── storage/              # encrypted MMKV + token helpers',
     '│   ├── localization/         # i18n setup + translations',
-    '│   ├── styles/ · theme/      # Unistyles themes, fonts, text styles',
+    STYLING_TREE[o.styling],
     '│   └── assets/',
     `├── app.config.${x}            # dynamic Expo config (per-environment name / bundle id)`,
+    ...(o.styling === 'tailwind'
+      ? [
+          '├── global.css                # Tailwind entry — theme colors, fonts, text roles',
+          '├── metro.config.js           # Uniwind Metro plugin',
+        ]
+      : []),
     `├── env.${x}                    # validated environment variables (import Env from '@env')`,
     '└── .skills/                  # instructions for AI coding assistants',
     '```',

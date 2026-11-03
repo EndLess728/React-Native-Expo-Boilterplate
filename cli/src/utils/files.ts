@@ -92,22 +92,21 @@ export class ProjectFiles {
   }
 
   /**
-   * Handles `// @cli:<name>-start` … `// @cli:<name>-end` regions. With
+   * Handles `// @cli:<name>-start` … `// @cli:<name>-end` regions (or the
+   * `<!-- @cli:… -->` form in Markdown), every occurrence in the file. With
    * `replacement` undefined the markers are stripped and the body kept;
-   * otherwise the whole region (markers included) is replaced.
+   * otherwise each whole region (markers included) is replaced.
    */
   async region(rel: string, name: string, replacement?: string): Promise<void> {
     const content = await this.read(rel);
-    const re = new RegExp(
-      `^[ \\t]*// @cli:${name}-start.*\\n([\\s\\S]*?)^[ \\t]*// @cli:${name}-end.*\\n`,
-      'm',
-    );
-    const match = content.match(re);
-    if (!match) {
+    const marker = (edge: string) => `^[ \\t]*(?://|<!--) @cli:${name}-${edge}.*\\n`;
+    const re = new RegExp(`${marker('start')}([\\s\\S]*?)${marker('end')}`, 'gm');
+    if (!re.test(content)) {
       throw new Error(
         `[create-expo-boilerplate] Template drift: region "${name}" missing in ${rel}`,
       );
     }
-    await this.write(rel, content.replace(re, replacement ?? match[1]));
+    re.lastIndex = 0;
+    await this.write(rel, content.replace(re, (_, body: string) => replacement ?? body));
   }
 }

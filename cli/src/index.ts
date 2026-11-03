@@ -18,6 +18,8 @@ import {
   type ProjectOptions,
   type ReduxMiddleware,
   type StateLibrary,
+  type Styling,
+  STYLING_LABEL,
   toDisplayName,
   toPackageName,
   validateBundleId,
@@ -33,6 +35,7 @@ interface CliFlags {
   state?: StateLibrary;
   reduxMiddleware?: ReduxMiddleware;
   navigation?: Navigation;
+  styling?: Styling;
   language?: Language;
   js?: boolean;
   eslint?: boolean;
@@ -66,6 +69,7 @@ const program = new Command()
     oneOf(CHOICES.reduxMiddleware),
   )
   .option('--navigation <library>', 'expo-router | react-navigation', oneOf(CHOICES.navigation))
+  .option('--styling <library>', 'unistyles | stylesheet | tailwind', oneOf(CHOICES.styling))
   .option('--language <lang>', 'ts | js', oneOf(CHOICES.language))
   .option('--js', 'shorthand for --language js')
   .option('--eslint', 'include ESLint')
@@ -84,6 +88,7 @@ const program = new Command()
 Examples:
   $ npx create-expo-boilerplate my-app
   $ npx create-expo-boilerplate my-app --state redux --redux-middleware saga --navigation react-navigation
+  $ npx create-expo-boilerplate my-app --styling tailwind
   $ npx create-expo-boilerplate my-app --yes --js --no-husky`,
   );
 
@@ -210,6 +215,18 @@ async function main(): Promise<void> {
     }),
   );
 
+  const styling = await ask<Styling>(flags.styling, defaults, DEFAULTS.styling, () =>
+    p.select<Styling>({
+      message: 'Styling',
+      initialValue: DEFAULTS.styling,
+      options: [
+        { value: 'unistyles', label: 'Unistyles', hint: 'default — themed StyleSheet, light/dark' },
+        { value: 'stylesheet', label: 'StyleSheet', hint: 'plain React Native, no extra deps' },
+        { value: 'tailwind', label: 'Tailwind', hint: 'className via Uniwind (Tailwind v4)' },
+      ],
+    }),
+  );
+
   const language = await ask<Language>(
     flags.js ? 'js' : flags.language,
     defaults,
@@ -252,6 +269,7 @@ async function main(): Promise<void> {
     state,
     reduxMiddleware,
     navigation,
+    styling,
     language,
     eslint,
     husky,
@@ -325,6 +343,7 @@ async function main(): Promise<void> {
     `${pc.dim('Stack:')} ${[
       state === 'redux' ? `Redux Toolkit + ${reduxMiddleware}` : 'Zustand',
       navigation === 'expo-router' ? 'Expo Router' : 'React Navigation',
+      STYLING_LABEL[styling],
       language === 'ts' ? 'TypeScript' : 'JavaScript',
       eslint ? 'ESLint' : null,
       husky ? 'Husky' : null,

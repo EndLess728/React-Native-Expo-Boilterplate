@@ -11,6 +11,10 @@ export const VERSIONS = {
   '@react-navigation/native': '^7.5.1',
   '@react-navigation/native-stack': '^7.21.0',
   '@react-navigation/bottom-tabs': '^7.21.0',
+
+  // Tailwind styling (Uniwind compiles Tailwind v4 at bundle time)
+  uniwind: '^1.13.1',
+  tailwindcss: '^4.3.3',
 } as const;
 
 export function pick(...names: (keyof typeof VERSIONS)[]): Record<string, string> {

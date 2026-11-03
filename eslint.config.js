@@ -1,17 +1,21 @@
 const expoConfig = require('eslint-config-expo/flat.js');
 const prettier = require('eslint-plugin-prettier/recommended');
 const compiler = require('eslint-plugin-react-compiler');
+// @cli:unistyles-start
 const unistyles = require('eslint-plugin-react-native-unistyles');
+// @cli:unistyles-end
 const simpleImportSort = require('eslint-plugin-simple-import-sort');
 const unusedImports = require('eslint-plugin-unused-imports');
 
 const restrictedImportPaths = [
+  // @cli:unistyles-start
   {
     name: 'react-native',
     importNames: ['StyleSheet'],
     message:
       "Please use unistyles StyleSheet instead. import { StyleSheet } from 'react-native-unistyles'",
   },
+  // @cli:unistyles-end
 ];
 
 // Feature boundaries: other code imports a feature through its public API
@@ -65,7 +69,9 @@ module.exports = [
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
+      // @cli:unistyles-start
       'react-native-unistyles': unistyles,
+      // @cli:unistyles-end
     },
     settings: {
       'import/resolver': {
@@ -111,8 +117,10 @@ module.exports = [
         },
       ],
 
+      // @cli:unistyles-start
       // Unistyles
       'react-native-unistyles/no-unused-styles': 'error',
+      // @cli:unistyles-end
 
       // React Native / Expo best practices
       'react/display-name': 'off',
@@ -132,12 +140,14 @@ module.exports = [
       ],
       'no-restricted-syntax': [
         'error',
+        // @cli:unistyles-start
         {
           selector:
             "CallExpression[callee.object.name='StyleSheet'][callee.property.name='create'] > ObjectExpression",
           message:
             'StyleSheet.create should use a callback function: StyleSheet.create(() => ({ ... }))',
         },
+        // @cli:unistyles-end
         // @cli:zustand-start — the create CLI removes this block for Redux projects
         {
           // Atomic Zustand selectors. Every `use<Name>Store()` call MUST pass a

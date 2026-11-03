@@ -1,0 +1,3 @@
+- [ ] No hex codes, no raw numbers in `style` blocks (except `flex`, `opacity`, `zIndex`).
+- [ ] All text uses a `TextStyles.*` entry; new styles were added to `TextStyles.ts`, not inlined.
+- [ ] All colors resolve from `theme.colors.*`; new tokens added to **both** themes.

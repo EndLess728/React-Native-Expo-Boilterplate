@@ -1,0 +1,3 @@
+- Inline hex/rgba colors in components → use `theme.colors.*`.
+- Raw numeric dimensions / font sizes → wrap with `ms()`.
+- Inline `fontSize` / `fontFamily` / `lineHeight` in screens → add to `TextStyles`.

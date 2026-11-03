@@ -1,6 +1,7 @@
 export type StateLibrary = 'zustand' | 'redux';
 export type ReduxMiddleware = 'thunk' | 'saga';
 export type Navigation = 'expo-router' | 'react-navigation';
+export type Styling = 'unistyles' | 'stylesheet' | 'tailwind';
 export type Language = 'ts' | 'js';
 export type PackageManager = 'yarn' | 'npm' | 'pnpm' | 'bun';
 
@@ -17,6 +18,7 @@ export interface ProjectOptions {
   /** Only set when `state` is `redux`. */
   reduxMiddleware: ReduxMiddleware | null;
   navigation: Navigation;
+  styling: Styling;
   language: Language;
   eslint: boolean;
   husky: boolean;
@@ -25,10 +27,17 @@ export interface ProjectOptions {
   git: boolean;
 }
 
+export const STYLING_LABEL: Record<Styling, string> = {
+  unistyles: 'Unistyles',
+  stylesheet: 'StyleSheet',
+  tailwind: 'Tailwind (Uniwind)',
+};
+
 export const DEFAULTS = {
   state: 'zustand',
   reduxMiddleware: 'thunk',
   navigation: 'expo-router',
+  styling: 'unistyles',
   language: 'ts',
   eslint: true,
   husky: true,
@@ -38,6 +47,7 @@ export const CHOICES = {
   state: ['zustand', 'redux'],
   reduxMiddleware: ['thunk', 'saga'],
   navigation: ['expo-router', 'react-navigation'],
+  styling: ['unistyles', 'stylesheet', 'tailwind'],
   language: ['ts', 'js'],
   packageManager: ['yarn', 'npm', 'pnpm', 'bun'],
 } as const;

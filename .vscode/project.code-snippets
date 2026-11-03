@@ -1,4 +1,5 @@
 {
+  // @cli:snippet-screen-start — the create CLI swaps this snippet for other styling options
   "Screen": {
     "prefix": "rnfu",
     "body": [
@@ -39,6 +40,7 @@
     ],
     "description": "Screen component with ScreenWrapper and react-native-unistyles",
   },
+  // @cli:snippet-screen-end
   // https://snippet-generator.app/?description=useQuery+with+variables&tabtrigger=useqv&snippet=import+type+%7B+AxiosError+%7D+from+%27axios%27%3B%0Aimport+%7B+createQuery+%7D+from+%27react-query-kit%27%3B%0A%0Aimport+%7B+client+%7D+from+%27..%2Fcommon%27%3B%0A%0Atype+Variables+%3D+%7B%243%7D%3B%0Atype+Response+%3D+%7B%244%7D%3B%0A%0Aexport+const+use%241+%3D+createQuery%3CResponse%2C+Variables%2C+AxiosError%3E%28%7B%0A++queryKey%3A+%5B%27%242%27%5D%2C+%0A++fetcher%3A+%28variables%29+%3D%3E+%7B%0A++++return+client%0A++++++.get%28%60%242%2F%5C%5C%24%7Bvariables.%24%7B5%7D%7D%60%29%22%2C%0A++++++.then%28%28response%29+%3D%3E+response.data%29%3B%0A++%7D%2C%0A%7D%29%3B%0A&mode=vscode
   "useQuery with variables": {
     "prefix": "useqv",

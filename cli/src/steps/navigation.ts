@@ -16,13 +16,8 @@ export async function applyNavigation(
 
   // Screens already live in src/features — the route files are just re-exports.
   await files.remove('src/app');
+  // Also replaces useBlockBackNavigation: React Navigation's usePreventRemove has no `repeat`.
   await files.overlay(join(OVERLAYS_DIR, 'react-navigation'));
-
-  await files.replace(
-    'src/shared/hooks/useBlockBackNavigation.ts',
-    "import { useNavigation } from 'expo-router';",
-    "import { useNavigation } from '@react-navigation/native';",
-  );
 
   await files.replace('app.config.ts', "    'expo-router',\n", '');
   await files.replace('app.config.ts', '    typedRoutes: true,\n', '');

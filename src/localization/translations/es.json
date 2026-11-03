@@ -45,5 +45,18 @@
   "tabs": {
     "home": "Inicio",
     "profile": "Perfil"
+  },
+  "home": {
+    "posts_title": "Publicaciones",
+    "posts_subtitle": "Datos en vivo de la API. Desplázate para cargar más, desliza hacia abajo para actualizar y toca una publicación para ver sus detalles.",
+    "create_post": "Crear una publicación",
+    "post_created": "Publicación #{{id}} creada",
+    "selected_post": "Publicación seleccionada",
+    "load_error": "No se pudieron cargar las publicaciones.",
+    "retry": "Reintentar",
+    "empty": "No se encontraron publicaciones.",
+    "demo_post_title": "Hola desde la plantilla",
+    "demo_post_body": "Esta publicación se envió con useAddPost().",
+    "loaded_count": "{{loaded}} de {{total}} cargadas"
   }
 }

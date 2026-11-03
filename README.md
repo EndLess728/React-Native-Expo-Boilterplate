@@ -260,6 +260,11 @@ EXPO_PUBLIC_API_URL=https://api.example.com/
 EXPO_PUBLIC_SOCKET_URL=https://ws.example.com/
 ```
 
+> `.env.development` is seeded with `EXPO_PUBLIC_API_URL=https://dummyjson.com/`, a free demo API, so
+> the Home screen renders real data on first run. It uses the hooks in `src/features/posts/api`:
+> `useInfinitePosts()` (paginated list, loads more on scroll), `usePost()` (detail by id, tap a post) and
+> `useAddPost()` (POST mutation). Swap the URL for your backend and replace the `posts` feature with your own.
+
 Adding a new variable:
 1. Add it to `.env.example` — the committed template every local file is seeded from
 2. Run `yarn env:init`. It will not touch your existing files, but it names each

@@ -32,7 +32,7 @@ Do not guess. If the requester has not provided one of these, ask before proceed
 5. **Query params** (e.g. `?page=1&limit=10`) — list them.
 6. **Request body shape** — for non-GET, what fields the backend expects. If it's a file upload, confirm whether the body should be `FormData`.
 7. **Response shape** — what the API actually returns. **No enforced envelope** in this project — `src/features/posts/api/use-posts.ts` unwraps `.data.posts`, others unwrap `.data` directly. Match reality, not an imagined wrapper.
-8. **Paginated** — if the response is a list with `count` / `next` / `previous`, use `createInfiniteQuery` and reuse `PaginateQuery<T>` from `src/services/types.ts`.
+8. **Paginated** — if the response is a paged list (`{ <resource>: [...], total, skip, limit }`), use `createInfiniteQuery` with `PaginateQuery<'<resource>', T>` from `src/services/types.ts` (step 5f).
 9. **Auth required** — by default yes (every request carries the Bearer token automatically). The only call that bypasses the 401-interceptor loop is the refresh-token call itself, which is hard-wired in `client.ts`. If you have another genuinely public endpoint, mention it.
 
 ---
@@ -46,7 +46,7 @@ src/
 │   ├── api-provider.tsx     ← APIProvider (QueryClientProvider) — do not touch unless intentionally changing query defaults
 │   ├── client.ts            ← shared Axios instance — never recreate, never `import axios` elsewhere
 │   └── utils.ts             ← DEFAULT_LIMIT, getQueryKey, normalizePages, getNextPageParam, getPreviousPageParam
-│   └── types.ts             ← cross-feature API types (PaginateQuery<T>)
+│   └── types.ts             ← cross-feature API types (PaginateQuery<K, T>)
 └── features/
     └── <feature>/
         ├── index.ts         ← the feature's public API: re-exports api types + every hook (alphabetical)
@@ -110,21 +110,21 @@ export interface AddPostRequest {
 - Request body → `<Action>Request` (e.g. `AddPostRequest`, `UpdatePostRequest`).
 - Response data shape → reuse the entity (`Post`, `Post[]`) when possible; name it `<Action>Response` only when it's non-trivial.
 
-**Paginated lists** reuse `PaginateQuery<T>` from `src/services/types.ts`:
+**Paginated lists** reuse `PaginateQuery<K, T>` from `src/services/types.ts`:
 
 ```ts
-import type { PaginateQuery } from '../types';
+import type { PaginateQuery } from '@/services/types';
 
-export type PostsListResponse = PaginateQuery<Post>;
+export type PostsPage = PaginateQuery<'posts', Post>;
 ```
 
-`PaginateQuery<T>` is `{ results: T[]; count: number; next: string | null; previous: string | null }` — offset/URL-based, matching the DRF default. If the backend uses a different pagination shape, define a new helper in `src/services/types.ts` rather than diverging per module.
+`PaginateQuery<'posts', Post>` is `{ posts: Post[]; total: number; skip: number; limit: number }`, DummyJSON's limit/skip shape. The first type argument is the key the items sit under, which is named after the resource (`'users'`, `'products'`, …). If the backend uses a different pagination shape, change `PaginationMeta` and the page-param helpers in `src/services/` rather than diverging per module.
 
 **File uploads:** the request type is `FormData`, not a specific interface. Document the expected fields in a comment above the hook.
 
 Reference: `src/features/posts/api/types.ts`.
 
-> **Note:** `PaginateQuery<T>` is imported from `src/services/types.ts`, not from `@/services`.
+> **Note:** `PaginateQuery` is imported from `src/services/types.ts`, not from `@/services`.
 
 ---
 
@@ -256,30 +256,28 @@ export const usePost = createQuery<Response, Variables, AxiosError>({
 
 ### 5f. Infinite query (paginated list)
 
-Use `createInfiniteQuery`. Import `DEFAULT_LIMIT`, `getNextPageParam`, `getPreviousPageParam` from `@/services`. Our pagination shape is offset/URL-based — the helpers read the `next` / `previous` URLs from the page and extract `offset`.
+Use `createInfiniteQuery`. Pagination follows DummyJSON's **limit / skip** convention (https://dummyjson.com/docs): the request sends `limit` and `skip`, and every page comes back as `{ <resource>: T[], total, skip, limit }`. Type it with `PaginateQuery<'<resource>', T>` from `@/services/types`, and take `DEFAULT_LIMIT`, `getNextPageParam`, `getPreviousPageParam` from `@/services`. They compute the next and previous `skip` and return `undefined` past either end, which is what turns `hasNextPage` / `hasPreviousPage` false.
+
+Working reference: `src/features/posts/api/use-infinite-posts.ts`, rendered on the Home screen. The VS Code snippet `useiq` scaffolds the same shape.
 
 ```ts
 import { createInfiniteQuery } from 'react-query-kit';
 import type { AxiosError } from 'axios';
 
 import { client, DEFAULT_LIMIT, getNextPageParam, getPreviousPageParam } from '@/services';
-import type { PaginateQuery } from '../types';
-import type { Post } from './types';
 
-type Response = PaginateQuery<Post>;
-type Variables = { search?: string; limit?: number };
+import type { PostsPage } from './types'; // PaginateQuery<'posts', Post>
 
-export const usePostsInfinite = createInfiniteQuery<Response, Variables, AxiosError>({
-  queryKey: ['postsInfinite'],
+type Response = PostsPage;
+type Variables = { limit?: number };
+
+export const useInfinitePosts = createInfiniteQuery<Response, Variables, AxiosError>({
+  queryKey: ['posts', 'infinite'],
   fetcher: (variables, { pageParam, signal }) =>
     client
       .get('posts', {
         signal,
-        params: {
-          ...variables,
-          limit: variables.limit ?? DEFAULT_LIMIT,
-          offset: pageParam,
-        },
+        params: { limit: variables?.limit ?? DEFAULT_LIMIT, skip: pageParam },
       })
       .then((response) => response.data),
   initialPageParam: 0,
@@ -288,7 +286,9 @@ export const usePostsInfinite = createInfiniteQuery<Response, Variables, AxiosEr
 });
 ```
 
-In the consumer, flatten pages with `normalizePages(data?.pages)` from `@/services` before passing to `FlatList` / `FlashList`.
+In the consumer, flatten pages with `normalizePages(data?.pages, '<resource>')` from `@/services` before passing them to `FlatList` / `FlashList`. Load more from `onEndReached`, guarded with `if (hasNextPage && !isFetchingNextPage) fetchNextPage()`; see `src/features/home/screens/HomeScreen.tsx`.
+
+If your backend paginates differently (page numbers, cursors, `next` URLs), change `PaginationMeta` and the two page-param helpers in `src/services/` once; every infinite hook picks it up.
 
 ---
 
@@ -389,7 +389,7 @@ mutate(draft, {
 - [ ] `signal` forwarded on every UI-backing `GET`
 - [ ] `<module>/index.ts` re-exports the new hook (alphabetical)
 - [ ] The feature's `index.ts` re-exports the new hook
-- [ ] Paginated list uses `createInfiniteQuery` + `PaginateQuery<T>` + `getNextPageParam` / `getPreviousPageParam` (imported from `@/services`)
+- [ ] Paginated list uses `createInfiniteQuery` + `PaginateQuery<'<resource>', T>` + `getNextPageParam` / `getPreviousPageParam` (imported from `@/services`)
 - [ ] FormData upload relies on the client's auto-detection — no manual `Content-Type` header
 - [ ] `yarn type-check` passes
 - [ ] `yarn lint` passes
@@ -401,6 +401,7 @@ mutate(draft, {
 | Pattern | File to read |
 |---|---|
 | Static GET, no params | `src/features/posts/api/use-posts.ts` |
+| Paginated GET (infinite scroll) | `src/features/posts/api/use-infinite-posts.ts` |
 | GET with path param | `src/features/posts/api/use-post.ts` |
 | Plain POST mutation | `src/features/posts/api/use-add-post.ts` |
 | Cross-feature response / pagination types | `src/services/types.ts` |

@@ -3,7 +3,6 @@
     "welcome": "Bienvenido",
     "login": "Iniciar sesión",
     "sign_in": "Iniciar sesión",
-    "profile": "Perfil",
     "logout": "Cerrar sesión",
     "home": "Inicio",
     "email": "Correo electrónico",
@@ -20,6 +19,7 @@
     "password_min_length": "La contraseña debe tener al menos 6 caracteres"
   },
   "settings": {
+    "title": "Ajustes",
     "language": "Idioma",
     "select_language": "Seleccionar idioma",
     "english": "Inglés",
@@ -44,6 +44,19 @@
   },
   "tabs": {
     "home": "Inicio",
-    "profile": "Perfil"
+    "settings": "Ajustes"
+  },
+  "home": {
+    "posts_title": "Publicaciones",
+    "posts_subtitle": "Datos en vivo de la API. Desplázate para cargar más, desliza hacia abajo para actualizar y toca una publicación para ver sus detalles.",
+    "create_post": "Crear una publicación",
+    "post_created": "Publicación #{{id}} creada",
+    "selected_post": "Publicación seleccionada",
+    "load_error": "No se pudieron cargar las publicaciones.",
+    "retry": "Reintentar",
+    "empty": "No se encontraron publicaciones.",
+    "demo_post_title": "Hola desde la plantilla",
+    "demo_post_body": "Esta publicación se envió con useAddPost().",
+    "loaded_count": "{{loaded}} de {{total}} cargadas"
   }
 }

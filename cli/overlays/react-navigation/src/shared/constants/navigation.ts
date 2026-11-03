@@ -6,5 +6,5 @@ export const NAVIGATION = {
   main: 'Main',
   login: 'Login',
   home: 'Home',
-  profile: 'Profile',
+  settings: 'Settings',
 } as const;

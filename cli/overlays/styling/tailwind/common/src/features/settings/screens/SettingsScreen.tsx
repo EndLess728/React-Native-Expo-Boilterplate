@@ -18,7 +18,7 @@ const LANGUAGES: {
   { code: 'ar', label: 'العربية' },
 ];
 
-export function ProfileScreen() {
+export function SettingsScreen() {
   const theme = useAppTheme();
   const logout = useLogout();
   const { language, setLanguage } = useSelectedLanguage();
@@ -27,9 +27,11 @@ export function ProfileScreen() {
   return (
     <ScreenWrapper className="items-center justify-center p-5">
       <View className="mb-4">
-        <Ionicons color={theme.colors.primary} name="person-outline" size={48} />
+        <Ionicons color={theme.colors.primary} name="settings-outline" size={48} />
       </View>
-      <Text className="text-h1 font-opensans-bold text-typography">{translate('auth.profile')}</Text>
+      <Text className="text-h1 font-opensans-bold text-typography">
+        {translate('settings.title')}
+      </Text>
 
       <View className="mt-[30px] w-full items-center">
         <Text className="mb-[15px] text-body-lg font-opensans-semibold text-typography">

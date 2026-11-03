@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { HomeScreen } from '@/features/home';
-import { ProfileScreen } from '@/features/profile';
+import { SettingsScreen } from '@/features/settings';
 import { useTranslate } from '@/localization/utils';
 import { TabBarIcon } from '@/shared/components/TabBarIcon';
 import { TabBarLabel } from '@/shared/components/TabBarLabel';
@@ -34,9 +34,9 @@ export function MainTabNavigator(): React.JSX.Element {
         options={{ title: t('tabs.home') }}
       />
       <Tab.Screen
-        component={ProfileScreen}
-        name={NAVIGATION.profile}
-        options={{ title: t('tabs.profile') }}
+        component={SettingsScreen}
+        name={NAVIGATION.settings}
+        options={{ title: t('tabs.settings') }}
       />
     </Tab.Navigator>
   );

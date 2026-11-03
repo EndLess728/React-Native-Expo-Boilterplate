@@ -1,39 +1,48 @@
-import type { GetNextPageParamFunction, GetPreviousPageParamFunction } from '@tanstack/react-query';
-
-import type { PaginateQuery } from '@/services/types';
+import type { PaginateQuery, PaginationMeta } from '@/services/types';
 
 type KeyParams = {
   [key: string]: any;
 };
+
+/** Default page size sent as `limit` by infinite queries. */
 export const DEFAULT_LIMIT = 10;
 
 export function getQueryKey<T extends KeyParams>(key: string, params?: T) {
   return [key, ...(params ? [params] : [])];
 }
 
-// for infinite query pages  to flatList data
-export function normalizePages<T>(pages?: PaginateQuery<T>[]): T[] {
-  return pages ? pages.reduce((prev: T[], current) => [...prev, ...current.results], []) : [];
+// ─────────────────────────────────────────────────────────────
+//  Infinite-query helpers for limit / skip pagination
+// ─────────────────────────────────────────────────────────────
+//
+//  `pageParam` is the `skip` value of the page to fetch. Pass these straight
+//  to `createInfiniteQuery` (see src/features/posts/api/use-infinite-posts.ts):
+//
+//    initialPageParam: 0,
+//    getNextPageParam,
+//    getPreviousPageParam,
+//
+//  Returning `undefined` tells React Query there is no such page, which is
+//  what turns `hasNextPage` / `hasPreviousPage` false.
+
+/** `skip` for the page after `page`, or `undefined` once every item is loaded. */
+export const getNextPageParam = (page: PaginationMeta): number | undefined => {
+  const nextSkip = page.skip + page.limit;
+  return nextSkip < page.total ? nextSkip : undefined;
+};
+
+/** `skip` for the page before `page`, or `undefined` on the first page. */
+export const getPreviousPageParam = (page: PaginationMeta): number | undefined =>
+  page.skip > 0 ? Math.max(page.skip - page.limit, 0) : undefined;
+
+/**
+ * Flattens infinite-query pages into one array for a FlatList / FlashList.
+ *
+ *   const posts = normalizePages(data?.pages, 'posts');
+ */
+export function normalizePages<K extends string, T>(
+  pages: PaginateQuery<K, T>[] | undefined,
+  key: K,
+): T[] {
+  return pages?.flatMap((page) => page[key] as T[]) ?? [];
 }
-
-// a function that accept a url and return params as an object
-export function getUrlParameters(url: string | null): { [k: string]: string } | null {
-  if (url === null) {
-    return null;
-  }
-  const regex = /[?&]([^=#]+)=([^&#]*)/g;
-  const params: Record<string, string> = {};
-  let match;
-  while ((match = regex.exec(url))) {
-    params[match[1]] = match[2];
-  }
-  return params;
-}
-
-export const getPreviousPageParam: GetNextPageParamFunction<unknown, PaginateQuery<unknown>> = (
-  page,
-) => getUrlParameters(page.previous)?.offset ?? null;
-
-export const getNextPageParam: GetPreviousPageParamFunction<unknown, PaginateQuery<unknown>> = (
-  page,
-) => getUrlParameters(page.next)?.offset ?? null;

@@ -40,6 +40,19 @@ const ENVIRONMENTS = ['development', 'staging', 'production'];
 /** The key whose value differs per generated file. */
 const APP_ENV_KEY = 'EXPO_PUBLIC_APP_ENV';
 
+/**
+ * Values that replace the .env.example placeholder in one generated file.
+ *
+ * Development points at https://dummyjson.com/, a free public demo API, so a
+ * fresh clone renders real data on the Home screen (src/features/posts/api)
+ * instead of failing with a network error against a placeholder host.
+ * Staging and production keep the placeholder: pointing them at a demo API by
+ * default would be a surprise nobody wants in a release build.
+ */
+const ENV_OVERRIDES = {
+  development: { EXPO_PUBLIC_API_URL: 'https://dummyjson.com/' },
+};
+
 const KEY_LINE = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/;
 
 /** The key a line declares, or undefined for a comment or blank line. */
@@ -94,12 +107,16 @@ function stripBanner(text) {
 
 const body = stripBanner(example);
 
-/** Rewrite `EXPO_PUBLIC_APP_ENV=…` to the environment this file is for. */
-function withAppEnv(text, environment) {
-  const line = new RegExp(`^\\s*${APP_ENV_KEY}\\s*=.*$`, 'm');
-  return line.test(text)
-    ? text.replace(line, `${APP_ENV_KEY}=${environment}`)
-    : `${APP_ENV_KEY}=${environment}\n\n${text}`;
+/** Set `key=value`, replacing the existing line or prepending one. */
+function withValue(text, key, value) {
+  const line = new RegExp(`^\\s*${key}\\s*=.*$`, 'm');
+  return line.test(text) ? text.replace(line, `${key}=${value}`) : `${key}=${value}\n\n${text}`;
+}
+
+/** Apply `EXPO_PUBLIC_APP_ENV` plus any per-environment overrides. */
+function withEnvironment(text, environment) {
+  const values = { [APP_ENV_KEY]: environment, ...ENV_OVERRIDES[environment] };
+  return Object.entries(values).reduce((acc, [key, value]) => withValue(acc, key, value), text);
 }
 
 function header(environment) {
@@ -136,7 +153,7 @@ for (const environment of ENVIRONMENTS) {
     continue;
   }
 
-  writeFileSync(target, header(environment) + withAppEnv(body, environment) + '\n', 'utf8');
+  writeFileSync(target, header(environment) + withEnvironment(body, environment) + '\n', 'utf8');
   created.push(environment);
 }
 

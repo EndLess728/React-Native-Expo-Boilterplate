@@ -6,7 +6,7 @@ import { NAVIGATION } from '@/shared/constants';
 import type { RootStackParamList } from './types';
 
 /**
- * Deep links: `<scheme>://` opens Home, `<scheme>://profile` opens Profile.
+ * Deep links: `<scheme>://` opens Home, `<scheme>://settings` opens Settings.
  * The scheme comes from `scheme` in app.config.ts.
  */
 export const linking: LinkingOptions<RootStackParamList> = {
@@ -21,7 +21,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       [NAVIGATION.main]: {
         screens: {
           [NAVIGATION.home]: '',
-          [NAVIGATION.profile]: 'profile',
+          [NAVIGATION.settings]: 'settings',
         },
       },
     },

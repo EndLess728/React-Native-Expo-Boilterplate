@@ -3,7 +3,6 @@
     "welcome": "Welcome",
     "login": "Login",
     "sign_in": "Sign in",
-    "profile": "Profile",
     "logout": "Logout",
     "home": "Home",
     "email": "Email",
@@ -20,6 +19,7 @@
     "password_min_length": "Password must be at least 6 characters"
   },
   "settings": {
+    "title": "Settings",
     "language": "Language",
     "select_language": "Select Language",
     "english": "English",
@@ -44,6 +44,19 @@
   },
   "tabs": {
     "home": "Home",
-    "profile": "Profile"
+    "settings": "Settings"
+  },
+  "home": {
+    "posts_title": "Posts",
+    "posts_subtitle": "Live data from the API. Scroll to load more, pull to refresh, tap a post to load its details.",
+    "create_post": "Create a post",
+    "post_created": "Post #{{id}} created",
+    "selected_post": "Selected post",
+    "load_error": "Could not load posts.",
+    "retry": "Retry",
+    "empty": "No posts found.",
+    "demo_post_title": "Hello from the boilerplate",
+    "demo_post_body": "This post was sent with useAddPost().",
+    "loaded_count": "{{loaded}} of {{total}} loaded"
   }
 }

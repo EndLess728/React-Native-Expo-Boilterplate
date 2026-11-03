@@ -9,7 +9,7 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   [NAVIGATION.home]: undefined;
-  [NAVIGATION.profile]: undefined;
+  [NAVIGATION.settings]: undefined;
 };
 
 export type RootStackParamList = {

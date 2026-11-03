@@ -23,7 +23,7 @@ export default function TabsLayout(): React.JSX.Element {
       })}
     >
       <Tabs.Screen name="index" options={{ headerShown: true, title: t('tabs.home') }} />
-      <Tabs.Screen name="profile" options={{ headerShown: true, title: t('tabs.profile') }} />
+      <Tabs.Screen name="settings" options={{ headerShown: true, title: t('tabs.settings') }} />
     </Tabs>
   );
 }

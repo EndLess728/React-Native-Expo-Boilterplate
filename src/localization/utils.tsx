@@ -68,13 +68,25 @@ export const changeLanguage = (lang: Language) => {
   }
 };
 
+/** Shown as selected when nothing is saved and i18n has not resolved a language. */
+export const DEFAULT_LANGUAGE: Language = 'en';
+
 export const useSelectedLanguage = () => {
   const [language, setLang] = useMMKVString(LOCAL, storage);
+  const { i18n: i18nInstance } = useTranslation();
 
   const setLanguage = (lang: Language) => {
     setLang(lang);
     changeLanguage(lang);
   };
 
-  return { language: language as Language, setLanguage };
+  // Nothing is saved until the user picks a language. Fall back to the
+  // language the app is actually rendering in (device locale, or English for
+  // unsupported locales via `fallbackLng`), so the Settings picker always has a
+  // selection and it always matches what is on screen.
+  const activeLanguage = (language ??
+    i18nInstance.resolvedLanguage ??
+    DEFAULT_LANGUAGE) as Language;
+
+  return { language: activeLanguage, setLanguage };
 };

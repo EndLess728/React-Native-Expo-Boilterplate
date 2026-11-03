@@ -1,0 +1,107 @@
+# Publishes the create-expo-boilerplate CLI (cli/) to npm on every push to main.
+#
+# The version is the one the Release workflow tags the same commit with:
+# git-cliff works it out from the Conventional Commits since the last `v*` tag
+# (config: cliff.toml), and the `v` prefix is dropped (v1.1.0 → 1.1.0). It is
+# written into cli/package.json on the runner only; nothing is committed back.
+#
+# npm never accepts the same version twice, so a push with nothing releasable
+# (only chore/docs/ci commits) resolves to a version that is already on npm and
+# the publish is skipped with a notice instead of failing.
+#
+# Requires the NPM_TOKEN repository secret: an npm automation (or granular,
+# publish-scoped) access token for the account that owns the package.
+
+name: Publish CLI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance: links the published package to this run
+
+# One publish at a time, in push order — never cancel a half-finished publish.
+concurrency:
+  group: publish-cli
+  cancel-in-progress: false
+
+env:
+  GIT_CLIFF: git-cliff@2.14.2
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history and tags, for the version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Work out the version
+        id: version
+        run: |
+          # Same command as the Release workflow, so npm and the GitHub release
+          # agree. If Release already tagged this commit, git-cliff returns that
+          # tag, which is still the right version.
+          tag=$(npx -y "$GIT_CLIFF" --bumped-version 2>/dev/null)
+          version="${tag#v}"
+          if [ -z "$version" ]; then
+            echo "::error::git-cliff did not return a version."
+            exit 1
+          fi
+
+          name=$(node -p "require('./cli/package.json').name")
+          echo "name=$name version=$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$(npm view "$name@$version" version 2>/dev/null)" ]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$name@$version is already on npm — nothing releasable since it, skipping."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install CLI dependencies
+        if: steps.version.outputs.publish == 'true'
+        working-directory: cli
+        run: npm ci
+
+      - name: Type-check
+        if: steps.version.outputs.publish == 'true'
+        working-directory: cli
+        run: npm run typecheck
+
+      - name: Set the package version
+        if: steps.version.outputs.publish == 'true'
+        working-directory: cli
+        run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Publish
+        if: steps.version.outputs.publish == 'true'
+        working-directory: cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # `prepack` builds dist/ and syncs the boilerplate into template/.
+        run: npm publish --provenance --access public
+
+      - name: Summary
+        if: steps.version.outputs.publish == 'true'
+        run: |
+          {
+            echo "### Published \`create-expo-boilerplate@${{ steps.version.outputs.version }}\`"
+            echo
+            echo '```bash'
+            echo "npx create-expo-boilerplate@${{ steps.version.outputs.version }} my-app"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -124,9 +124,17 @@ Upgrade the boilerplate at the repo root as usual, then bump the overlay-only pa
 
 ## Publishing
 
+Publishing is automatic: `.github/workflows/publish-cli.yml` publishes to npm on every push to `main`. It needs an `NPM_TOKEN` repository secret (an npm automation token, or a granular token with publish rights to this package).
+
+- **The version comes from the commits**, the same way the GitHub release is versioned: git-cliff reads the Conventional Commits since the last `v*` tag (`feat` → minor, `fix` / `perf` → patch, `!` or `BREAKING CHANGE` → major), and `v1.1.0` is published as `1.1.0`. The `version` in `package.json` is set on the CI runner only, so don't bump it by hand.
+- **A push with nothing releasable** (only `chore` / `docs` / `ci` commits) resolves to a version that is already on npm, so the run skips the publish with a notice instead of failing.
+- Packages are published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements), linking each version to the workflow run that built it.
+
+To publish by hand instead (for example, to test a release):
+
 ```bash
 cd cli
-npm version patch        # or minor / major
+npm version 1.2.3 --no-git-tag-version
 npm publish              # prepack builds dist/ and syncs template/
 ```
 

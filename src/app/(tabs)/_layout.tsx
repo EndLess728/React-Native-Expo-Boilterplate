@@ -1,13 +1,13 @@
 import React from 'react';
-import { useUnistyles } from 'react-native-unistyles';
 import { Tabs } from 'expo-router';
 
-import { TabBarIcon } from '@/components/TabBarIcon';
-import { TabBarLabel } from '@/components/TabBarLabel';
 import { useTranslate } from '@/localization/utils';
+import { TabBarIcon } from '@/shared/components/TabBarIcon';
+import { TabBarLabel } from '@/shared/components/TabBarLabel';
+import { useAppTheme } from '@/theme';
 
 export default function TabsLayout(): React.JSX.Element {
-  const { theme } = useUnistyles();
+  const theme = useAppTheme();
   const t = useTranslate();
 
   return (

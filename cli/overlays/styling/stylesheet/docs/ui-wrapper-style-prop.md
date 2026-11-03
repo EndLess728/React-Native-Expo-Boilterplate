@@ -1,0 +1,1 @@
+- `style` — layout style (padding, `justifyContent`, `alignItems`, etc.). Routed to the content container in scrollable mode, or the outer `View` otherwise. **Caller never thinks about which.**

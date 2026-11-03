@@ -1,0 +1,1 @@
+- Pass layout via the `className` prop only. There is no separate content container prop — `ScreenWrapper` routes it for you.

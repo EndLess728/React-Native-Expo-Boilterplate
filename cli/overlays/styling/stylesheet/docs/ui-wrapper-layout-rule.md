@@ -1,0 +1,1 @@
+- Pass layout via `style` prop only. There is no separate `contentContainerStyle` prop — `ScreenWrapper` routes it for you.

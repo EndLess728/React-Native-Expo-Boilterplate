@@ -17,10 +17,10 @@ import NetInfo from '@react-native-community/netinfo';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 import Env from '@env';
+import { signOut } from '@/features/auth';
 import { translate } from '@/localization/utils';
+import { showErrorToast } from '@/shared/utils/toast';
 import { getAccessToken, getRefreshToken, setTokens } from '@/storage/token';
-import { useUserStore } from '@/store/useUserStore';
-import { showErrorToast } from '@/utils/toast';
 
 // ─────────────────────────────────────────────────────────────
 //  Types
@@ -121,10 +121,10 @@ const forceLogout = () => {
   if (isLoggingOut) return;
   isLoggingOut = true;
 
-  // Flip auth state synchronously — `logout()` clears tokens via the store —
+  // Flip auth state synchronously — `signOut()` clears tokens via the store —
   // so any in-flight screens stop issuing requests with the stale token
   // before the user has even tapped OK on the alert.
-  useUserStore.getState().logout();
+  signOut();
 
   Alert.alert(
     translate('errors.session_expired'),

@@ -1,0 +1,49 @@
+{
+  "name": "create-expo-boilerplate",
+  "version": "0.1.0",
+  "description": "Scaffold a production-ready Expo app from the React-Native-Expo-Boilterplate, with your choice of state management, navigation, language and tooling.",
+  "type": "module",
+  "bin": {
+    "create-expo-boilerplate": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "template",
+    "overlays"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "sync-template": "node scripts/sync-template.mjs",
+    "prepack": "npm run build && npm run sync-template",
+    "test:matrix": "node scripts/test-matrix.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EndLess728/React-Native-Expo-Boilterplate.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "boilerplate",
+    "template",
+    "create"
+  ],
+  "author": "EndLess728",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "commander": "^14.0.0",
+    "picocolors": "^1.1.1",
+    "prettier": "^3.7.4",
+    "typescript": "~6.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}

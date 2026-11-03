@@ -10,6 +10,10 @@ import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
 
 type DefaultLocale = typeof resources.en.translation;
+
+// i18next ≥ 25.10 requires `context` to be a string; this shape type-checks
+// against both older and newer i18next typings.
+export type TranslateOptions = Omit<TOptions, 'context'> & { context?: string };
 export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
 export const LOCAL = 'local';
@@ -22,7 +26,7 @@ export const getLanguage = (): string | null => storage?.getString(LOCAL) ?? nul
  * Translates text (non-reactive, use for static content).
  * For components that need to react to language changes, use useTranslate() hook.
  */
-export function translate(key: TxKeyPath, options?: TOptions): string {
+export function translate(key: TxKeyPath, options?: TranslateOptions): string {
   if (i18n.isInitialized) {
     return i18n.t(key, options);
   }
@@ -35,7 +39,7 @@ export function translate(key: TxKeyPath, options?: TOptions): string {
  */
 export const useTranslate = () => {
   const { t } = useTranslation();
-  return (key: TxKeyPath, options?: TOptions): string => t(key, options);
+  return (key: TxKeyPath, options?: TranslateOptions): string => t(key, options);
 };
 
 export const changeLanguage = (lang: Language) => {

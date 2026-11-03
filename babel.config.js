@@ -25,12 +25,14 @@ module.exports = function (api) {
           },
         },
       ],
+      // @cli:unistyles-start
       [
         'react-native-unistyles/plugin',
         {
           root: 'src',
         },
       ],
+      // @cli:unistyles-end
       // Strip console.log / console.info / console.debug from production
       // bundles. Keep console.error and console.warn so crash reporters
       // (Sentry, Bugsnag, etc.) still receive them.

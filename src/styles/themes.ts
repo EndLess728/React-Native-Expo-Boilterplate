@@ -1,9 +1,11 @@
+// @cli:unistyles-start
 /**
  * References:
  * - Introduction: https://www.unistyl.es/v3/start/getting-started
  * - Migration from Unistyle v2 to v3: https://www.unistyl.es/v3/start/migration-guide
  */
 
+// @cli:unistyles-end
 // Colors that look correct on both light and dark surfaces — kept in a
 // single map so each theme only declares its differences.
 const constantsColors = {

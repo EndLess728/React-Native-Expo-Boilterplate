@@ -3,10 +3,10 @@ import { Text } from 'react-native';
 import { StyleSheet } from 'react-native-unistyles';
 import { Link, Stack } from 'expo-router';
 
-import ScreenWrapper from '@/components/ScreenWrapper';
 import { useTranslate } from '@/localization/utils';
+import ScreenWrapper from '@/shared/components/ScreenWrapper';
+import { ms } from '@/shared/utils';
 import { TextStyles } from '@/theme';
-import { ms } from '@/utils';
 
 export default function NotFound() {
   const t = useTranslate();
@@ -16,7 +16,7 @@ export default function NotFound() {
       <Stack.Screen options={{ title: t('not_found.title') }} />
       <ScreenWrapper style={styles.container}>
         <Text style={TextStyles.h1}>{t('not_found.message')}</Text>
-        <Link href="/(tabs)" style={styles.link}>
+        <Link href="/" style={styles.link}>
           <Text style={[TextStyles.link, styles.linkText]}>{t('not_found.go_home')}</Text>
         </Link>
       </ScreenWrapper>

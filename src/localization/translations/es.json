@@ -10,7 +10,8 @@
     "password": "Contraseña",
     "login_description": "Ingrese su correo electrónico y contraseña para iniciar sesión",
     "enter_email": "Ingrese su correo electrónico",
-    "enter_password": "Ingrese su contraseña"
+    "enter_password": "Ingrese su contraseña",
+    "login_success": "Inicio de sesión exitoso"
   },
   "validation": {
     "email_required": "El correo electrónico es obligatorio",

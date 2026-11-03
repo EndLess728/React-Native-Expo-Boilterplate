@@ -31,8 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/icon.png',
       backgroundColor: '#232323',
     },
-    // SDK 55 removed `edgeToEdgeEnabled` — edge-to-edge is now mandatory and is
-    // wired up via the `react-native-edge-to-edge` plugin in the plugins list.
+    // Edge-to-edge is mandatory (Android 16) and built into Expo — no config needed.
     package: Env.EXPO_PUBLIC_PACKAGE_NAME,
   },
   web: {
@@ -58,7 +57,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // Required from SDK 55 onward — registers the SecureStore native module.
     'expo-secure-store',
     'expo-status-bar',
-    ['react-native-edge-to-edge', { android: { enforceNavigationBarContrast: false } }],
+    // Keep the navigation bar fully transparent instead of adding a contrast scrim.
+    ['expo-navigation-bar', { enforceContrast: false }],
     [
       'expo-splash-screen',
       {

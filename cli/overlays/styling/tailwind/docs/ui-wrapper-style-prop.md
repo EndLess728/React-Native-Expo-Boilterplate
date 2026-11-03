@@ -1,0 +1,1 @@
+- `className` — layout classes (padding, `justify-*`, `items-*`, etc.). Applied to the content in both scrollable and static mode. **Caller never thinks about which.**

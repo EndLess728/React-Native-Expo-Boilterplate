@@ -1,0 +1,3 @@
+- Arbitrary colors (`bg-[#fff]`) or palette colors (`text-gray-500`) → use a theme class (`bg-background`, `text-text-gray`).
+- Arbitrary font sizes (`text-[17px]`) or `font-bold` → use a text role + `font-opensans-*` class.
+- Class names built from fragments (`` `text-${tone}` ``) → write out each full class.

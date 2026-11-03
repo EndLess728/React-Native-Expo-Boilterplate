@@ -1,0 +1,2 @@
+- Adding a key to one theme only → both `lightTheme` and `darkTheme` must define every key.
+- Reading `theme.colors.*` in a module-level `StyleSheet.create` → use `makeStyles((theme) => ...)` so styles follow the active theme.

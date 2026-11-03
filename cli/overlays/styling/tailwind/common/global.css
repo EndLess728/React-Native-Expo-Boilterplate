@@ -1,0 +1,92 @@
+/*
+ * Tailwind entry for Uniwind — https://docs.uniwind.dev
+ *
+ * Colors here mirror `src/styles/themes.ts`, which components read through
+ * `useAppTheme()` when a color must be passed as a prop (icon colors, tab bar
+ * tints, placeholderTextColor). Change a color in both places.
+ */
+@import 'tailwindcss';
+@import 'uniwind';
+
+@theme {
+  /* Fonts — one family per weight; names must match the font files bundled by
+     the expo-font plugin in app.config.ts. */
+  --font-opensans: 'OpenSans';
+  --font-opensans-italic: 'OpenSans-Italic';
+  --font-opensans-semibold: 'OpenSans-Semibold';
+  --font-opensans-semibold-italic: 'OpenSans-SemiboldItalic';
+  --font-opensans-bold: 'OpenSans-Bold';
+  --font-opensans-bold-italic: 'OpenSans-BoldItalic';
+
+  /* Text roles — `text-h1`, `text-body`, … (size + line height). Pair them
+     with a font class: `text-h1 font-opensans-bold`. */
+  --text-h1: 32px;
+  --text-h1--line-height: 40px;
+  --text-h2: 24px;
+  --text-h2--line-height: 32px;
+  --text-h3: 20px;
+  --text-h3--line-height: 28px;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 26px;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-button: 18px;
+  --text-button--line-height: 24px;
+  --text-label: 16px;
+  --text-label--line-height: 22px;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+
+  /* Colors that are the same in both themes. */
+  --color-danger: #dc3545;
+  --color-grey: #b0b0b0;
+  --color-blue: #001eb9;
+  --color-light: #f8f9fa;
+  --color-green: #62ea9f;
+  --color-cancel: #eb5757;
+  --color-on-primary: #ffffff;
+}
+
+@layer theme {
+  :root {
+    /* Android resolves fonts by file name, iOS by PostScript name — only the
+       regular weight differs (see src/theme/fonts.ts). */
+    @variant android {
+      --font-opensans: 'OpenSans-Regular';
+    }
+
+    @variant light {
+      --color-typography: #000000;
+      --color-background: #ffffff;
+      --color-surface: #ffffff;
+      --color-opacity50: rgba(1, 1, 1, 0.5);
+      --color-text-input: rgba(217, 217, 217, 0.2);
+      --color-placeholder: rgba(1, 1, 1, 0.52);
+      --color-primary: #00bfff;
+      --color-primary-transparent: #e1f8ff;
+      --color-text-gray: #6b7f85;
+      --color-primary-text: #394347;
+      --color-faded-white: #f7f8f9;
+      --color-border-gray: #e8ecf4;
+      --color-icon-gray: #8ba1a8;
+    }
+
+    @variant dark {
+      --color-typography: #ffffff;
+      --color-background: #000000;
+      --color-surface: #1a1a1a;
+      --color-opacity50: rgba(201, 201, 201, 0.5);
+      --color-text-input: #000000;
+      --color-placeholder: #f8f9fa;
+      --color-primary: #00bfff;
+      --color-primary-transparent: #001a1f;
+      --color-text-gray: #6b7f85;
+      --color-primary-text: #394347;
+      --color-faded-white: #1a1a1a;
+      --color-border-gray: #2a2a2a;
+      --color-icon-gray: #8ba1a8;
+    }
+  }
+}

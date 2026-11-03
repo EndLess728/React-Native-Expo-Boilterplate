@@ -1,0 +1,2 @@
+- Adding a color to one theme only → both `@variant light` and `@variant dark` in `global.css` must define it, and `src/styles/themes.ts` must mirror it.
+- `StyleSheet.create` for static layout → use `className`.

@@ -10,7 +10,8 @@
     "password": "Password",
     "login_description": "Enter your email and password to login",
     "enter_email": "Enter your email",
-    "enter_password": "Enter your password"
+    "enter_password": "Enter your password",
+    "login_success": "Login successful"
   },
   "validation": {
     "email_required": "Email is required",

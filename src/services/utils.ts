@@ -1,6 +1,6 @@
 import type { GetNextPageParamFunction, GetPreviousPageParamFunction } from '@tanstack/react-query';
 
-import type { PaginateQuery } from '@/api/types';
+import type { PaginateQuery } from '@/services/types';
 
 type KeyParams = {
   [key: string]: any;

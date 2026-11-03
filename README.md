@@ -832,4 +832,4 @@ Built and maintained by [**EndLess728**](https://github.com/EndLess728).
 
 ## License
 
-Private — All rights reserved.
+[MIT](LICENSE) © EndLess728. You are free to use this boilerplate, and the `create-expo-boilerplate` CLI, in personal and commercial projects. Apps generated from it do not include this license: they are yours to license however you like.

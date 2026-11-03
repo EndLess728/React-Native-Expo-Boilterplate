@@ -82,10 +82,10 @@ export function HomeScreen() {
         className={`bg-surface gap-1 rounded-xl border p-4 ${isSelected ? 'border-primary' : 'border-border-gray'}`}
         onPress={() => setSelectedId(item.id)}
       >
-        <Text numberOfLines={1} className="text-body font-opensans-semibold text-typography">
+        <Text className="text-body font-opensans-semibold text-typography" numberOfLines={1}>
           {item.title}
         </Text>
-        <Text numberOfLines={2} className="text-body-sm font-opensans text-text-gray">
+        <Text className="text-body-sm font-opensans text-text-gray" numberOfLines={2}>
           {item.body}
         </Text>
       </Pressable>

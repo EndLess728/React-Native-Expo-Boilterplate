@@ -8,7 +8,7 @@ import { ms } from '@/shared/utils';
 
 const tabIcon: Record<string, ImageSourcePropType> = {
   [NAVIGATION.home]: homeIcon,
-  [NAVIGATION.profile]: settingsIcon,
+  [NAVIGATION.settings]: settingsIcon,
 };
 
 interface TabBarIconProps {

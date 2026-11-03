@@ -2,5 +2,5 @@
 // Used by TabBar* components to map `route.name` → icon / label.
 export const NAVIGATION = {
   home: 'index',
-  profile: 'profile',
+  settings: 'settings',
 } as const;

@@ -92,7 +92,7 @@ export function renderReadme(o: ProjectOptions): string {
       `│   ├── app/                  # Expo Router routes — thin re-exports of feature screens`,
       `│   │   ├── _layout.${xx}       #   bootstrap + providers + <Stack.Protected> auth gating`,
       `│   │   ├── (auth)/login.${xx}`,
-      `│   │   └── (tabs)/           #   index → Home, profile → Profile`,
+      `│   │   └── (tabs)/           #   index → Home, settings → Settings`,
     );
   } else {
     push(
@@ -107,7 +107,7 @@ export function renderReadme(o: ProjectOptions): string {
     `│   │   ├── auth/             #   index.${x} is the public API — import from '@/features/auth'`,
     '│   │   ├── home/',
     '│   │   ├── posts/            #   api/ — react-query-kit hooks',
-    '│   │   └── profile/',
+    '│   │   └── settings/',
     '│   ├── shared/               # components, hooks, constants, utils used across features',
     '│   ├── providers/            # AppProviders + useAppBootstrap()',
     '│   ├── services/             # Axios client (auth header, 401 handling, error toasts), QueryClient',

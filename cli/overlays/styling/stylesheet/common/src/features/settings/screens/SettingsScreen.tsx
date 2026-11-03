@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { StyleSheet, useUnistyles } from 'react-native-unistyles';
 import { Ionicons } from '@react-native-vector-icons/ionicons';
 
 import { useLogout } from '@/features/auth';
@@ -9,7 +8,7 @@ import { useSelectedLanguage, useTranslate } from '@/localization/utils';
 import Button from '@/shared/components/Button';
 import ScreenWrapper from '@/shared/components/ScreenWrapper';
 import { ms } from '@/shared/utils';
-import { TextStyles } from '@/theme';
+import { makeStyles, TextStyles, useAppTheme } from '@/theme';
 
 const LANGUAGES: {
   code: Language;
@@ -20,8 +19,9 @@ const LANGUAGES: {
   { code: 'ar', label: 'العربية' },
 ];
 
-export function ProfileScreen() {
-  const { theme } = useUnistyles();
+export function SettingsScreen() {
+  const theme = useAppTheme();
+  const styles = useStyles();
   const logout = useLogout();
   const { language, setLanguage } = useSelectedLanguage();
   const translate = useTranslate();
@@ -30,11 +30,11 @@ export function ProfileScreen() {
     <ScreenWrapper style={styles.container}>
       <Ionicons
         color={theme.colors.primary}
-        name="person-outline"
+        name="settings-outline"
         size={ms(48)}
         style={styles.icon}
       />
-      <Text style={TextStyles.h1}>{translate('auth.profile')}</Text>
+      <Text style={TextStyles.h1}>{translate('settings.title')}</Text>
 
       <View style={styles.languageSection}>
         <Text style={[TextStyles.bodyLargeSemiBold, styles.languageLabel]}>
@@ -70,7 +70,7 @@ export function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create((theme) => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     padding: ms(20),
     justifyContent: 'center',

@@ -8,7 +8,7 @@ import { TextStyles } from '@/theme';
 
 const tabLabel: Record<string, TxKeyPath> = {
   [NAVIGATION.home]: 'tabs.home',
-  [NAVIGATION.profile]: 'tabs.profile',
+  [NAVIGATION.settings]: 'tabs.settings',
 };
 
 interface TabBarLabelProps {

@@ -3,7 +3,6 @@
     "welcome": "Welcome",
     "login": "Login",
     "sign_in": "Sign in",
-    "profile": "Profile",
     "logout": "Logout",
     "home": "Home",
     "email": "Email",
@@ -20,6 +19,7 @@
     "password_min_length": "Password must be at least 6 characters"
   },
   "settings": {
+    "title": "Settings",
     "language": "Language",
     "select_language": "Select Language",
     "english": "English",
@@ -44,7 +44,7 @@
   },
   "tabs": {
     "home": "Home",
-    "profile": "Profile"
+    "settings": "Settings"
   },
   "home": {
     "posts_title": "Posts",

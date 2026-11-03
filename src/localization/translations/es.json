@@ -3,7 +3,6 @@
     "welcome": "Bienvenido",
     "login": "Iniciar sesión",
     "sign_in": "Iniciar sesión",
-    "profile": "Perfil",
     "logout": "Cerrar sesión",
     "home": "Inicio",
     "email": "Correo electrónico",
@@ -20,6 +19,7 @@
     "password_min_length": "La contraseña debe tener al menos 6 caracteres"
   },
   "settings": {
+    "title": "Ajustes",
     "language": "Idioma",
     "select_language": "Seleccionar idioma",
     "english": "Inglés",
@@ -44,7 +44,7 @@
   },
   "tabs": {
     "home": "Inicio",
-    "profile": "Perfil"
+    "settings": "Ajustes"
   },
   "home": {
     "posts_title": "Publicaciones",

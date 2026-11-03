@@ -146,13 +146,13 @@ yarn ios:development       # prebuild + run iOS (dev)
 │   │   ├── +not-found.tsx    #   404 catch-all
 │   │   ├── +html.tsx         #   Web-only HTML shell (no-op on iOS/Android)
 │   │   ├── (auth)/login.tsx  #   `export { LoginScreen as default } from '@/features/auth'`
-│   │   └── (tabs)/           #   Tabs group (URL-invisible): index → Home, profile → Profile
+│   │   └── (tabs)/           #   Tabs group (URL-invisible): index → Home, settings → Settings
 │   ├── features/             # One folder per feature — screens, state, API, types
 │   │   ├── auth/             #   screens/, store/, api/, hooks.ts, session.ts, types.ts
 │   │   │   └── index.ts      #     Public API — the only entry other code may import
 │   │   ├── home/             #   screens/HomeScreen.tsx
 │   │   ├── posts/            #   api/ — react-query-kit hooks for the posts resource
-│   │   └── profile/          #   screens/ProfileScreen.tsx
+│   │   └── settings/         #   screens/SettingsScreen.tsx (language picker)
 │   ├── shared/               # Feature-agnostic building blocks
 │   │   ├── components/       #   Button, TextField, ControlledTextField, ScreenWrapper, Tab bar bits
 │   │   ├── constants/        #   Tab route segments, ApiUrls, deviceInfo, status enums
@@ -304,7 +304,7 @@ export is the screen component, re-exported from its feature.
 | `src/app/_layout.tsx` | Root layout — `useAppBootstrap()` (splash, storage, store rehydration, i18n), `<AppProviders>`, `<Stack.Protected>` auth gating, `ErrorBoundary` re-export |
 | `src/app/(tabs)/_layout.tsx` | Bottom `<Tabs>` |
 | `src/app/(tabs)/index.tsx` | `/` (Home tab) → `HomeScreen` from `@/features/home` |
-| `src/app/(tabs)/profile.tsx` | `/profile` → `ProfileScreen` from `@/features/profile` |
+| `src/app/(tabs)/settings.tsx` | `/settings` → `SettingsScreen` from `@/features/settings` |
 
 ### Adding a new screen
 
@@ -339,11 +339,11 @@ entry in `src/app/(tabs)/_layout.tsx`. Also register its icon/label in
 import { Link, useRouter } from 'expo-router';
 
 // Declarative
-<Link href="/profile">Go to profile</Link>;
+<Link href="/settings">Go to settings</Link>;
 
 // Imperative
 const router = useRouter();
-router.push('/profile');
+router.push('/settings');
 router.replace('/login');
 router.back();
 ```

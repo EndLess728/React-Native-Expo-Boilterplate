@@ -289,7 +289,7 @@ fr.json → "settings": { ..., "french": "Français" }
 
 ### 5d. Add the language to the language picker UI
 
-The language picker is in `app/(tabs)/profile.tsx`. Add to the `LANGUAGES` array:
+The language picker is in `src/features/settings/screens/SettingsScreen.tsx`. Add to the `LANGUAGES` array:
 
 ```tsx
 const LANGUAGES: {
@@ -413,7 +413,7 @@ Understanding the type pipeline helps you debug autocomplete issues:
 - [ ] Components use `useTranslate()` from `@/localization/utils`, not `useTranslation()` from `react-i18next`
 - [ ] Non-component code uses `translate()` from `@/localization/utils`, not `i18n.t()`
 - [ ] Language switching uses `useSelectedLanguage()`, not `i18n.changeLanguage()` directly
-- [ ] If a new language was added: JSON file created, registered in `resources.ts`, label keys added to all existing files, added to language picker in `app/(tabs)/profile.tsx`
+- [ ] If a new language was added: JSON file created, registered in `resources.ts`, label keys added to all existing files, added to language picker in `src/features/settings/screens/SettingsScreen.tsx`
 - [ ] If a new RTL language was added: RTL detection logic updated in `utils.tsx → changeLanguage()`
 - [ ] `yarn type-check` passes
 - [ ] `yarn lint` passes
@@ -431,6 +431,6 @@ Understanding the type pipeline helps you debug autocomplete issues:
 | Recursive key-path type utility            | `src/localization/types.ts`                    |
 | English translations (type source of truth)| `src/localization/translations/en.json`        |
 | App init sequence (storage → i18n)         | `app/_layout.tsx`                              |
-| Language picker UI                         | `app/(tabs)/profile.tsx`                       |
+| Language picker UI                         | `src/features/settings/screens/SettingsScreen.tsx` |
 | MMKV storage initialization                | `src/storage/index.ts`                         |
-| Translation usage in a screen              | `app/(tabs)/index.tsx`, `app/(tabs)/profile.tsx`|
+| Translation usage in a screen              | `src/features/home/screens/HomeScreen.tsx`, `src/features/settings/screens/SettingsScreen.tsx` |

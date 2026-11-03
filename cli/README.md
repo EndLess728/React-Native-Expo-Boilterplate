@@ -19,6 +19,7 @@ It asks a few questions, writes the project, installs dependencies, sets up git 
 | State management | Zustand · Redux Toolkit | Zustand | `--state zustand\|redux` |
 | Redux side effects (Redux only) | Thunk · Saga | Thunk | `--redux-middleware thunk\|saga` |
 | Navigation | Expo Router · React Navigation | Expo Router | `--navigation expo-router\|react-navigation` |
+| Styling | Unistyles · StyleSheet · Tailwind (Uniwind) | Unistyles | `--styling unistyles\|stylesheet\|tailwind` |
 | Language | TypeScript · JavaScript | TypeScript | `--language ts\|js` (or `--js`) |
 | ESLint | yes · no | yes | `--eslint` / `--no-eslint` |
 | Husky git hooks | yes · no | yes | `--husky` / `--no-husky` |
@@ -32,8 +33,18 @@ Other flags: `--yes` (take defaults for anything not passed), `--no-install`, `-
 # Fully non-interactive
 npx create-expo-boilerplate my-app --yes \
   --state redux --redux-middleware saga \
-  --navigation react-navigation --js --no-husky
+  --navigation react-navigation --styling tailwind --js --no-husky
 ```
+
+### Styling
+
+| Option | Styles are written with | Extra packages |
+|---|---|---|
+| Unistyles (default) | `StyleSheet.create((theme, rt) => …)` from `react-native-unistyles` | `react-native-unistyles` |
+| StyleSheet | React Native's `StyleSheet`; `makeStyles((theme) => …)` from `@/theme` for theme-aware styles | none |
+| Tailwind | `className` via [Uniwind](https://uniwind.dev/) (Tailwind v4); theme colors, fonts and text roles in `global.css`, plus `metro.config.js` | `uniwind`, `tailwindcss` |
+
+Every option has the same screens and the same light/dark theme tokens (`src/styles/themes.ts`), and exposes `useAppTheme()` from `@/theme` for colors that must be passed as props (icon colors, tab bar tints, `placeholderTextColor`). The project's `.skills/ui-creation.md` and the `rnfu` VS Code snippet are rewritten for the option you pick.
 
 Every combination uses the same feature-based layout (`src/features/<feature>`, `src/shared`, …). Screens only talk to state through the auth feature's hooks (`useIsLoggedIn`, `useLogin`, …), which is why switching the state library or the navigator doesn't touch a single screen.
 
@@ -49,6 +60,7 @@ cli/
 │   ├── template.ts           # copies the repo root (or the packaged template/)
 │   └── steps/
 │       ├── navigation.ts     # React Navigation: drop src/app, add the overlay, edit app.config + deps
+│       ├── styling.ts        # StyleSheet / Tailwind: strip Unistyles, add the styling overlay, swap docs
 │       ├── state.ts          # Redux: drop the Zustand store, add redux/common + thunk|saga overlays
 │       ├── tooling.ts        # remove ESLint / Husky (+ lint-staged, Commitlint)
 │       ├── identity.ts       # name, slug, scheme, bundle id
@@ -58,7 +70,11 @@ cli/
 │       └── format.ts         # Prettier with the project's .prettierrc
 ├── overlays/                 # files that differ per option, written in TypeScript
 │   ├── react-navigation/
-│   └── redux/{common,thunk,saga}/
+│   ├── redux/{common,thunk,saga}/
+│   └── styling/{stylesheet,tailwind}/
+│       ├── common/           #   styled components, screens, theme hooks (+ global.css, metro.config.js)
+│       ├── expo-router/      #   route files that only exist with Expo Router
+│       └── docs/             #   replacement sections for .skills/ui-creation.md and the screen snippet
 └── scripts/
     ├── sync-template.mjs     # copies the repo root into template/ when packing
     └── test-matrix.mjs       # generates + checks every combination
@@ -66,7 +82,12 @@ cli/
 
 - **Overlays are TypeScript only.** The JavaScript option transpiles the finished project with the TypeScript compiler (types erased, JSX untouched, blank lines kept), deletes files that only held types, and Prettier formats the result. There's no separate JS template to maintain.
 - **Edits fail loudly.** Every string edit throws if its target text is missing, so if the boilerplate changes in a way a step depends on, generation (and CI) fails instead of shipping a half-converted project.
-- **One marker.** `eslint.config.js` wraps the Zustand-only rule in `// @cli:zustand-start` … `// @cli:zustand-end`. The CLI strips the markers, or swaps the block for the typed-Redux-hooks rule.
+- **Region markers.** Option-specific blocks in the template are wrapped in `// @cli:<name>-start` … `// @cli:<name>-end` (or `<!-- @cli:… -->` in Markdown). The CLI either strips the markers and keeps the block, or replaces it:
+  - `zustand` — the Zustand-only lint rule in `eslint.config.js`, swapped for the typed-Redux-hooks rule.
+  - `unistyles` — Unistyles-only lines in `index.ts`, `babel.config.js`, `eslint.config.js` and `src/styles/themes.ts`, removed for StyleSheet / Tailwind.
+  - `ui-*` and `snippet-screen` — styling sections of `.skills/ui-creation.md` and `.vscode/project.code-snippets`, replaced from `overlays/styling/<option>/docs/`.
+
+  The test matrix fails if a marker survives into a generated project.
 
 ## Developing
 
@@ -82,13 +103,13 @@ Run from a checkout, the CLI copies the boilerplate straight from the repo root,
 ### Test every combination
 
 ```bash
-npm run test:matrix            # 18 core combinations
-npm run test:matrix -- --all   # all 48
+npm run test:matrix            # 26 core combinations
+npm run test:matrix -- --all   # all 144
 npm run test:matrix -- --export   # also bundle each with `expo export` (slow)
-npm run test:matrix -- --only redux-saga.react-navigation
+npm run test:matrix -- --only redux-saga.react-navigation.tailwind
 ```
 
-The script generates each project into your temp dir, installs **one** shared superset of dependencies, and checks each project for leftovers (stray markers, Zustand imports in Redux apps, …), circular imports (madge), `tsc`, ESLint (or Prettier when ESLint is off), Jest, and `expo config`. CI runs the core set on every PR that touches the app or the CLI.
+The script generates each project into your temp dir, installs **one** shared superset of dependencies, and checks each project for leftovers (stray markers, Zustand imports in Redux apps, Unistyles in StyleSheet / Tailwind apps, …), circular imports (madge), `tsc`, ESLint (or Prettier when ESLint is off), Jest, and `expo config`. CI runs the core set on every PR that touches the app or the CLI.
 
 ### Adding an option
 
@@ -99,7 +120,7 @@ The script generates each project into your temp dir, installs **one** shared su
 
 ### Upgrading the Expo SDK
 
-Upgrade the boilerplate at the repo root as usual, then bump the overlay-only packages in `src/versions.ts` (React Navigation, Redux), and run `npm run test:matrix -- --all --export`.
+Upgrade the boilerplate at the repo root as usual, then bump the overlay-only packages in `src/versions.ts` (React Navigation, Redux, Uniwind / Tailwind), and run `npm run test:matrix -- --all --export`.
 
 ## Publishing
 

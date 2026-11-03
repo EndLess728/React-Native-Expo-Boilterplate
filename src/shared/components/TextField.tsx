@@ -4,6 +4,7 @@ import {
   type ImageSourcePropType,
   type ImageStyle,
   TextInput,
+  type TextInputInstance,
   type TextInputProps,
   View,
   type ViewStyle,
@@ -24,7 +25,7 @@ interface TextFieldProps extends TextInputProps {
   hasError?: boolean;
 }
 
-const TextField = forwardRef<TextInput, TextFieldProps>(
+const TextField = forwardRef<TextInputInstance, TextFieldProps>(
   (
     {
       placeholder = '',

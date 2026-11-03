@@ -1,10 +1,11 @@
 import React from 'react';
-import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { useUnistyles } from 'react-native-unistyles';
+import { NavigationBar } from 'expo-navigation-bar';
+import { StatusBar } from 'expo-status-bar';
 
 import { APIProvider } from '@/services/api-provider';
 import { toastConfig } from '@/shared/utils/toast';
@@ -20,7 +21,8 @@ export function AppProviders({ children }: { children: React.ReactNode }): React
 
   return (
     <>
-      <SystemBars style={{ statusBar: barStyle, navigationBar: barStyle }} />
+      <StatusBar style={barStyle} />
+      <NavigationBar style={barStyle} />
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardProvider>
           <SafeAreaProvider>

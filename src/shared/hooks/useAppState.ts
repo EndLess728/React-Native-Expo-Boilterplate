@@ -11,7 +11,10 @@ import { AppState, type AppStateStatus } from 'react-native';
  * // appState === 'active' | 'background' | 'inactive'
  */
 export function useAppState(): AppStateStatus {
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const [appState, setAppState] = useState<AppStateStatus>(
+    // RN 0.87 types `currentState` as a plain string; it is always an AppStateStatus at runtime.
+    (AppState.currentState as AppStateStatus | null | undefined) ?? 'unknown',
+  );
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', setAppState);

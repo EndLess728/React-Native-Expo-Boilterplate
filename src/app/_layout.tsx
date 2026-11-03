@@ -17,7 +17,7 @@ export { ErrorBoundary } from 'expo-router';
 
 // Hint expo-router which screen to show at `/` when deep-linked into the root.
 export const unstable_settings = {
-  initialRouteName: '(tabs)',
+  anchor: '(tabs)',
 };
 
 function RootNavigator(): React.JSX.Element {
@@ -25,10 +25,12 @@ function RootNavigator(): React.JSX.Element {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={isLoggedIn}>
+      {/* Explicit redirects: without them a failed guard falls back to the anchor,
+          which is `(tabs)` — itself guarded when logged out — and lands on +not-found. */}
+      <Stack.Protected guard={isLoggedIn} redirectTo="/login">
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>
-      <Stack.Protected guard={!isLoggedIn}>
+      <Stack.Protected guard={!isLoggedIn} redirectTo="/">
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
       <Stack.Screen name="+not-found" />

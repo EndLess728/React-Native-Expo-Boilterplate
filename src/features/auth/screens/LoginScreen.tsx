@@ -90,7 +90,7 @@ export function LoginScreen() {
         style={styles.btnStyle}
         title={t('auth.sign_in')}
         type="primary"
-        onPress={handleSubmit(onSubmit)}
+        onPress={() => handleSubmit(onSubmit)()}
       />
       {__DEV__ && (
         <Text style={[TextStyles.bodySemiBold, styles.envLabel]}>

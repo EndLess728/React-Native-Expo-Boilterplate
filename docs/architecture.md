@@ -23,7 +23,7 @@ How the boilerplate is put together: folder layout, routing, the API layer, stat
 │   │   └── settings/         #   screens/SettingsScreen.tsx (language picker)
 │   ├── shared/               # Feature-agnostic building blocks
 │   │   ├── components/       #   Button, TextField, ControlledTextField, ScreenWrapper, Tab bar bits
-│   │   ├── constants/        #   Tab route segments, ApiUrls, deviceInfo, status enums
+│   │   ├── constants/        #   Tab route segments
 │   │   ├── hooks/            #   useAppState, useDebounce, useBlockBackNavigation
 │   │   └── utils/            #   scale helpers, toast
 │   ├── providers/            # AppProviders (all context providers) + useAppBootstrap()

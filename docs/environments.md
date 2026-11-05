@@ -21,7 +21,6 @@ Each `.env.<environment>` file defines:
 ```bash
 EXPO_PUBLIC_APP_ENV=development    # development | staging | production
 EXPO_PUBLIC_API_URL=https://api.example.com/
-EXPO_PUBLIC_SOCKET_URL=https://ws.example.com/
 ```
 
 > `.env.development` is seeded with `EXPO_PUBLIC_API_URL=https://dummyjson.com/`, a free demo API, so

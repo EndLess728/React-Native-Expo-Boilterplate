@@ -95,7 +95,6 @@ yarn ios:development        # or yarn android:development — prebuild + run
 ```bash
 EXPO_PUBLIC_APP_ENV=development    # development | staging | production
 EXPO_PUBLIC_API_URL=https://dummyjson.com/
-EXPO_PUBLIC_SOCKET_URL=https://ws.example.com/
 ```
 
 More detail, including how values reach EAS builds, in [docs/environments.md](docs/environments.md).

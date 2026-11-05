@@ -119,7 +119,7 @@ Before building anything new, check `src/shared/components/`:
 | `Button` | Any tappable CTA. Variants: `primary`, `secondary`, `disabled`. Supports `leftIcon` / `rightIcon` / `isLoading`. |
 | `TextField` | Uncontrolled text input with focus animation, error border, optional left/end icons. |
 | `ControlledTextField` | `react-hook-form`-bound `TextField`. Use this in forms — never wire `TextField` to RHF directly. |
-| `FullScreenLoader` | Modal spinner overlay — usually triggered via `ScreenWrapper`'s `showLoader` prop. |
+| `FullScreenLoader` | Spinner overlay that blocks touches beneath it. On screens, use `ScreenWrapper`'s `showLoader`. In a modal, add `isModal` to `ScreenWrapper`, or render `<FullScreenLoader inModal visible={isLoading} />` as the last child of the view to cover. Give a view with rounded corners hidden overflow. |
 | `TabBarIcon` / `TabBarLabel` | Tab navigator UI bits. |
 
 If a new pattern recurs ≥3 times across screens, lift it into `src/shared/components/` rather than copy-pasting JSX.
@@ -143,7 +143,8 @@ Props:
 - `style` — layout style (padding, `justifyContent`, `alignItems`, etc.). Routed to the content container in scrollable mode, or the outer `View` otherwise. **Caller never thinks about which.**
 <!-- @cli:ui-wrapper-style-prop-end -->
 - `scrollable` — opt-in when the screen has text inputs or content that may exceed the viewport. Uses `KeyboardAwareScrollView` from `react-native-keyboard-controller`, which scrolls **only when the focused input would be obscured** by the keyboard. Centered layouts stay centered when there is room.
-- `showLoader` — toggles full-screen `ActivityIndicator` overlay.
+- `showLoader` — shows the app-wide `FullScreenLoader` above the tab bar and header while this screen is focused. A screen loading in the background doesn't show it.
+- `isModal` — set on modal screens and inside a React Native `<Modal>`. `showLoader` then covers only this content, and the modal stays solid instead of being dimmed.
 - `backgroundImage` / `backgroundImageStyle` / `backgroundImageResizeMode` — full-screen background art.
 - `keyboardBottomOffset` — gap between the keyboard top and the focused input (default `20`).
 

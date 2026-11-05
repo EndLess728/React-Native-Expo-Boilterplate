@@ -326,7 +326,7 @@ These are the call-site idioms you'll see in `app/(tabs)/home.tsx` etc. — repe
 **Loading + error states:**
 ```tsx
 const { data, isLoading, error } = usePosts();
-if (isLoading) return <FullScreenLoader />;
+return <ScreenWrapper showLoader={isLoading}>{/* screen content */}</ScreenWrapper>;
 // Error toast is already shown by the Axios interceptor; render an empty/retry state if needed.
 ```
 

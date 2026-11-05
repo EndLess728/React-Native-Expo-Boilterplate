@@ -2,12 +2,11 @@ import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
 import { NavigationBar } from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
 
 import { APIProvider } from '@/services/api-provider';
-import { toastConfig } from '@/shared/utils/toast';
+import { AppOverlay } from '@/shared/components/AppOverlay';
 import { StoreProvider } from '@/store';
 import { useAppTheme } from '@/theme';
 
@@ -31,7 +30,7 @@ export function AppProviders({ children }: { children: React.ReactNode }): React
             </StoreProvider>
           </SafeAreaProvider>
         </KeyboardProvider>
-        <Toast config={toastConfig} position="top" />
+        <AppOverlay />
       </GestureHandlerRootView>
     </>
   );

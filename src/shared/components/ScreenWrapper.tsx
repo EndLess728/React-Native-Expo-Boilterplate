@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ImageBackground,
+  Image,
   type ImageResizeMode,
   type ImageSourcePropType,
   type ImageStyle,
@@ -60,18 +60,16 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     <View style={[styles.viewContainer, style]}>{children}</View>
   );
 
-  return backgroundImage ? (
-    <ImageBackground
-      imageStyle={backgroundImageStyle}
-      resizeMode={backgroundImageResizeMode}
-      source={backgroundImage}
-      style={styles.wrapper}
-    >
-      {content}
-      {modalLoader}
-    </ImageBackground>
-  ) : (
+  return (
     <View style={styles.wrapper}>
+      {backgroundImage ? (
+        <Image
+          accessibilityIgnoresInvertColors
+          resizeMode={backgroundImageResizeMode}
+          source={backgroundImage}
+          style={[styles.backgroundImage, backgroundImageStyle]}
+        />
+      ) : null}
       {content}
       {modalLoader}
     </View>
@@ -84,6 +82,13 @@ const styles = StyleSheet.create((theme, rt) => ({
   wrapper: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  // The explicit size overrides the file's own dimensions, which `Image` applies
+  // to a `require`d source and which would otherwise beat the absolute edges.
+  backgroundImage: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   container: {
     flex: 1,

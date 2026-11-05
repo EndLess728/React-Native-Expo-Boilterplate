@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ImageBackground,
+  Image,
   type ImageResizeMode,
   type ImageSourcePropType,
   View,
@@ -67,18 +67,18 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     </View>
   );
 
-  return backgroundImage ? (
-    <ImageBackground
-      className="flex-1 bg-background"
-      imageClassName={backgroundImageClassName}
-      resizeMode={backgroundImageResizeMode}
-      source={backgroundImage}
-    >
-      {content}
-      {modalLoader}
-    </ImageBackground>
-  ) : (
+  return (
     <View className="flex-1 bg-background">
+      {backgroundImage ? (
+        <Image
+          accessibilityIgnoresInvertColors
+          // The explicit size overrides the file's own dimensions, which `Image`
+          // applies to a `require`d source and which would otherwise beat `inset-0`.
+          className={`absolute h-full w-full ${backgroundImageClassName ?? ''}`}
+          resizeMode={backgroundImageResizeMode}
+          source={backgroundImage}
+        />
+      ) : null}
       {content}
       {modalLoader}
     </View>

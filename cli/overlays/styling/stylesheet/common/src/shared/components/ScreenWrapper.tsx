@@ -11,7 +11,8 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import FullscreenLoader from '@/shared/components/FullScreenLoader';
+import FullScreenLoader from '@/shared/components/FullScreenLoader';
+import { useScreenLoader } from '@/shared/hooks/useScreenLoader';
 import { useAppTheme } from '@/theme';
 
 interface ScreenWrapperProps {
@@ -19,6 +20,8 @@ interface ScreenWrapperProps {
   /** Layout style (padding, justifyContent, alignItems, etc.). Routed to the content container in scrollable mode, or the outer View otherwise. */
   style?: ViewStyle;
   showLoader?: boolean;
+  /** Set on modal screens, and inside a React Native `<Modal>`: `showLoader` then covers only this content, not the whole app. */
+  isModal?: boolean;
   /** Enable for any screen with text inputs. Scrolls only when needed to keep the focused input above the keyboard. */
   scrollable?: boolean;
   /** Optional full-screen background image. Renders behind all content. */
@@ -35,12 +38,16 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
   style,
   showLoader = false,
+  isModal = false,
   scrollable = false,
   backgroundImage,
   backgroundImageStyle,
   backgroundImageResizeMode = 'cover',
   keyboardBottomOffset = 20,
 }) => {
+  useScreenLoader(showLoader && !isModal);
+  const modalLoader = isModal ? <FullScreenLoader inModal visible={showLoader} /> : null;
+
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const wrapperStyle = [styles.wrapper, { backgroundColor: theme.colors.background }];
@@ -60,7 +67,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     <View style={[styles.viewContainer, bottomInset, style]}>{children}</View>
   );
 
-  const body = backgroundImage ? (
+  return backgroundImage ? (
     <ImageBackground
       imageStyle={backgroundImageStyle}
       resizeMode={backgroundImageResizeMode}
@@ -68,16 +75,13 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
       style={wrapperStyle}
     >
       {content}
+      {modalLoader}
     </ImageBackground>
   ) : (
-    <View style={wrapperStyle}>{content}</View>
-  );
-
-  return (
-    <>
-      {body}
-      <FullscreenLoader visible={showLoader} />
-    </>
+    <View style={wrapperStyle}>
+      {content}
+      {modalLoader}
+    </View>
   );
 };
 

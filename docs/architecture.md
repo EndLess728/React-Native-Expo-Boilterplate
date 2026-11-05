@@ -22,10 +22,10 @@ How the boilerplate is put together: folder layout, routing, the API layer, stat
 │   │   ├── posts/            #   api/ — react-query-kit hooks for the posts resource
 │   │   └── settings/         #   screens/SettingsScreen.tsx (language picker)
 │   ├── shared/               # Feature-agnostic building blocks
-│   │   ├── components/       #   Button, TextField, ControlledTextField, ScreenWrapper, Tab bar bits
+│   │   ├── components/       #   Button, TextField, ControlledTextField, ScreenWrapper, Tab bar bits, AppOverlay (loader + toasts)
 │   │   ├── constants/        #   Tab route segments
-│   │   ├── hooks/            #   useAppState, useDebounce, useBlockBackNavigation
-│   │   └── utils/            #   scale helpers, toast
+│   │   ├── hooks/            #   useAppState, useDebounce, useBlockBackNavigation, useScreenLoader
+│   │   └── utils/            #   scale helpers, toast, appLoader
 │   ├── providers/            # AppProviders (all context providers) + useAppBootstrap()
 │   ├── services/             # HTTP infrastructure (Axios client, QueryClientProvider, pagination)
 │   ├── store/                # App-level store wiring: rehydrateStores(), StoreProvider,

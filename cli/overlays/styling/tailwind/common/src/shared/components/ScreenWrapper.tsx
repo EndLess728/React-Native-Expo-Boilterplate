@@ -8,13 +8,16 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import FullscreenLoader from '@/shared/components/FullScreenLoader';
+import FullScreenLoader from '@/shared/components/FullScreenLoader';
+import { useScreenLoader } from '@/shared/hooks/useScreenLoader';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
   /** Layout classes (padding, justify-*, items-*, …). Applied to the content in both scrollable and static mode. */
   className?: string;
   showLoader?: boolean;
+  /** Set on modal screens, and inside a React Native `<Modal>`: `showLoader` then covers only this content, not the whole app. */
+  isModal?: boolean;
   /** Enable for any screen with text inputs. Scrolls only when needed to keep the focused input above the keyboard. */
   scrollable?: boolean;
   /** Optional full-screen background image. Renders behind all content. */
@@ -31,12 +34,16 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   children,
   className = '',
   showLoader = false,
+  isModal = false,
   scrollable = false,
   backgroundImage,
   backgroundImageClassName,
   backgroundImageResizeMode = 'cover',
   keyboardBottomOffset = 20,
 }) => {
+  useScreenLoader(showLoader && !isModal);
+  const modalLoader = isModal ? <FullScreenLoader inModal visible={showLoader} /> : null;
+
   const insets = useSafeAreaInsets();
   const bottomInset = { paddingBottom: insets.bottom };
 
@@ -60,7 +67,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     </View>
   );
 
-  const body = backgroundImage ? (
+  return backgroundImage ? (
     <ImageBackground
       className="flex-1 bg-background"
       imageClassName={backgroundImageClassName}
@@ -68,16 +75,13 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
       source={backgroundImage}
     >
       {content}
+      {modalLoader}
     </ImageBackground>
   ) : (
-    <View className="flex-1 bg-background">{content}</View>
-  );
-
-  return (
-    <>
-      {body}
-      <FullscreenLoader visible={showLoader} />
-    </>
+    <View className="flex-1 bg-background">
+      {content}
+      {modalLoader}
+    </View>
   );
 };
 

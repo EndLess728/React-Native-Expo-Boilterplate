@@ -1,34 +1,54 @@
 import React from 'react';
-import { ActivityIndicator, Modal, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { translate } from '@/localization/utils';
 import { useAppTheme } from '@/theme';
 
-interface FullscreenLoaderProps {
+interface FullScreenLoaderProps {
   visible: boolean;
   size?: 'small' | 'large';
   color?: string;
+  /** Uses a lighter dim and theme-colored text, so a modal still looks solid. */
+  inModal?: boolean;
 }
 
-const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
+/**
+ * Loading overlay that fills its parent and blocks touches on what's beneath it.
+ *
+ * It is a plain view rather than a native `Modal`, so it can't get stuck over the
+ * app. Screens get it through `ScreenWrapper`'s `showLoader`. Inside a modal, pass
+ * `isModal` to `ScreenWrapper`, or render it here with `inModal` as the last child
+ * of the view to cover (give a view with rounded corners `overflow-hidden`).
+ */
+const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({
   visible = false,
   size = 'large',
   color,
+  inModal = false,
 }) => {
   const theme = useAppTheme();
 
+  if (!visible) return null;
+
+  const label = translate('common.loading');
+
   return (
-    <Modal statusBarTranslucent transparent animationType="fade" visible={visible}>
-      <View className="flex-1 items-center justify-center bg-opacity50">
-        <View className="items-center justify-center rounded-[10px] p-5">
-          <ActivityIndicator color={color || theme.colors.primary} size={size} />
-          <Text className="text-label font-opensans-bold mt-2.5 text-white">
-            {translate('common.loading')}
-          </Text>
-        </View>
-      </View>
-    </Modal>
+    <View
+      accessibilityViewIsModal
+      accessible
+      accessibilityLabel={label}
+      accessibilityRole="progressbar"
+      className="absolute inset-0 items-center justify-center"
+    >
+      <View className={`absolute inset-0 ${inModal ? 'bg-black/35' : 'bg-opacity50'}`} />
+      <ActivityIndicator color={color || theme.colors.primary} size={size} />
+      <Text
+        className={`text-label font-opensans-bold mt-2.5 ${inModal ? 'text-typography' : 'text-white'}`}
+      >
+        {label}
+      </Text>
+    </View>
   );
 };
 
-export default FullscreenLoader;
+export default FullScreenLoader;

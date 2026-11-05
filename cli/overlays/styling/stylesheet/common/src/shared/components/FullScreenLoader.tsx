@@ -1,50 +1,64 @@
 import React from 'react';
-import { ActivityIndicator, Modal, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { translate } from '@/localization/utils';
 import { ms } from '@/shared/utils';
 import { makeStyles, TextStyles, useAppTheme } from '@/theme';
 
-interface FullscreenLoaderProps {
+interface FullScreenLoaderProps {
   visible: boolean;
   size?: 'small' | 'large';
   color?: string;
+  /** Uses a lighter dim and theme-colored text, so a modal still looks solid. */
+  inModal?: boolean;
 }
 
-const FullscreenLoader: React.FC<FullscreenLoaderProps> = ({
+/**
+ * Loading overlay that fills its parent and blocks touches on what's beneath it.
+ *
+ * It is a plain view rather than a native `Modal`, so it can't get stuck over the
+ * app. Screens get it through `ScreenWrapper`'s `showLoader`. Inside a modal, pass
+ * `isModal` to `ScreenWrapper`, or render it here with `inModal` as the last child
+ * of the view to cover (give a view with rounded corners `overflow: 'hidden'`).
+ */
+const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({
   visible = false,
   size = 'large',
   color,
+  inModal = false,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles();
 
+  if (!visible) return null;
+
+  const label = translate('common.loading');
+
   return (
-    <Modal statusBarTranslucent transparent animationType="fade" visible={visible}>
-      <View style={styles.modalBackground}>
-        <View style={styles.activityIndicatorWrapper}>
-          <ActivityIndicator color={color || theme.colors.primary} size={size} />
-          <Text style={[TextStyles.label, styles.loadingText]}>{translate('common.loading')}</Text>
-        </View>
-      </View>
-    </Modal>
+    <View
+      accessibilityViewIsModal
+      accessible
+      accessibilityLabel={label}
+      accessibilityRole="progressbar"
+      style={styles.overlay}
+    >
+      <View style={inModal ? styles.modalBackdrop : styles.screenBackdrop} />
+      <ActivityIndicator color={color || theme.colors.primary} size={size} />
+      <Text style={[TextStyles.label, inModal ? styles.modalText : styles.screenText]}>
+        {label}
+      </Text>
+    </View>
   );
 };
 
+const fill = { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 } as const;
+
 const useStyles = makeStyles((theme) => ({
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.opacity50,
-  },
-  activityIndicatorWrapper: {
-    padding: ms(20),
-    borderRadius: ms(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: { color: theme.colors.white, marginTop: ms(10) },
+  overlay: { ...fill, justifyContent: 'center', alignItems: 'center' },
+  screenBackdrop: { ...fill, backgroundColor: theme.colors.opacity50 },
+  modalBackdrop: { ...fill, backgroundColor: 'rgba(0,0,0,0.35)' },
+  screenText: { color: theme.colors.white, marginTop: ms(10) },
+  modalText: { color: theme.colors.typography, marginTop: ms(10) },
 }));
 
-export default FullscreenLoader;
+export default FullScreenLoader;
